@@ -770,5 +770,10 @@
         }
       }
     }
+  },
+  "table": {
+    "columns": "Spalten",
+    "toggleColumns": "Spalten ein-/ausblenden",
+    "resetColumns": "Auf Standard zurücksetzen"
   }
 }
