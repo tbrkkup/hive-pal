@@ -21,7 +21,7 @@ import { ActiveQueen, QueenResponse } from 'shared-schemas';
 import { useState } from 'react';
 import { QueenTransferDialog } from '@/pages/queen/components/queen-transfer-dialog';
 import { getQueenColorClass } from '@/lib/queen-utils';
-import { useUpdateQueen } from '@/api/hooks';
+import { useUpdateQueen, useHiveApiaryLookup } from '@/api/hooks';
 
 function formatInstalledDate(installedAt: string | Date): string {
   return format(
@@ -51,6 +51,7 @@ const QueenActionsMenu: React.FC<{
   const { t } = useTranslation('queen');
   const navigate = useNavigate();
   const { mutateAsync: updateQueen } = useUpdateQueen();
+  const lookupApiaryId = useHiveApiaryLookup();
 
   const handleMarkQueenState = async (newState: 'DEAD' | 'REPLACED') => {
     await updateQueen({
@@ -59,6 +60,8 @@ const QueenActionsMenu: React.FC<{
         status: newState,
         replacedAt: new Date().toISOString(),
       },
+      // Target the queen's own apiary so this works in cross-apiary view-all.
+      apiaryId: lookupApiaryId(queen.hiveId ?? hiveId),
     });
     onQueenUpdated?.();
   };

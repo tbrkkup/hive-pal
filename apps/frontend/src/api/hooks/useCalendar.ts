@@ -13,8 +13,10 @@ export type { CalendarEvent, SubscriptionUrlResponse } from 'shared-schemas';
 const CALENDAR_KEYS = {
   all: ['calendar'] as const,
   lists: () => [...CALENDAR_KEYS.all, 'list'] as const,
-  list: (filters: CalendarFilter | undefined) =>
-    [...CALENDAR_KEYS.lists(), filters] as const,
+  // Scope ('all' or the selected apiary id) keeps single- and cross-apiary
+  // results in separate cache entries.
+  list: (scope: string | null, filters: CalendarFilter | undefined) =>
+    [...CALENDAR_KEYS.lists(), scope, filters] as const,
   subscription: (apiaryId: string) =>
     [...CALENDAR_KEYS.all, 'subscription', apiaryId] as const,
 };
@@ -22,8 +24,12 @@ const CALENDAR_KEYS = {
 // Get calendar events with optional filtering
 export const useCalendar = (filters?: CalendarFilter) => {
   const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const viewAllApiaries = useApiaryStore(state => state.viewAllApiaries);
+  // In view-all mode the interceptor sends `x-apiary-id: all`, so the calendar
+  // aggregates events across every apiary the user has access to.
+  const scope = viewAllApiaries ? 'all' : activeApiaryId;
   return useQuery<CalendarResponse>({
-    queryKey: CALENDAR_KEYS.list(filters),
+    queryKey: CALENDAR_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.append('hiveId', filters.hiveId);
@@ -34,7 +40,7 @@ export const useCalendar = (filters?: CalendarFilter) => {
       const response = await apiClient.get<CalendarResponse>(url);
       return response.data;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 

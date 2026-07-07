@@ -174,14 +174,39 @@ Postgres) — legt zwei Stände mit je einem Quick-Check an und prüft:
 3. Einzelstand-Dashboard zeigt nur den eigenen Quick-Check, „Alle Bienenstände" **beide**;
 4. **kein** Timeline-Endpoint liefert beim Laden im Alle-Modus einen 4xx/5xx.
 
-**Noch offen in Phase 2 (bewusst zurückgestellt, niedrige Priorität):** Kalender (Sub-Routen
-mit Pfad-`apiaryId`), Reports, Alerts, Assistant/Weather — gleiches Muster.
+**Erledigt (Phase 2c — Kalender, Alerts, cross-apiary Writes):**
+- **Kalender** – `CalendarService.getCalendarEvents` Alle-Scope (`hive.apiary` →
+  `apiaryAccessWhere`), `@AllowAllApiaries`, `useCalendar` Scope-Key + `enabled` auf Scope,
+  `/api/calendar` in der Interceptor-Allowlist. Dashboard-Kalender-Widget und `/calendar`
+  aggregieren jetzt Termine über alle Stände. Die Sub-Routen mit Pfad-`apiaryId`
+  (`apiary/:id/subscription`, `.../ical.ics`, `.../calendar-inspections`) nutzen **nur**
+  `JwtAuthGuard` und ignorieren den `x-apiary-id`-Header → das `all` aus der Allowlist ist
+  für sie harmlos.
+- **Alerts** – `AlertsService.findAll`/`findOne` Alle-Scope, `@AllowAllApiaries`,
+  `/api/alerts` in der Allowlist. Cross-apiary Writes: `dismiss`/`resolve` zielen über die
+  Hive-`apiaryId` des Alerts auf dessen eigenen Stand (Header-Override), sodass ein Alert
+  eines fremden Stands (Hive-Liste/Hive-Detail im Alle-Modus) korrekt quittiert wird.
+- **Cross-apiary Writes**:
+  - **Queen** create/update/transfer pinnen jetzt den Stand der Königin (aufgelöst über die
+    Hive-`apiaryId` via `useHiveApiaryLookup`, Header-Override) — Bearbeiten/Transfer einer
+    Königin eines fremden Stands im Alle-Modus funktioniert.
+  - **Batch-Inspektion** create pinnt den im Formular gewählten Ziel-Stand
+    (`data.apiaryId` als Header-Override).
 
-Ebenfalls **zurückgestellt (später)** — dieselbe Klasse:
-- **Cross-apiary WRITES außerhalb Hive/Inspektion/Timeline** (Queen-Transfer/-Edit,
-  Batch-Inspektionen): senden im Alle-Modus noch den aktiven Stand → 404-Risiko bei
-  fremden Ständen. Fix analog (Ziel-`apiaryId` als Header-Override). (Timeline-Deletes für
-  Quick-Checks/Photos/Documents sind bereits umgestellt.)
+Verifikation Phase 2c: der Endpoint-Probe-Teil von `view-all-phase2b-timeline.spec.ts` deckt
+zusätzlich `/api/calendar` und `/api/alerts` mit `x-apiary-id: all` = **200** ab.
+
+**Bewusst NICHT auf Alle-Modus umgestellt (naturgemäß Einzelstand):**
+- **Reports** (`/api/reports/*`): berechnen Statistiken/Trends **für genau einen Stand**
+  (Honigproduktion, Health-Scores, …). Die Reports-Seite wird immer mit einem konkreten
+  `activeApiaryId` aufgerufen (im Alle-Modus weiterhin der Schreib-Ziel-Stand), und der
+  Endpoint ist **nicht** in der Allowlist → bekommt nie `all`. Eine standübergreifende
+  Summen-Auswertung wäre ein eigenständiges Feature (≈1000 Zeilen Aggregationslogik), kein
+  Bugfix — daher offen gelassen.
+- **Weather**: braucht die Koordinaten **eines** Stands; „alle Stände" hat keinen
+  eindeutigen Ort. Bleibt am aktiven Stand.
+- **Assistant**: Chat ist an den Stand seines Threads gebunden und sendet dessen `apiaryId`
+  bereits explizit mit → keine Alle-Modus-Semantik nötig.
 
 ### Fehleranalyse & Behebungen (aus Review „analoge Fehler")
 
@@ -205,15 +230,17 @@ Ebenfalls **zurückgestellt (später)** — dieselbe Klasse:
   Stand B im Alle-Modus).
 - **`/todos`-Caption**: „…for all apiaries." im Alle-Modus (`todo:list.captionAll`).
 
+**Behoben (Phase 2c):**
+- **Cross-apiary WRITES außerhalb Hive/Inspektion**: Queen-Transfer/-Edit/-Create und
+  Batch-Inspektion-Create pinnen jetzt den Ziel-/Objekt-Stand als Header-Override (siehe
+  Phase 2c oben). Actions-Writes laufen über die Timeline-Deletes bzw. den Hive-Kontext.
+- **Interceptor-Allowlist & Sub-Routen**: `/api/calendar` (und `/api/alerts`) sind in der
+  Allowlist; ihre Sub-Routen mit eigenem Pfad-`apiaryId` (`/api/calendar/apiary/:id/...`)
+  nutzen nur `JwtAuthGuard` und ignorieren den `x-apiary-id`-Header → das `all` ist für sie
+  harmlos. `supportsViewAll` bleibt bei `startsWith`, da alle so erreichten GET-Handler
+  entweder `@AllowAllApiaries` sind oder den Header ignorieren.
+
 **Vorgeschlagen / noch offen (gleiche Klasse):**
-- **Cross-apiary WRITES außerhalb Hive/Inspektion**: Queen-Transfer/-Edit, Actions,
-  Batch-Inspektionen senden im Alle-Modus noch den aktiven Stand als Header → könnten bei
-  Objekten fremder Stände 404en. Fix analog zu Hive/Inspektions-Writes (Ziel-`apiaryId`
-  aus dem Objekt als Header-Override). Priorität: mittel (seltene Flows).
-- **Interceptor-Allowlist & Sub-Routen**: `supportsViewAll` nutzt `startsWith`. Beim
-  Aufnehmen neuer Endpoints in Phase 2b (z. B. `/api/calendar`) ist darauf zu achten, dass
-  Sub-Routen mit eigenem Pfad-`apiaryId` (z. B. `/api/calendar/apiary/:id/subscription`,
-  `…/ical.ics`) **kein** `all` erhalten dürfen bzw. entsprechend behandelt werden.
 - **Empty-State-Texte**: `onboarding` „Add your first hive to this apiary" (Dashboard-Empty
   im Alle-Modus, nur wenn 0 Hives gesamt) – niedrige Priorität, scope-abhängig formulieren.
   `hive:noHivesInApiary` betrifft nur die Stand-Detailseite (immer Einzelstand) → kein

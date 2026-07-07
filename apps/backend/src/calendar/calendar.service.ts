@@ -9,7 +9,8 @@ import {
   CalendarResponse,
   ObservationSchemaType,
 } from 'shared-schemas';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { ActionsService } from '../actions/actions.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { InspectionStatusUpdaterService } from '../inspections/inspection-status-updater.service';
@@ -24,7 +25,7 @@ export class CalendarService {
   ) {}
 
   async getCalendarEvents(
-    filter: CalendarFilter & ApiaryUserFilter,
+    filter: CalendarFilter & ApiaryScopeFilter,
   ): Promise<CalendarResponse> {
     // Update any overdue inspection statuses before fetching
     await this.inspectionStatusUpdater.checkAndUpdateInspectionStatuses();
@@ -33,11 +34,12 @@ export class CalendarService {
     const baseWhereClause = {
       // Filter by hive if specified
       ...(filter.hiveId && { hiveId: filter.hiveId }),
-      // Ensure data belongs to the user's apiary
+      // Scope to the selected apiary, or — in the cross-apiary "view all" mode
+      // (no single apiaryId) — to every apiary the user has access to.
       hive: {
-        apiary: {
-          id: filter.apiaryId,
-        },
+        apiary: filter.apiaryId
+          ? { id: filter.apiaryId }
+          : apiaryAccessWhere(filter.userId),
       },
     };
 

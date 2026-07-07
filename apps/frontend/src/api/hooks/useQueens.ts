@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
 import { useApiaryStore } from '@/hooks/use-apiary';
+import { apiaryHeaderConfig, useHiveApiaryLookup } from './useHives';
 import {
   CreateQueen,
   UpdateQueen,
@@ -86,9 +87,16 @@ export const useHiveQueenHistory = (hiveId: string) => {
 
 export const useCreateQueen = (callbacks?: { onSuccess: () => void }) => {
   const queryClient = useQueryClient();
+  const lookupApiaryId = useHiveApiaryLookup();
   return useMutation({
     mutationFn: async (data: CreateQueen) => {
-      const response = await apiClient.post<QueenResponse>('/api/queens', data);
+      // Pin to the target hive's apiary so creating a queen for a hive in a
+      // non-selected apiary works in cross-apiary "view all" mode.
+      const response = await apiClient.post<QueenResponse>(
+        '/api/queens',
+        data,
+        apiaryHeaderConfig(lookupApiaryId(data.hiveId ?? undefined)),
+      );
       return response.data;
     },
     onSuccess: async data => {
@@ -108,11 +116,23 @@ export const useCreateQueen = (callbacks?: { onSuccess: () => void }) => {
 
 export const useUpdateQueen = () => {
   const queryClient = useQueryClient();
+  const lookupApiaryId = useHiveApiaryLookup();
   return useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: UpdateQueen }) => {
+    mutationFn: async ({
+      id,
+      data,
+      apiaryId,
+    }: {
+      id: string;
+      data: UpdateQueen;
+      // The queen's own apiary, so edits work in cross-apiary "view all" mode.
+      // Falls back to the target hive's apiary when the update moves the queen.
+      apiaryId?: string;
+    }) => {
       const response = await apiClient.patch<QueenResponse>(
         `/api/queens/${id}`,
         data,
+        apiaryHeaderConfig(apiaryId ?? lookupApiaryId(data.hiveId ?? undefined)),
       );
       return response.data;
     },
@@ -132,18 +152,23 @@ export const useUpdateQueen = () => {
 
 export const useRecordQueenTransfer = () => {
   const queryClient = useQueryClient();
+  const lookupApiaryId = useHiveApiaryLookup();
   return useMutation({
     mutationFn: async ({
       queenId,
       data,
+      fromHiveId,
     }: {
       queenId: string;
       data: RecordQueenTransfer;
       fromHiveId?: string | null;
     }) => {
+      // Authorize against the queen's current (source) apiary so a transfer
+      // works in cross-apiary "view all" mode.
       const response = await apiClient.post<QueenDetail>(
         `/api/queens/${queenId}/transfer`,
         data,
+        apiaryHeaderConfig(lookupApiaryId(fromHiveId ?? undefined)),
       );
       return response.data;
     },

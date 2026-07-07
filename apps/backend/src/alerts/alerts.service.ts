@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { CustomLoggerService } from '../logger/logger.service';
 import { Alert, Prisma } from '@/prisma/client';
 import {
@@ -40,21 +44,25 @@ export class AlertsService {
   }
 
   async findAll(
-    filter: ApiaryUserFilter & AlertFilter,
+    filter: ApiaryScopeFilter & AlertFilter,
   ): Promise<AlertResponse[]> {
     this.logger.log(
-      `Finding alerts for apiary ${filter.apiaryId} and user ${filter.userId}`,
+      `Finding alerts for apiary ${filter.apiaryId ?? 'ALL'} and user ${filter.userId}`,
     );
 
     const where: Prisma.AlertWhereInput = {};
+
+    // Scope to the selected apiary, or — in the cross-apiary "view all" mode
+    // (no single apiaryId) — to every apiary the user has access to.
+    const apiaryWhere: Prisma.ApiaryWhereInput = filter.apiaryId
+      ? { id: filter.apiaryId }
+      : apiaryAccessWhere(filter.userId);
 
     // Add hive filter with apiary/user context
     if (filter.hiveId) {
       where.hive = {
         id: filter.hiveId,
-        apiary: {
-          id: filter.apiaryId,
-        },
+        apiary: apiaryWhere,
       };
     } else {
       // If no specific hive, ensure all alerts belong to user's apiaries
@@ -62,9 +70,7 @@ export class AlertsService {
         // Hive-specific alerts
         {
           hive: {
-            apiary: {
-              id: filter.apiaryId,
-            },
+            apiary: apiaryWhere,
           },
         },
         // General alerts (no hiveId) - would need different context in future
@@ -102,7 +108,7 @@ export class AlertsService {
     return alerts.map((alert) => this.mapToResponse(alert));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<AlertResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<AlertResponse> {
     this.logger.log(`Finding alert with ID: ${id}`);
 
     const alert = await this.prisma.alert.findFirst({
@@ -112,9 +118,9 @@ export class AlertsService {
           // Hive-specific alerts
           {
             hive: {
-              apiary: {
-                id: filter.apiaryId,
-              },
+              apiary: filter.apiaryId
+                ? { id: filter.apiaryId }
+                : apiaryAccessWhere(filter.userId),
             },
           },
           // General alerts (no hiveId)
