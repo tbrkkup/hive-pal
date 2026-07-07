@@ -15,5 +15,4 @@ export const ALLOW_ALL_APIARIES_KEY = 'allowAllApiaries';
  * scopes the query to the user's apiaries when no single apiary is set should
  * opt in with this decorator.
  */
-export const AllowAllApiaries = () =>
-  SetMetadata(ALLOW_ALL_APIARIES_KEY, true);
+export const AllowAllApiaries = () => SetMetadata(ALLOW_ALL_APIARIES_KEY, true);
