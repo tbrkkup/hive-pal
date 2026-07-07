@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import {
   CreateQueen,
   QueenResponse,
@@ -99,10 +103,14 @@ export class QueensService {
   }
 
   async findAll(
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
     params?: { status?: string; hiveId?: string },
   ): Promise<QueenResponse[]> {
-    const apiaryFilter = { hive: { apiary: { id: filter.apiaryId } } };
+    // Single apiary, or every apiary the user can access in view-all mode.
+    const apiaryWhere = filter.apiaryId
+      ? { id: filter.apiaryId }
+      : apiaryAccessWhere(filter.userId);
+    const apiaryFilter = { hive: { apiary: apiaryWhere } };
 
     let where: Record<string, unknown>;
     if (params?.hiveId) {
@@ -118,8 +126,8 @@ export class QueensService {
             movements: {
               some: {
                 OR: [
-                  { fromHive: { apiary: { id: filter.apiaryId } } },
-                  { toHive: { apiary: { id: filter.apiaryId } } },
+                  { fromHive: { apiary: apiaryWhere } },
+                  { toHive: { apiary: apiaryWhere } },
                 ],
               },
             },

@@ -128,6 +128,27 @@ Kalender, Reports, Harvests, Todos, Alerts, Queens, Measurements, Photos, Docume
 Actions, Quick-Checks, Assistant/Weather. Pro Endpoint: Service um Alle-Scope erweitern,
 Hook `enabled`/Key anpassen, Seite ggf. gruppieren. Jede Seite einzeln abnehmen.
 
+**Erledigt (Phase 2a):**
+- **Todos** – `TodosService.findAll` Alle-Scope (`apiaryAccessWhere`), `@AllowAllApiaries`,
+  `useTodos` Scope/enabled, Interceptor-Allowlist, `/todos` zeigt alle. Neuer geteilter
+  Helper `common/apiary-scope.ts` (`apiaryAccessWhere`).
+- **Queens** – `QueensService.findAll` Alle-Scope (inkl. Movement-Filter), `@AllowAllApiaries`,
+  `useQueens` Scope-Key + Store-Anbindung, Interceptor-Allowlist.
+- **Harvests** – bereits user-scoped mit optionalem `apiaryId`-Filter; im Alle-Modus lässt
+  `harvest-list-page` den Filter weg (kein Backend-Change nötig).
+
+Verifikation Phase 2a: API-E2E (echte Postgres) – Todo einzeln vs. `all` (Anna+Boris),
+Queens `all` = 200, Todo-Write mit `all` = 400. Playwright grün & stabil
+(`apps/e2e/tests/view-all-phase2.spec.ts`, 2× wiederholt).
+
+| Zustand | Screenshot |
+| --- | --- |
+| Einzelstand „My Apiary" → nur „Todo Anna" | `docs/screenshots/view-all/p2-01-single-apiary-todos.png` |
+| „Alle Bienenstände" → `/todos` über alle Stände | `docs/screenshots/view-all/p2-02-all-apiaries-todos.png` |
+
+**Phase 2b (offen):** Kalender, Reports, Alerts, Measurements, Photos, Documents,
+Actions, Quick-Checks, Assistant/Weather – gleiches Muster.
+
 ### Phase 3 – Feinschliff
 - Aggregierte Dashboard-Widgets im Alle-Modus (Todos/Timeline über Stände hinweg) – optional.
 - Empty-States, Ladezustände, Query-Cache-Konsistenz über alle Seiten.
