@@ -13,6 +13,7 @@ import {
   ApiaryUserFilter,
   ApiaryScopeFilter,
 } from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { ActionsService } from '../actions/actions.service';
 import { CustomLoggerService } from '../logger/logger.service';
 import { InspectionCreatedEvent } from '../events/hive.events';
@@ -367,15 +368,15 @@ export class InspectionsService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<InspectionResponse | null> {
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id,
         hive: {
-          apiary: {
-            id: filter.apiaryId,
-          },
+          apiary: filter.apiaryId
+            ? { id: filter.apiaryId }
+            : apiaryAccessWhere(filter.userId),
         },
       },
       include: INSPECTION_INCLUDE,

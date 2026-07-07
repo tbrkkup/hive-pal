@@ -143,5 +143,11 @@ test.describe('View all apiaries', () => {
     await expect(
       page.getByText(apiaryB, { exact: true }).first(),
     ).toBeVisible();
+
+    // --- Opening a hive that lives in a non-active apiary must work in
+    // view-all mode (regression: detail reads previously 400'd on `all`). ---
+    await page.getByText(hiveB).first().click();
+    await expect(page).toHaveURL(/\/hives\/[0-9a-f-]+$/);
+    await expect(page.getByText(hiveB).first()).toBeVisible();
   });
 });

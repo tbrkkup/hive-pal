@@ -81,15 +81,19 @@ export class TodosController {
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   @ApiOkResponse({ type: Object })
   findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<TodoResponse> {
-    this.logger.log(`Finding todo with ID ${id} in apiary ${req.apiaryId}`);
+    this.logger.log(
+      `Finding todo with ID ${id} in apiary ${req.apiaryId ?? 'ALL'}`,
+    );
     return this.todosService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
