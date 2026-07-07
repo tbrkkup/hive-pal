@@ -176,10 +176,7 @@ export const HomePage = () => {
 
   // User has no apiaries at all — invite them to create one (default apiary is
   // auto-created on registration, so this mainly covers users who removed it).
-  if (
-    (!apiaries || apiaries.length === 0) &&
-    pendingMemberships === 0
-  ) {
+  if ((!apiaries || apiaries.length === 0) && pendingMemberships === 0) {
     return (
       <PageGrid>
         <MainContent>
@@ -290,10 +287,7 @@ export const HomePage = () => {
               <HiveMinimap apiaryId={activeApiaryId} showHeader={false} />
             </CollapsibleSection>
           )}
-          <CollapsibleSection
-            storageKey="home-section:hives"
-            title="Hives"
-          >
+          <CollapsibleSection storageKey="home-section:hives" title="Hives">
             {data && data.length > 0 ? (
               viewAllApiaries ? (
                 <GroupedHives hives={data} apiaries={apiaries} />
@@ -304,7 +298,11 @@ export const HomePage = () => {
               <EmptyStateCard
                 icon={<Sparkles className="h-6 w-6 text-amber-600" />}
                 title={t('empty.noHives.title')}
-                description={t('empty.noHives.description')}
+                description={t(
+                  viewAllApiaries
+                    ? 'empty.noHives.descriptionAll'
+                    : 'empty.noHives.description',
+                )}
                 action={
                   <Button asChild>
                     <Link to="/hives/create">{t('empty.noHives.action')}</Link>
@@ -313,9 +311,12 @@ export const HomePage = () => {
               />
             )}
           </CollapsibleSection>
-          {/* Todos and the timeline are per-apiary; aggregation across all
-              apiaries is a later iteration, so hide them in view-all mode. */}
-          {!viewAllApiaries && <DashboardTodos />}
+          {/* Todos are apiary-scoped but the todos endpoint supports the
+              cross-apiary view, so they aggregate across all apiaries here. */}
+          <DashboardTodos />
+          {/* The timeline mixes endpoints that don't yet support view-all
+              (actions, quick-checks, photos, documents), so it stays hidden in
+              view-all mode until those gain cross-apiary support (Phase 2b). */}
           {!viewAllApiaries && <ApiaryTimeline />}
         </div>
       </MainContent>
