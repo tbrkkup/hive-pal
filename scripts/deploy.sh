@@ -41,8 +41,12 @@
 #   BACKEND_SERVICE     Backend service name in compose      (default: backend)
 #   PG_USER / PG_DB     DB credentials for the dump          (default: postgres / beekeeper)
 #   SKIP_BACKUP=1       Skip the pre-deploy DB backup        (not recommended)
-#   AUTO_STASH=1        Stash local changes before pulling and restore them after
+#   NO_STASH=1          Require a clean tree instead of auto-stashing local edits
 #   SKIP_GIT=1          Do not touch git (deploy current checkout as-is)
+#
+# By default, local edits to tracked files are stashed before the pull and
+# restored right after (before the deploy), so `./scripts/deploy.sh` alone
+# updates and deploys while keeping your local docker-compose/env tweaks.
 #   HEALTH_TIMEOUT      Seconds to wait for health           (default: 180)
 #
 set -euo pipefail
@@ -91,31 +95,30 @@ fi
 if [ "${SKIP_GIT:-0}" != "1" ]; then
   command -v git >/dev/null 2>&1 || die "git is required (or set SKIP_GIT=1)."
   STASHED=0
+  # Local edits to tracked files (e.g. a customised docker-compose.yaml) are
+  # normal on a server. By default we stash them, fast-forward, then restore
+  # them — so the deploy runs WITH your local config and no manual pre-steps are
+  # needed. Set NO_STASH=1 to require a clean tree instead.
   if [ -n "$(git status --porcelain)" ]; then
-    if [ "${AUTO_STASH:-0}" = "1" ]; then
-      log "Local changes detected — stashing them (AUTO_STASH=1) ..."
-      git stash push -u -m "deploy.sh auto-stash $(date +%F-%T)" >/dev/null
-      STASHED=1
-    else
-      warn "Working tree is not clean:"
+    if [ "${NO_STASH:-0}" = "1" ]; then
+      warn "Working tree is not clean and NO_STASH=1:"
       git status --short >&2
-      warn "Options:"
-      warn "  • Keep & re-apply your edits:   AUTO_STASH=1 ./scripts/deploy.sh"
-      warn "  • Deploy the current checkout:  SKIP_GIT=1 ./scripts/deploy.sh   (no git pull)"
-      warn "  • Or discard/commit manually:   git stash   /   git checkout -- <file>"
-      die "Working tree is not clean (see options above)."
+      die "Commit/stash your changes, drop NO_STASH to auto-stash them, or use SKIP_GIT=1."
     fi
+    log "Local changes present — stashing them before the update:"
+    git status --short | sed 's/^/[deploy]   /' >&2
+    git stash push -u -m "deploy.sh auto-stash $(date +%F-%T)" >/dev/null && STASHED=1
   fi
   log "Fetching and fast-forwarding to origin/${HIVE_PAL_BRANCH} ..."
   git fetch --prune origin "${HIVE_PAL_BRANCH}"
   git checkout "${HIVE_PAL_BRANCH}"
   git merge --ff-only "origin/${HIVE_PAL_BRANCH}" \
-    || die "Cannot fast-forward ${HIVE_PAL_BRANCH}; resolve divergence manually."
+    || die "Cannot fast-forward ${HIVE_PAL_BRANCH}; resolve divergence manually. Your changes are safe in 'git stash'."
   log "Now at $(git rev-parse --short HEAD): $(git log -1 --pretty=%s)"
   if [ "${STASHED}" = "1" ]; then
-    log "Restoring your stashed local changes ..."
+    log "Restoring your local changes ..."
     git stash pop \
-      || warn "Could not auto-restore stashed changes (conflict?). Run 'git stash list' and 'git stash pop' manually."
+      || die "Could not re-apply your local changes (they conflict with the update). Resolve with 'git status' and 'git stash pop'; nothing has been deployed yet."
   fi
 else
   warn "SKIP_GIT=1 — deploying the current checkout as-is (no git pull)."
