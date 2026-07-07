@@ -94,7 +94,11 @@ export const InspectionListPage = () => {
       : undefined,
   );
 
-  const { data: hivesData, isLoading: isLoadingHives } = useHives();
+  // Include non-active hives (inactive/archived/dead/sold) so inspections that
+  // belong to them still resolve their hive name instead of showing "Unknown".
+  const { data: hivesData, isLoading: isLoadingHives } = useHives({
+    includeInactive: true,
+  });
 
   // Handle tab changes
   const handleTabChange = (value: string) => {
