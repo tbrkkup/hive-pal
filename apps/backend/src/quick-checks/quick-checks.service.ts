@@ -6,7 +6,11 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { v4 as uuidv4 } from 'uuid';
 import {
   CreateQuickCheck,
@@ -26,8 +30,11 @@ const MAX_PHOTO_SIZE = 10 * 1024 * 1024; // 10MB
 
 interface QuickCheckFilterInternal {
   hiveId?: string;
-  apiaryId: string;
+  // Optional: when omitted, list runs in the cross-apiary "view all" mode and
+  // is scoped to every apiary the user has access to.
+  apiaryId?: string;
   userId: string;
+  allApiaries?: boolean;
   startDate?: string;
   endDate?: string;
 }
@@ -86,19 +93,14 @@ export class QuickChecksService {
   async findAll(
     filter: QuickCheckFilterInternal,
   ): Promise<QuickCheckResponse[]> {
-    // Verify apiary belongs to user
-    const apiary = await this.prisma.apiary.findFirst({
-      where: { id: filter.apiaryId },
-    });
-
-    if (!apiary) {
-      throw new NotFoundException(
-        `Apiary with ID ${filter.apiaryId} not found`,
-      );
-    }
-
     const where: Record<string, unknown> = {
-      apiary: { id: filter.apiaryId },
+      // Scope to the selected apiary, or — in the cross-apiary "view all" mode
+      // (no single apiaryId) — to every apiary the user has access to. The
+      // ApiaryContextGuard already verified the user's access to a concrete
+      // apiary, so no extra ownership check is needed here.
+      apiary: filter.apiaryId
+        ? { id: filter.apiaryId }
+        : apiaryAccessWhere(filter.userId),
     };
 
     if (filter.hiveId) {
@@ -126,12 +128,14 @@ export class QuickChecksService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QuickCheckResponse> {
     const quickCheck = await this.prisma.quickCheck.findFirst({
       where: {
         id,
-        apiary: { id: filter.apiaryId },
+        apiary: filter.apiaryId
+          ? { id: filter.apiaryId }
+          : apiaryAccessWhere(filter.userId),
       },
       include: {
         photos: true,
@@ -259,7 +263,7 @@ export class QuickChecksService {
   async getPhotoDownloadUrl(
     quickCheckId: string,
     photoId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     if (!this.storageService.isEnabled()) {
       throw new BadRequestException(
@@ -272,7 +276,9 @@ export class QuickChecksService {
         id: photoId,
         quickCheckId,
         quickCheck: {
-          apiary: { id: filter.apiaryId },
+          apiary: filter.apiaryId
+            ? { id: filter.apiaryId }
+            : apiaryAccessWhere(filter.userId),
         },
       },
     });

@@ -19,7 +19,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import {
   InspectionAudioService,
@@ -71,9 +75,10 @@ export class InspectionAudioController {
    * List all audio recordings for an inspection
    */
   @Get()
+  @AllowAllApiaries()
   async findAll(
     @Param('inspectionId') inspectionId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<AudioResponse[]> {
     this.logger.log({
       message: 'Listing audio recordings',
@@ -83,6 +88,7 @@ export class InspectionAudioController {
     return this.audioService.findAll(inspectionId, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
@@ -90,10 +96,11 @@ export class InspectionAudioController {
    * Get a pre-signed download URL for an audio recording
    */
   @Get(':audioId/download-url')
+  @AllowAllApiaries()
   async getDownloadUrl(
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<DownloadUrlResponse> {
     this.logger.log({
       message: 'Getting download URL for audio',
@@ -104,6 +111,7 @@ export class InspectionAudioController {
     return this.audioService.getDownloadUrl(inspectionId, audioId, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
@@ -143,14 +151,16 @@ export class InspectionAudioController {
   }
 
   @Get(':audioId/ai/status')
+  @AllowAllApiaries()
   async getAiAnalysisStatus(
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.audioService.getAiAnalysisStatus(inspectionId, audioId, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
@@ -179,14 +189,16 @@ export class InspectionAudioController {
   }
 
   @Get(':audioId/ai/result')
+  @AllowAllApiaries()
   async getAiAnalysisResult(
     @Param('inspectionId') inspectionId: string,
     @Param('audioId') audioId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.audioService.getAiAnalysisResult(inspectionId, audioId, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 }

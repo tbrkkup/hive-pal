@@ -13,6 +13,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
 import { ActionsService } from './actions.service';
 import {
   ActionFilter,
@@ -25,7 +26,10 @@ import {
 } from 'shared-schemas';
 import { ZodValidation } from '../common';
 
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 
 @Controller('actions')
 @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
@@ -33,15 +37,17 @@ export class ActionsController {
   constructor(private readonly actionsService: ActionsService) {}
 
   @Get()
+  @AllowAllApiaries()
   @ZodValidation(actionFilterSchema)
   findAll(
     @Query() query: ActionFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<ActionResponse[]> {
     return this.actionsService.findAll({
+      ...query,
       apiaryId: req.apiaryId,
       userId: req.user.id,
-      ...query,
+      allApiaries: req.allApiaries,
     });
   }
 

@@ -314,10 +314,10 @@ export const HomePage = () => {
           {/* Todos are apiary-scoped but the todos endpoint supports the
               cross-apiary view, so they aggregate across all apiaries here. */}
           <DashboardTodos />
-          {/* The timeline mixes endpoints that don't yet support view-all
-              (actions, quick-checks, photos, documents), so it stays hidden in
-              view-all mode until those gain cross-apiary support (Phase 2b). */}
-          {!viewAllApiaries && <ApiaryTimeline />}
+          {/* The timeline's endpoints (inspections, actions, quick-checks,
+              photos, documents) all support the cross-apiary view, so it
+              aggregates recent activity across every apiary in view-all mode. */}
+          <ApiaryTimeline />
         </div>
       </MainContent>
       <PageAside>

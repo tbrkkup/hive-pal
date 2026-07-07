@@ -39,7 +39,7 @@ import {
 export const ApiaryTimeline = () => {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
-  const { activeApiaryId } = useApiary();
+  const { activeApiaryId, viewAllApiaries } = useApiary();
   const { canEdit } = useApiaryPermission();
   const [deletingQuickCheck, setDeletingQuickCheck] =
     useState<QuickCheckResponse | null>(null);
@@ -52,7 +52,11 @@ export const ApiaryTimeline = () => {
   const handleDeleteQuickCheckConfirm = async () => {
     if (!deletingQuickCheck) return;
     try {
-      await deleteQuickCheckMutation.mutateAsync(deletingQuickCheck.id);
+      // Target the check's own apiary so deletes work in cross-apiary view-all.
+      await deleteQuickCheckMutation.mutateAsync({
+        id: deletingQuickCheck.id,
+        apiaryId: deletingQuickCheck.apiaryId,
+      });
       toast.success(t('common:quickCheck.deleted'));
       setDeletingQuickCheck(null);
     } catch {
@@ -63,7 +67,10 @@ export const ApiaryTimeline = () => {
   const handleDeletePhotoConfirm = async () => {
     if (!deletingPhoto) return;
     try {
-      await deletePhotoMutation.mutateAsync(deletingPhoto.id);
+      await deletePhotoMutation.mutateAsync({
+        id: deletingPhoto.id,
+        apiaryId: deletingPhoto.apiaryId,
+      });
       toast.success(t('common:photo.deleted', { defaultValue: 'Photo deleted' }));
       setDeletingPhoto(null);
     } catch {
@@ -74,7 +81,10 @@ export const ApiaryTimeline = () => {
   const handleDeleteDocumentConfirm = async () => {
     if (!deletingDocument) return;
     try {
-      await deleteDocumentMutation.mutateAsync(deletingDocument.id);
+      await deleteDocumentMutation.mutateAsync({
+        id: deletingDocument.id,
+        apiaryId: deletingDocument.apiaryId,
+      });
       toast.success(t('common:document.deleted', { defaultValue: 'Document deleted' }));
       setDeletingDocument(null);
     } catch {
@@ -82,19 +92,28 @@ export const ApiaryTimeline = () => {
     }
   };
 
+  // In view-all mode we let each hook follow the cross-apiary scope (no explicit
+  // apiaryId filter), so the timeline aggregates activity across every apiary.
+  // In single-apiary mode we pin to the selected apiary as before.
+  const scopedFilter = viewAllApiaries
+    ? undefined
+    : activeApiaryId
+      ? { apiaryId: activeApiaryId }
+      : undefined;
+  const scopeEnabled = viewAllApiaries || !!activeApiaryId;
+
   const { data: inspections, isLoading: inspectionsLoading } = useInspections();
   const { data: actions, isLoading: actionsLoading } = useActions();
   const { data: quickChecks, isLoading: quickChecksLoading } = useQuickChecks(
-    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
-    { enabled: !!activeApiaryId },
+    scopedFilter,
+    { enabled: scopeEnabled },
   );
-  const { data: photos, isLoading: photosLoading } = usePhotos(
-    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
-    { enabled: !!activeApiaryId },
-  );
+  const { data: photos, isLoading: photosLoading } = usePhotos(scopedFilter, {
+    enabled: scopeEnabled,
+  });
   const { data: documents, isLoading: documentsLoading } = useDocuments(
-    activeApiaryId ? { apiaryId: activeApiaryId } : undefined,
-    { enabled: !!activeApiaryId },
+    scopedFilter,
+    { enabled: scopeEnabled },
   );
   const { data: hives } = useHives();
 
@@ -135,7 +154,13 @@ export const ApiaryTimeline = () => {
         photos={photos ?? []}
         documents={documents ?? []}
         isLoading={inspectionsLoading || actionsLoading || quickChecksLoading || photosLoading || documentsLoading}
-        emptyMessage={t('common:timeline.noActivityApiary')}
+        emptyMessage={
+          viewAllApiaries
+            ? t('common:timeline.noActivityAll', {
+                defaultValue: 'No recent activity across your apiaries.',
+              })
+            : t('common:timeline.noActivityApiary')
+        }
         getHiveName={getHiveName}
         hives={hiveList}
         onInspectionClick={handleInspectionClick}
@@ -144,7 +169,9 @@ export const ApiaryTimeline = () => {
         onDeletePhoto={canEdit ? setDeletingPhoto : undefined}
         onDeleteDocument={canEdit ? setDeletingDocument : undefined}
         headerSlot={
-          canEdit && activeApiaryId ? (
+          // Inline quick-add needs a single concrete target apiary, which
+          // doesn't exist in the cross-apiary "view all" mode.
+          canEdit && activeApiaryId && !viewAllApiaries ? (
             <QuickAddMenu apiaryId={activeApiaryId} variant="inline" />
           ) : undefined
         }
