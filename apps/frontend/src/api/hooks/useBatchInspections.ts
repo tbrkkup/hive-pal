@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { apiaryHeaderConfig } from './useHives';
 import {
   CreateBatchInspection,
   UpdateBatchInspection,
@@ -68,9 +69,12 @@ export const useCreateBatchInspection = () => {
 
   return useMutation({
     mutationFn: async (data: CreateBatchInspection) => {
+      // Target the batch's own apiary (from the form), so creating a batch for
+      // hives in a non-selected apiary works in cross-apiary "view all" mode.
       const response = await apiClient.post<BatchInspectionResponse>(
         '/api/batch-inspections',
         data,
+        apiaryHeaderConfig(data.apiaryId),
       );
       return response.data;
     },
