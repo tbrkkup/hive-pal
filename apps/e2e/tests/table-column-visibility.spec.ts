@@ -42,6 +42,7 @@ const seedInspection = async (page: Page) => {
         hiveId: hive.id,
         date: new Date('2026-06-01T10:00:00.000Z').toISOString(),
         status: 'COMPLETED',
+        notes: 'Colony looked strong and healthy with plenty of stores',
       }),
     });
   });
@@ -135,4 +136,23 @@ test('inspections table columns can be hidden and the choice persists', async ({
   await expect(
     page.getByRole('columnheader', { name: 'Weather' }),
   ).toBeVisible();
+
+  // --- The Notes column is off by default and can be enabled ---
+  await expect(
+    page.getByRole('columnheader', { name: 'Notes' }),
+  ).toHaveCount(0);
+  await page.getByRole('button', { name: 'Columns', exact: true }).click();
+  await page.getByRole('menuitemcheckbox', { name: 'Notes' }).click();
+  await page.keyboard.press('Escape');
+  await expect(
+    page.getByRole('columnheader', { name: 'Notes' }),
+  ).toBeVisible();
+  // The (abbreviated) note text is rendered in the row.
+  await expect(
+    page.getByText('Colony looked strong', { exact: false }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: `${SHOT_DIR}/columns-03-notes-enabled.png`,
+    fullPage: true,
+  });
 });
