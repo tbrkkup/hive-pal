@@ -147,9 +147,16 @@ export class QueensService {
     return queens.map((queen) => this.mapQueenToResponse(queen));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<QueenResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<QueenResponse> {
     const queen = await this.prisma.queen.findFirst({
-      where: { id, hive: { apiary: { id: filter.apiaryId } } },
+      where: {
+        id,
+        hive: {
+          apiary: filter.apiaryId
+            ? { id: filter.apiaryId }
+            : apiaryAccessWhere(filter.userId),
+        },
+      },
       include: { hive: { select: { name: true } } },
     });
     if (!queen) throw new NotFoundException(`Queen with ID ${id} not found`);
@@ -288,19 +295,22 @@ export class QueensService {
 
   async getQueenHistory(
     queenId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QueenDetail> {
+    const apiaryWhere = filter.apiaryId
+      ? { id: filter.apiaryId }
+      : apiaryAccessWhere(filter.userId);
     const queen = await this.prisma.queen.findFirst({
       where: {
         id: queenId,
         OR: [
-          { hive: { apiary: { id: filter.apiaryId } } },
+          { hive: { apiary: apiaryWhere } },
           {
             movements: {
               some: {
                 OR: [
-                  { fromHive: { apiary: { id: filter.apiaryId } } },
-                  { toHive: { apiary: { id: filter.apiaryId } } },
+                  { fromHive: { apiary: apiaryWhere } },
+                  { toHive: { apiary: apiaryWhere } },
                 ],
               },
             },
@@ -350,10 +360,15 @@ export class QueensService {
 
   async getHiveQueenHistory(
     hiveId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<QueenResponse[]> {
     const hive = await this.prisma.hive.findFirst({
-      where: { id: hiveId, apiary: { id: filter.apiaryId } },
+      where: {
+        id: hiveId,
+        apiary: filter.apiaryId
+          ? { id: filter.apiaryId }
+          : apiaryAccessWhere(filter.userId),
+      },
     });
     if (!hive) throw new NotFoundException(`Hive with ID ${hiveId} not found`);
 

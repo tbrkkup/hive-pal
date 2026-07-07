@@ -78,16 +78,18 @@ export class InspectionsController {
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   async findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<InspectionResponse | null> {
     this.logger.log(
-      `Finding inspection with ID ${id} in apiary ${req.apiaryId}`,
+      `Finding inspection with ID ${id} in apiary ${req.apiaryId ?? 'ALL'}`,
     );
     return this.inspectionsService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 

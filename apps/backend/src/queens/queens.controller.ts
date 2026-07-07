@@ -64,15 +64,17 @@ export class QueensController {
   }
 
   @Get('hive/:hiveId/history')
+  @AllowAllApiaries()
   @ApiOkResponse({ type: Object, isArray: true })
   getHiveHistory(
     @Param('hiveId') hiveId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QueenResponse[]> {
     this.logger.log(`Getting queen history for hive ${hiveId}`);
     return this.queensService.getHiveQueenHistory(hiveId, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
@@ -96,15 +98,17 @@ export class QueensController {
   }
 
   @Get(':id/history')
+  @AllowAllApiaries()
   @ApiOkResponse({ type: Object })
   getHistory(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QueenDetail> {
     this.logger.log(`Getting history for queen ${id}`);
     return this.queensService.getQueenHistory(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
@@ -124,15 +128,19 @@ export class QueensController {
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   @ApiOkResponse({ type: Object })
   findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QueenResponse> {
-    this.logger.log(`Finding queen with ID ${id} in apiary ${req.apiaryId}`);
+    this.logger.log(
+      `Finding queen with ID ${id} in apiary ${req.apiaryId ?? 'ALL'}`,
+    );
     return this.queensService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 

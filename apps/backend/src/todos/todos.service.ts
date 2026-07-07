@@ -94,9 +94,14 @@ export class TodosService {
     return todos.map((todo) => this.mapTodoToResponse(todo));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<TodoResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<TodoResponse> {
     const todo = await this.prisma.todo.findFirst({
-      where: { id, apiaryId: filter.apiaryId },
+      where: {
+        id,
+        ...(filter.apiaryId
+          ? { apiaryId: filter.apiaryId }
+          : { apiary: apiaryAccessWhere(filter.userId) }),
+      },
       include: { hive: { select: { name: true } } },
     });
     if (!todo) throw new NotFoundException(`Todo with ID ${id} not found`);
