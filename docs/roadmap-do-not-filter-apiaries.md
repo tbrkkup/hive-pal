@@ -12,6 +12,35 @@ Bestätigte Richtungsentscheidungen: **1a** (Eintrag "Alle Bienenstände" im Swi
 
 ---
 
+## Status & Verifikation
+
+**Phase 1 abgeschlossen** (Dashboard, `/hives`, `/inspections`, Switcher, cross-apiary
+Writes inkl. Inspektionen).
+
+| Prüfung | Ergebnis |
+| --- | --- |
+| Backend-/Frontend-Typecheck | ✅ |
+| Frontend-Production-Build (inkl. SSR-Prerender) | ✅ |
+| Backend-Unit-Tests (vitest) | ✅ 118 grün / 33 skipped |
+| Guard-Spec inkl. Alle-Modus-Fälle | ✅ 11/11 |
+| API-E2E (echte Postgres): Einzelstand / `all` / Cross-User-Isolation / Gating | ✅ |
+| **Playwright-UI-E2E** (`apps/e2e/tests/view-all-apiaries.spec.ts`) | ✅ **vom User als bestanden anerkannt** (lokal 3× grün gegen Postgres + Prod-Build) |
+| **Deploy-Test (Produktionsserver)** | ⏳ **offen – wird vom User später selbst durchgeführt** |
+
+Belege (Playwright, echter Browser gegen Backend + Postgres):
+
+| Zustand | Screenshot |
+| --- | --- |
+| Einzelstand „My Apiary" → nur dessen Hive | `docs/screenshots/view-all/01-single-apiary-filter.png` |
+| „Alle Bienenstände" → `/hives` flache Liste über alle Stände | `docs/screenshots/view-all/02-all-apiaries-hives-flat.png` |
+| Dashboard nach Stand gruppiert (BEEP-Stil) | `docs/screenshots/view-all/03-dashboard-grouped.png` |
+
+Lokaler Testlauf (Referenz): Postgres via `/usr/lib/postgresql/16/bin` (kein Docker nötig),
+Backend auf `:3000`, Prod-Build hinter einem kleinen Static-+`/api`-Proxy-Server auf `:5173`,
+Playwright mit dem vorinstallierten Chromium (`/opt/pw-browsers/chromium-1194`).
+
+---
+
 ## Ist-Zustand (wie das Filtern heute funktioniert)
 
 1. **Store** `apps/frontend/src/hooks/use-apiary.ts`: `activeApiaryId` (genau ein Stand)
