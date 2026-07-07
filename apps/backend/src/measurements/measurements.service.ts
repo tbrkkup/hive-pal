@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import {
   CreateMeasurementBatch,
   CreateMeasurementBatchResponse,
@@ -57,10 +59,10 @@ export class MeasurementsService {
 
   async findForHive(
     hiveId: string,
-    apiaryId: string,
+    scope: ApiaryScopeFilter,
     filter: MeasurementFilter,
   ): Promise<MeasurementResponse[]> {
-    await this.assertHiveInApiary(hiveId, apiaryId);
+    await this.assertHiveAccessible(hiveId, scope);
 
     const where: {
       hiveId: string;
@@ -95,9 +97,9 @@ export class MeasurementsService {
 
   async findLatestForHive(
     hiveId: string,
-    apiaryId: string,
+    scope: ApiaryScopeFilter,
   ): Promise<LatestMeasurementsResponse> {
-    await this.assertHiveInApiary(hiveId, apiaryId);
+    await this.assertHiveAccessible(hiveId, scope);
 
     const rows = await this.prisma.$queryRaw<LatestRow[]>`
       SELECT DISTINCT ON (metric)
@@ -125,6 +127,29 @@ export class MeasurementsService {
   ): Promise<void> {
     const hive = await this.prisma.hive.findFirst({
       where: { id: hiveId, apiaryId },
+      select: { id: true },
+    });
+
+    if (!hive) {
+      throw new NotFoundException(`Hive with ID ${hiveId} not found in apiary`);
+    }
+  }
+
+  /**
+   * Verifies the hive belongs to the selected apiary, or — in the cross-apiary
+   * "view all" mode (no single apiaryId) — to any apiary the user has access to.
+   */
+  private async assertHiveAccessible(
+    hiveId: string,
+    scope: ApiaryScopeFilter,
+  ): Promise<void> {
+    const hive = await this.prisma.hive.findFirst({
+      where: {
+        id: hiveId,
+        apiary: scope.apiaryId
+          ? { id: scope.apiaryId }
+          : apiaryAccessWhere(scope.userId),
+      },
       select: { id: true },
     });
 

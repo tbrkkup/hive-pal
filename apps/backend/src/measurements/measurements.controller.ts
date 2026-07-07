@@ -12,7 +12,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiKeyGuard, RequestWithApiKey } from '../auth/guards/api-key.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { MeasurementsService } from './measurements.service';
 import { ZodValidation } from '../common';
@@ -54,21 +58,30 @@ export class MeasurementsController {
 
   @Get('hives/:id/measurements')
   @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+  @AllowAllApiaries()
   @ZodValidation(measurementFilterSchema)
   async list(
     @Param('id') hiveId: string,
     @Query() query: MeasurementFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<MeasurementResponse[]> {
-    return this.measurementsService.findForHive(hiveId, req.apiaryId, query);
+    return this.measurementsService.findForHive(
+      hiveId,
+      { apiaryId: req.apiaryId, userId: req.user.id },
+      query,
+    );
   }
 
   @Get('hives/:id/measurements/latest')
   @UseGuards(JwtAuthGuard, ApiaryContextGuard, ApiaryPermissionGuard)
+  @AllowAllApiaries()
   async latest(
     @Param('id') hiveId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<LatestMeasurementsResponse> {
-    return this.measurementsService.findLatestForHive(hiveId, req.apiaryId);
+    return this.measurementsService.findLatestForHive(hiveId, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 }

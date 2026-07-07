@@ -6,7 +6,11 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.interface';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { Prisma, TranscriptionStatus } from '@/prisma/client';
@@ -144,6 +148,19 @@ export class InspectionAudioService {
   }
 
   /**
+   * Apiary where-filter for read queries: the selected apiary, or — in the
+   * cross-apiary "view all" mode (no single apiaryId) — every apiary the user
+   * has access to.
+   */
+  private apiaryScopeWhere(
+    filter: ApiaryScopeFilter,
+  ): Prisma.ApiaryWhereInput {
+    return filter.apiaryId
+      ? { id: filter.apiaryId }
+      : apiaryAccessWhere(filter.userId);
+  }
+
+  /**
    * Upload an audio recording
    */
   async upload(
@@ -227,15 +244,13 @@ export class InspectionAudioService {
    */
   async findAll(
     inspectionId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<AudioResponse[]> {
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id: inspectionId,
         hive: {
-          apiary: {
-            id: filter.apiaryId,
-          },
+          apiary: this.apiaryScopeWhere(filter),
         },
       },
     });
@@ -347,7 +362,7 @@ export class InspectionAudioService {
   async getDownloadUrl(
     inspectionId: string,
     audioId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<DownloadUrlResponse> {
     if (!this.storageService.isEnabled()) {
       throw new BadRequestException(
@@ -361,9 +376,7 @@ export class InspectionAudioService {
         inspectionId,
         inspection: {
           hive: {
-            apiary: {
-              id: filter.apiaryId,
-            },
+            apiary: this.apiaryScopeWhere(filter),
           },
         },
       },
@@ -760,7 +773,7 @@ export class InspectionAudioService {
   async getAiAnalysisStatus(
     inspectionId: string,
     audioId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<AiAnalysisStatusResponse> {
     const audio = await this.prisma.inspectionAudio.findFirst({
       where: {
@@ -768,10 +781,7 @@ export class InspectionAudioService {
         inspectionId,
         inspection: {
           hive: {
-            apiary: {
-              id: filter.apiaryId,
-              userId: filter.userId,
-            },
+            apiary: this.apiaryScopeWhere(filter),
           },
         },
       },
@@ -794,7 +804,7 @@ export class InspectionAudioService {
   async getAiAnalysisResult(
     inspectionId: string,
     audioId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<AiAnalysisResultResponse> {
     const audio = await this.prisma.inspectionAudio.findFirst({
       where: {
@@ -802,10 +812,7 @@ export class InspectionAudioService {
         inspectionId,
         inspection: {
           hive: {
-            apiary: {
-              id: filter.apiaryId,
-              userId: filter.userId,
-            },
+            apiary: this.apiaryScopeWhere(filter),
           },
         },
       },

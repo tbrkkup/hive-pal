@@ -18,7 +18,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { DocumentsService } from './documents.service';
 import { ZodValidation } from '../common';
@@ -73,10 +77,11 @@ export class DocumentsController {
   }
 
   @Get()
+  @AllowAllApiaries()
   @ZodValidation(documentFilterSchema)
   async findAll(
     @Query() query: DocumentFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<DocumentResponse[]> {
     this.logger.log({
       message: 'Listing documents',
@@ -87,25 +92,33 @@ export class DocumentsController {
       ...query,
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   async findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<DocumentResponse> {
     return this.documentsService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Get(':id/download-url')
-  async getDownloadUrl(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  @AllowAllApiaries()
+  async getDownloadUrl(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiaryScope,
+  ) {
     return this.documentsService.getDownloadUrl(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 

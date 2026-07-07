@@ -18,7 +18,8 @@ import {
 const boxesSchema = z
   .array(z.object({ type: boxTypeSchema, frameCount: z.number().int().min(0) }))
   .nullable();
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 
 type ActionWithRelations = Prisma.ActionGetPayload<{
   include: {
@@ -336,7 +337,7 @@ export class ActionsService {
    * @returns Array of action responses
    */
   async findAll(
-    filter: ActionFilter & Partial<ApiaryUserFilter>,
+    filter: ActionFilter & ApiaryScopeFilter,
   ): Promise<ActionResponse[]> {
     const whereClause: Prisma.ActionWhereInput = {
       type: filter.type ?? undefined,
@@ -351,13 +352,12 @@ export class ActionsService {
         : {}),
       // Filter by hive if specified
       ...(filter.hiveId && { hiveId: filter.hiveId }),
-      // Ensure the action belongs to the user's apiary
+      // Scope to the selected apiary, or — in the cross-apiary "view all" mode
+      // (no single apiaryId) — to every apiary the user has access to.
       hive: {
-        ...(filter.apiaryId && {
-          apiary: {
-            id: filter.apiaryId,
-          },
-        }),
+        apiary: filter.apiaryId
+          ? { id: filter.apiaryId }
+          : apiaryAccessWhere(filter.userId),
       },
     };
 
