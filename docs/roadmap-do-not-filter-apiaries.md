@@ -149,6 +149,32 @@ Queens `all` = 200, Todo-Write mit `all` = 400. Playwright grün & stabil
 **Phase 2b (offen):** Kalender, Reports, Alerts, Measurements, Photos, Documents,
 Actions, Quick-Checks, Assistant/Weather – gleiches Muster.
 
+### Fehleranalyse & Behebungen (aus Review „analoge Fehler")
+
+**Behoben:**
+- **Detail-/History-Reads im Alle-Modus** (Korrektheitsfehler): Beim Öffnen einer
+  Detailseite (Hive/Inspektion/Todo/Queen) eines Objekts aus einem *nicht-aktiven*
+  Stand kam vorher **400** (`x-apiary-id: all` auf nicht-opt-in-Handler) bzw. **404**
+  (Header = aktiver Stand ≠ Objekt-Stand). `findOne` + Queen-History-Endpoints sind jetzt
+  `@AllowAllApiaries` und scopen auf die Stände des Users. Einzelstand-Isolation
+  unverändert (falscher Stand → 404). Regressionstest im Hives-Spec (öffnet ein Hive aus
+  Stand B im Alle-Modus).
+- **`/todos`-Caption**: „…for all apiaries." im Alle-Modus (`todo:list.captionAll`).
+
+**Vorgeschlagen / noch offen (gleiche Klasse):**
+- **Cross-apiary WRITES außerhalb Hive/Inspektion**: Queen-Transfer/-Edit, Actions,
+  Batch-Inspektionen senden im Alle-Modus noch den aktiven Stand als Header → könnten bei
+  Objekten fremder Stände 404en. Fix analog zu Hive/Inspektions-Writes (Ziel-`apiaryId`
+  aus dem Objekt als Header-Override). Priorität: mittel (seltene Flows).
+- **Interceptor-Allowlist & Sub-Routen**: `supportsViewAll` nutzt `startsWith`. Beim
+  Aufnehmen neuer Endpoints in Phase 2b (z. B. `/api/calendar`) ist darauf zu achten, dass
+  Sub-Routen mit eigenem Pfad-`apiaryId` (z. B. `/api/calendar/apiary/:id/subscription`,
+  `…/ical.ics`) **kein** `all` erhalten dürfen bzw. entsprechend behandelt werden.
+- **Empty-State-Texte**: `onboarding` „Add your first hive to this apiary" (Dashboard-Empty
+  im Alle-Modus, nur wenn 0 Hives gesamt) – niedrige Priorität, scope-abhängig formulieren.
+  `hive:noHivesInApiary` betrifft nur die Stand-Detailseite (immer Einzelstand) → kein
+  Alle-Modus-Problem.
+
 ### Phase 3 – Feinschliff
 - Aggregierte Dashboard-Widgets im Alle-Modus (Todos/Timeline über Stände hinweg) – optional.
 - Empty-States, Ladezustände, Query-Cache-Konsistenz über alle Seiten.
