@@ -146,8 +146,16 @@ Queens `all` = 200, Todo-Write mit `all` = 400. Playwright grün & stabil
 | Einzelstand „My Apiary" → nur „Todo Anna" | `docs/screenshots/view-all/p2-01-single-apiary-todos.png` |
 | „Alle Bienenstände" → `/todos` über alle Stände | `docs/screenshots/view-all/p2-02-all-apiaries-todos.png` |
 
-**Phase 2b (offen):** Kalender, Reports, Alerts, Measurements, Photos, Documents,
-Actions, Quick-Checks, Assistant/Weather – gleiches Muster.
+**Phase 2b — ZURÜCKGESTELLT (später):** Kalender, Reports, Alerts, Measurements, Photos,
+Documents, Actions, Quick-Checks, Assistant/Weather. Gleiches Muster (Service um Alle-Scope
+via `apiaryAccessWhere` erweitern, GET-Handler `@AllowAllApiaries`, Hook `enabled`/Scope-Key,
+Endpoint in die Interceptor-Allowlist, Seite anpassen). Beim Aufnehmen jeweils die
+Sub-Routen-Regel unten beachten. Auf ausdrücklichen Wunsch bewusst offen gelassen.
+
+Ebenfalls **zurückgestellt (später)** — dieselbe Klasse:
+- **Cross-apiary WRITES außerhalb Hive/Inspektion** (Queen-Transfer/-Edit, Actions,
+  Batch-Inspektionen): senden im Alle-Modus noch den aktiven Stand → 404-Risiko bei
+  fremden Ständen. Fix analog (Ziel-`apiaryId` als Header-Override).
 
 ### Fehleranalyse & Behebungen (aus Review „analoge Fehler")
 
@@ -175,9 +183,20 @@ Actions, Quick-Checks, Assistant/Weather – gleiches Muster.
   `hive:noHivesInApiary` betrifft nur die Stand-Detailseite (immer Einzelstand) → kein
   Alle-Modus-Problem.
 
-### Phase 3 – Feinschliff
-- Aggregierte Dashboard-Widgets im Alle-Modus (Todos/Timeline über Stände hinweg) – optional.
-- Empty-States, Ladezustände, Query-Cache-Konsistenz über alle Seiten.
+### Phase 3 – Feinschliff  ✅ (Kern)
+- **Todos aggregiert im Alle-Modus auf dem Dashboard**: `DashboardTodos` wird im Alle-Modus
+  wieder eingeblendet (der Todos-Endpoint ist seit Phase 2a view-all-fähig) → zeigt offene
+  Todos über alle Stände.
+- **Timeline bleibt im Alle-Modus versteckt**: `ApiaryTimeline` mischt Endpoints, die noch
+  nicht view-all-fähig sind (Actions, Quick-Checks, Photos, Documents). Volle Aggregation
+  hängt an Phase 2b → bis dahin bewusst ausgeblendet (im Code kommentiert).
+- **Scope-bewusster Empty-State**: Dashboard-„keine Hives" nutzt im Alle-Modus
+  `empty.noHives.descriptionAll` („…any of your apiaries") statt „…this apiary".
+- Query-Cache-Konsistenz: Scope-Token in allen betroffenen Query-Keys (Phase 1/2) —
+  single vs. `all` bleiben getrennt.
+
+Offen (Phase 3b, mit Phase 2b): aggregierte Timeline; ggf. aggregierter Dashboard-Header
+(Gesamt-Statistiken über Stände).
 
 ### Phase 4 – Tests (Playwright)
 - E2E: Zwei Stände mit je Hives/Inspections; "Alle Bienenstände" zeigt beide (gruppiert),
