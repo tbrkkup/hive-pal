@@ -171,6 +171,8 @@ test.describe('View all apiaries — Phase 2b/3b (timeline)', () => {
         '/api/quick-checks',
         '/api/photos',
         '/api/documents',
+        '/api/calendar',
+        '/api/alerts',
       ];
       const out: Record<string, number> = {};
       for (const ep of endpoints) {
@@ -187,6 +189,8 @@ test.describe('View all apiaries — Phase 2b/3b (timeline)', () => {
       '/api/quick-checks': 200,
       '/api/photos': 200,
       '/api/documents': 200,
+      '/api/calendar': 200,
+      '/api/alerts': 200,
     });
 
     // Nested detail-page reads (measurements sits under the /api/hives prefix
