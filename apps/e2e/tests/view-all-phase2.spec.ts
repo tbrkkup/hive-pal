@@ -121,5 +121,16 @@ test.describe('View all apiaries — Phase 2 (Todos)', () => {
     await expect(
       page.getByText('Keep track of tasks for all apiaries.'),
     ).toBeVisible();
+
+    // --- Phase 3: the dashboard aggregates todos across apiaries in view-all
+    // mode, and the empty hives state uses scope-aware wording. ---
+    await page.getByRole('button', { name: 'Dashboard' }).click();
+    await expect(page.getByText(todoA).first()).toBeVisible();
+    await expect(page.getByText(todoB).first()).toBeVisible();
+    await expect(
+      page.getByText(
+        'Add a hive to any of your apiaries to start tracking it.',
+      ),
+    ).toBeVisible();
   });
 });
