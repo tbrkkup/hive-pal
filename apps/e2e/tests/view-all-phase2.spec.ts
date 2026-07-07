@@ -108,10 +108,18 @@ test.describe('View all apiaries — Phase 2 (Todos)', () => {
     await selectApiary(page, apiaryA);
     await expect(page.getByText(todoA).first()).toBeVisible();
     await expect(page.getByText(todoB)).toHaveCount(0);
+    // Caption reflects the single-apiary scope.
+    await expect(
+      page.getByText('Keep track of tasks for this apiary.'),
+    ).toBeVisible();
 
     // --- "All apiaries": /todos shows todos from every apiary ---
     await selectAllApiaries(page);
     await expect(page.getByText(todoA).first()).toBeVisible();
     await expect(page.getByText(todoB).first()).toBeVisible();
+    // Caption switches to the cross-apiary wording.
+    await expect(
+      page.getByText('Keep track of tasks for all apiaries.'),
+    ).toBeVisible();
   });
 });

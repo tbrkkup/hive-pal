@@ -85,16 +85,18 @@ export class HiveController {
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<HiveDetailResponse> {
     this.logger.log(
-      `Getting hive details for ID: ${id} in apiary: ${req.apiaryId}`,
+      `Getting hive details for ID: ${id} in apiary: ${req.apiaryId ?? 'ALL'}`,
     );
     return this.hiveService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 

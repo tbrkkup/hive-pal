@@ -14,6 +14,7 @@ import {
   ApiaryUserFilter,
   ApiaryScopeFilter,
 } from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import { CustomLoggerService } from '../logger/logger.service';
 import { Box as PrismaBox } from '@/prisma/client';
 import { HiveCreatedEvent, HiveUpdatedEvent } from '../events/hive.events';
@@ -349,17 +350,18 @@ export class HiveService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<HiveDetailResponse> {
     this.logger.log(
-      `Finding hive with ID: ${id} for apiary ${filter.apiaryId} and user ${filter.userId}`,
+      `Finding hive with ID: ${id} for apiary ${filter.apiaryId ?? 'ALL'} and user ${filter.userId}`,
     );
     const hive = await this.prisma.hive.findFirst({
       where: {
         id,
-        apiary: {
-          id: filter.apiaryId,
-        },
+        // Single apiary, or any apiary the user can access in view-all mode.
+        apiary: filter.apiaryId
+          ? { id: filter.apiaryId }
+          : apiaryAccessWhere(filter.userId),
       },
       include: {
         apiary: { select: { settings: true } },
