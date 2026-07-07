@@ -58,6 +58,7 @@ export function ApiarySwitcher() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
+              data-testid="apiary-switcher"
               className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ${!hasSelection ? 'border border-dashed border-muted-foreground/50' : ''}`}
             >
               <div
@@ -110,6 +111,7 @@ export function ApiarySwitcher() {
             {/* Cross-apiary "view all" option — disables the single-apiary filter. */}
             <DropdownMenuItem
               onClick={handleSelectAll}
+              data-testid="apiary-switcher-all"
               className="gap-2 p-2"
             >
               <div className="flex size-6 items-center justify-center rounded-xs border">
