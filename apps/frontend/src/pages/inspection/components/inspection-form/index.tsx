@@ -56,9 +56,7 @@ import { applyInspectionModeToFormData } from './mode-behavior';
 import type { Box } from 'shared-schemas';
 
 const normalizeBoxSummary = (
-  boxesSummary:
-    | Array<{ type: string; frameCount: number }>
-    | undefined,
+  boxesSummary: Array<{ type: string; frameCount: number }> | undefined,
   fallbackBoxes: Box[] = [],
 ): Box[] | undefined => {
   if (!boxesSummary?.length) return undefined;
@@ -136,75 +134,75 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
       // discriminant (`type`) optional and breaks discriminated-union narrowing.
       // The mapping below produces correctly-shaped action objects at runtime.
       actions: (inspection?.actions?.map(action => {
-          if (action.details.type === ActionType.FEEDING) {
-            const details = action.details;
-            return {
-              type: ActionType.FEEDING,
-              notes: action.notes ?? '',
-              feedType: details.feedType,
-              quantity: details.amount,
-              unit: details.unit,
-              concentration: details.concentration ?? '',
-            };
-          }
-
-          if (action.details.type === ActionType.TREATMENT) {
-            const details = action.details;
-            return {
-              type: ActionType.TREATMENT,
-              notes: action.notes ?? '',
-              amount: details.quantity,
-              treatmentType: details.product,
-              unit: details.unit,
-            };
-          }
-
-          if (action.details.type === ActionType.FRAME) {
-            const details = action.details;
-            return {
-              type: ActionType.FRAME,
-              notes: action.notes ?? '',
-              frames: details.quantity,
-            };
-          }
-
-          if (action.details.type === ActionType.MAINTENANCE) {
-            const details = action.details;
-            return {
-              type: ActionType.MAINTENANCE,
-              notes: action.notes ?? '',
-              component: details.component,
-              status: details.status,
-            };
-          }
-
-          if (action.details.type === ActionType.NOTE) {
-            const details = action.details;
-            return {
-              type: ActionType.NOTE,
-              notes: details.content || action.notes || '',
-            };
-          }
-
-          if (action.details.type === ActionType.BOX_CONFIGURATION) {
-            const details = action.details;
-            return {
-              type: ActionType.BOX_CONFIGURATION,
-              boxesAdded: details.boxesAdded,
-              boxesRemoved: details.boxesRemoved,
-              framesAdded: details.framesAdded,
-              framesRemoved: details.framesRemoved,
-              totalBoxes: details.totalBoxes,
-              totalFrames: details.totalFrames,
-              boxesSummary: details.boxes,
-            };
-          }
-
+        if (action.details.type === ActionType.FEEDING) {
+          const details = action.details;
           return {
-            type: ActionType.OTHER,
-            notes: action.notes || '',
+            type: ActionType.FEEDING,
+            notes: action.notes ?? '',
+            feedType: details.feedType,
+            quantity: details.amount,
+            unit: details.unit,
+            concentration: details.concentration ?? '',
           };
-        }) || []) as InspectionFormData['actions'],
+        }
+
+        if (action.details.type === ActionType.TREATMENT) {
+          const details = action.details;
+          return {
+            type: ActionType.TREATMENT,
+            notes: action.notes ?? '',
+            amount: details.quantity,
+            treatmentType: details.product,
+            unit: details.unit,
+          };
+        }
+
+        if (action.details.type === ActionType.FRAME) {
+          const details = action.details;
+          return {
+            type: ActionType.FRAME,
+            notes: action.notes ?? '',
+            frames: details.quantity,
+          };
+        }
+
+        if (action.details.type === ActionType.MAINTENANCE) {
+          const details = action.details;
+          return {
+            type: ActionType.MAINTENANCE,
+            notes: action.notes ?? '',
+            component: details.component,
+            status: details.status,
+          };
+        }
+
+        if (action.details.type === ActionType.NOTE) {
+          const details = action.details;
+          return {
+            type: ActionType.NOTE,
+            notes: details.content || action.notes || '',
+          };
+        }
+
+        if (action.details.type === ActionType.BOX_CONFIGURATION) {
+          const details = action.details;
+          return {
+            type: ActionType.BOX_CONFIGURATION,
+            boxesAdded: details.boxesAdded,
+            boxesRemoved: details.boxesRemoved,
+            framesAdded: details.framesAdded,
+            framesRemoved: details.framesRemoved,
+            totalBoxes: details.totalBoxes,
+            totalFrames: details.totalFrames,
+            boxesSummary: details.boxes,
+          };
+        }
+
+        return {
+          type: ActionType.OTHER,
+          notes: action.notes || '',
+        };
+      }) || []) as InspectionFormData['actions'],
     },
   });
 
@@ -226,15 +224,22 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   );
 
   const effectiveBoxes =
-    boxConfigAction?.updatedBoxes ?? summarizedBoxes ?? selectedHive?.boxes ?? [];
+    boxConfigAction?.updatedBoxes ??
+    summarizedBoxes ??
+    selectedHive?.boxes ??
+    [];
 
   const totalFrames =
     effectiveBoxes
       .filter((box: { type: string }) => box.type === 'BROOD')
-      .reduce((sum: number, box: { frameCount: number }) => sum + box.frameCount, 0) || null;
+      .reduce(
+        (sum: number, box: { frameCount: number }) => sum + box.frameCount,
+        0,
+      ) || null;
 
   const broodBoxCount =
-    effectiveBoxes.filter((box: { type: string }) => box.type === 'BROOD').length || null;
+    effectiveBoxes.filter((box: { type: string }) => box.type === 'BROOD')
+      .length || null;
 
   // Live frame (Rähmchen) delta from the form's current FRAME action(s)
   const liveFrameDelta = formActions
@@ -320,6 +325,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   });
 
   const onSubmit = useUpsertInspection(inspectionId, {
+    apiaryId: selectedHive?.apiaryId,
     onBeforeNavigate: async (id: string) => {
       await Promise.all([
         pendingRecordings.length > 0
@@ -456,9 +462,11 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                           )}
                         >
                           {field.value ? (
-                            isAllDay
-                              ? format(field.value, 'PPP')
-                              : format(field.value, 'PPP HH:mm')
+                            isAllDay ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              format(field.value, 'PPP HH:mm')
+                            )
                           ) : (
                             <span>{t('inspection:form.pickDate')}</span>
                           )}

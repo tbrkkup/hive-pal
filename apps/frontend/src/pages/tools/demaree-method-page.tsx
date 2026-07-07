@@ -61,7 +61,8 @@ type EditableCheckpoint = DemareeCheckpointPlan & {
 
 const warningVariantClasses: Record<DemareeWarningCode, string> = {
   lateQueenCellCheck: 'border-amber-300 bg-amber-50 dark:bg-amber-950/30',
-  unsafeCheckpointSpacing: 'border-orange-300 bg-orange-50 dark:bg-orange-950/30',
+  unsafeCheckpointSpacing:
+    'border-orange-300 bg-orange-50 dark:bg-orange-950/30',
   illogicalScheduleOrder: 'border-red-300 bg-red-50 dark:bg-red-950/30',
 };
 
@@ -69,7 +70,9 @@ function buildCheckpointNotes(
   checkpoint: DemareeCheckpointPlan,
   t: (key: string, options?: Record<string, unknown>) => string,
 ) {
-  const checklist = checkpoint.checklistKeys.map(key => `- ${t(key)}`).join('\n');
+  const checklist = checkpoint.checklistKeys
+    .map(key => `- ${t(key)}`)
+    .join('\n');
 
   return [
     `${t('swarmManagement.planner.checkpointPrefix')} ${t(checkpoint.titleKey)}`,
@@ -143,7 +146,10 @@ export function DemareeMethodPage() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [checkpoints, setCheckpoints] = useState<EditableCheckpoint[]>([]);
 
-  const warnings = useMemo(() => getDemareeWarnings(checkpoints), [checkpoints]);
+  const warnings = useMemo(
+    () => getDemareeWarnings(checkpoints),
+    [checkpoints],
+  );
 
   const selectedHive = hives.find(hive => hive.id === selectedHiveId);
 
@@ -185,12 +191,15 @@ export function DemareeMethodPage() {
     const results = await Promise.allSettled(
       checkpoints.map(checkpoint =>
         createInspection({
-          hiveId: selectedHiveId,
-          date: toInspectionDateISOString(checkpoint.date, true),
-          isAllDay: true,
-          notes: checkpoint.notes,
-          status: InspectionStatus.SCHEDULED,
-          actions: [],
+          data: {
+            hiveId: selectedHiveId,
+            date: toInspectionDateISOString(checkpoint.date, true),
+            isAllDay: true,
+            notes: checkpoint.notes,
+            status: InspectionStatus.SCHEDULED,
+            actions: [],
+          },
+          apiaryId: selectedHive?.apiaryId,
         }),
       ),
     );
@@ -342,7 +351,9 @@ export function DemareeMethodPage() {
         <ToolPageHeader
           title={t('swarmManagement.demaree.title')}
           badge={
-            <Badge variant="outline">{t('swarmManagement.demaree.badge')}</Badge>
+            <Badge variant="outline">
+              {t('swarmManagement.demaree.badge')}
+            </Badge>
           }
           description={t('swarmManagement.demaree.description')}
           intro={t('swarmManagement.demaree.intro')}
@@ -355,7 +366,9 @@ export function DemareeMethodPage() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>{t('swarmManagement.demaree.overviewTitle')}</CardTitle>
+              <CardTitle>
+                {t('swarmManagement.demaree.overviewTitle')}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-muted-foreground">
               <p>{t('swarmManagement.demaree.overviewLead')}</p>
@@ -370,12 +383,16 @@ export function DemareeMethodPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('swarmManagement.demaree.prerequisitesTitle')}</CardTitle>
+              <CardTitle>
+                {t('swarmManagement.demaree.prerequisitesTitle')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="list-disc space-y-3 pl-5 text-sm text-muted-foreground marker:text-primary/60">
                 {[0, 1, 2, 3, 4, 5].map(i => (
-                  <li key={i}>{t(`swarmManagement.demaree.prerequisites.${i}`)}</li>
+                  <li key={i}>
+                    {t(`swarmManagement.demaree.prerequisites.${i}`)}
+                  </li>
                 ))}
               </ul>
             </CardContent>
@@ -383,7 +400,9 @@ export function DemareeMethodPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('swarmManagement.demaree.advantagesTitle')}</CardTitle>
+              <CardTitle>
+                {t('swarmManagement.demaree.advantagesTitle')}
+              </CardTitle>
               <CardDescription>
                 {t('swarmManagement.demaree.advantagesDescription')}
               </CardDescription>
@@ -409,7 +428,9 @@ export function DemareeMethodPage() {
                 {METHOD_DETAIL_SECTIONS.map(section => (
                   <div key={section.id} className="space-y-3">
                     <h3 className="font-semibold text-foreground">
-                      {t(`swarmManagement.demaree.methodDetail.${section.id}.title`)}
+                      {t(
+                        `swarmManagement.demaree.methodDetail.${section.id}.title`,
+                      )}
                     </h3>
                     <ul className="list-disc space-y-2 pl-5 marker:text-primary/60">
                       {section.items.map(itemIndex => (
@@ -421,13 +442,15 @@ export function DemareeMethodPage() {
                           </span>
                           {(section.children[itemIndex] ?? []).length > 0 && (
                             <ul className="list-[circle] space-y-2 pl-5 pt-2 marker:text-muted-foreground/60">
-                              {(section.children[itemIndex] ?? []).map(childIndex => (
-                                <li key={childIndex}>
-                                  {t(
-                                    `swarmManagement.demaree.methodDetail.${section.id}.items.${itemIndex}.children.${childIndex}`,
-                                  )}
-                                </li>
-                              ))}
+                              {(section.children[itemIndex] ?? []).map(
+                                childIndex => (
+                                  <li key={childIndex}>
+                                    {t(
+                                      `swarmManagement.demaree.methodDetail.${section.id}.items.${itemIndex}.children.${childIndex}`,
+                                    )}
+                                  </li>
+                                ),
+                              )}
                             </ul>
                           )}
                         </li>
@@ -441,7 +464,9 @@ export function DemareeMethodPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('swarmManagement.demaree.followUpTitle')}</CardTitle>
+              <CardTitle>
+                {t('swarmManagement.demaree.followUpTitle')}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="overflow-hidden rounded-lg border">
@@ -468,15 +493,21 @@ export function DemareeMethodPage() {
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
                   {t('swarmManagement.aside.criticalTimingTitle')}
                 </p>
-                <p className="mt-2">{t('swarmManagement.aside.criticalTimingLead')}</p>
-                <p className="mt-2">{t('swarmManagement.aside.criticalTimingDetail')}</p>
+                <p className="mt-2">
+                  {t('swarmManagement.aside.criticalTimingLead')}
+                </p>
+                <p className="mt-2">
+                  {t('swarmManagement.aside.criticalTimingDetail')}
+                </p>
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle>{t('swarmManagement.demaree.prosConsTitle')}</CardTitle>
+              <CardTitle>
+                {t('swarmManagement.demaree.prosConsTitle')}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -522,7 +553,9 @@ export function DemareeMethodPage() {
                   </p>
                   <div className="mt-4 flex flex-col items-center justify-center gap-2 sm:flex-row">
                     <Button asChild>
-                      <Link to="/login">{t('swarmManagement.planner.signInCta')}</Link>
+                      <Link to="/login">
+                        {t('swarmManagement.planner.signInCta')}
+                      </Link>
                     </Button>
                     <Button variant="outline" asChild>
                       <Link to="/register">
@@ -603,7 +636,9 @@ export function DemareeMethodPage() {
                             <CardHeader>
                               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                 <div className="min-w-0">
-                                  <CardTitle>{t(checkpoint.titleKey)}</CardTitle>
+                                  <CardTitle>
+                                    {t(checkpoint.titleKey)}
+                                  </CardTitle>
                                   <CardDescription>
                                     {t('swarmManagement.planner.dayOffset', {
                                       count: checkpoint.dayOffset,
@@ -629,7 +664,9 @@ export function DemareeMethodPage() {
                               {checkpointWarnings.map(warning => (
                                 <Alert
                                   key={`${checkpoint.id}-${warning.code}`}
-                                  className={warningVariantClasses[warning.code]}
+                                  className={
+                                    warningVariantClasses[warning.code]
+                                  }
                                 >
                                   <ShieldAlert className="h-4 w-4" />
                                   <AlertTitle>
@@ -685,7 +722,10 @@ export function DemareeMethodPage() {
           </Card>
         </div>
 
-        <ToolFaq title={t('swarmManagement.demaree.faq.title')} items={faqItems} />
+        <ToolFaq
+          title={t('swarmManagement.demaree.faq.title')}
+          items={faqItems}
+        />
       </MainContent>
 
       <PageAside>

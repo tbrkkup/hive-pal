@@ -32,6 +32,31 @@ const HIVES_KEYS = {
   detail: (id: string) => [...HIVES_KEYS.details(), id] as const,
 };
 
+/**
+ * Returns a function that resolves a hive's apiary id from the React Query
+ * cache (hive lists + hive details), without triggering a fetch. Used to pin
+ * inspection writes to the hive's own apiary in view-all mode. Returns
+ * undefined when the hive isn't cached — callers then fall back to the active
+ * apiary (correct in single-apiary mode).
+ */
+export const useHiveApiaryLookup = () => {
+  const queryClient = useQueryClient();
+  return (hiveId?: string): string | undefined => {
+    if (!hiveId) return undefined;
+    const lists = queryClient.getQueriesData<HiveResponse[]>({
+      queryKey: HIVES_KEYS.lists(),
+    });
+    for (const [, data] of lists) {
+      const hive = data?.find(h => h.id === hiveId);
+      if (hive?.apiaryId) return hive.apiaryId;
+    }
+    const detail = queryClient.getQueryData<HiveDetailResponse>(
+      HIVES_KEYS.detail(hiveId),
+    );
+    return detail?.apiaryId;
+  };
+};
+
 // Get all hives with optional filtering
 export const useHives = (
   filters?: HiveFilter,
@@ -108,7 +133,10 @@ export const useHivesWithBoxes = (
       const config = filters?.apiaryId
         ? { headers: { 'x-apiary-id': filters.apiaryId } }
         : undefined;
-      const response = await apiClient.get<HiveWithBoxesResponse[]>(url, config);
+      const response = await apiClient.get<HiveWithBoxesResponse[]>(
+        url,
+        config,
+      );
       return response.data;
     },
     enabled: !!scope && queryOptions?.enabled !== false,
@@ -169,7 +197,7 @@ export const useCreateHive = (callbacks?: { onSuccess: () => void }) => {
 // cross-apiary writes in "view all" mode, where the mutation targets a hive
 // that may not belong to the currently selected apiary. When apiaryId is
 // undefined the interceptor falls back to the selected apiary.
-const apiaryHeaderConfig = (apiaryId?: string) =>
+export const apiaryHeaderConfig = (apiaryId?: string) =>
   apiaryId ? { headers: { 'x-apiary-id': apiaryId } } : undefined;
 
 // Update an existing hive
@@ -217,7 +245,10 @@ export const useDeleteHive = () => {
   return useMutation({
     mutationFn: async ({ id, apiaryId }: { id: string; apiaryId?: string }) => {
       try {
-        await apiClient.delete(`/api/hives/${id}`, apiaryHeaderConfig(apiaryId));
+        await apiClient.delete(
+          `/api/hives/${id}`,
+          apiaryHeaderConfig(apiaryId),
+        );
       } catch (error) {
         logApiError(error, `/api/hives/${id}`, 'DELETE');
         throw error;
