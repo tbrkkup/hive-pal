@@ -1,37 +1,49 @@
 import { test, expect } from './fixtures';
+import { Page } from '@playwright/test';
 import { ApiaryFormPage, HiveFormPage } from 'page-objects';
 import { generateRandomString } from './utils';
 
 /**
  * End-to-end coverage for the cross-apiary "view all" mode.
  *
- * A fresh user is registered (which starts the onboarding wizard), creates a
- * first apiary + hive through onboarding, then a second apiary + hive. We then
- * verify that:
- *   - selecting a single apiary filters the dashboard to that apiary's hive,
- *   - "All apiaries" shows hives from every apiary, grouped under each apiary,
- *   - the /hives list shows every hive across apiaries (flat list).
+ * A fresh user is registered (a default "My Apiary" is auto-created). We add a
+ * hive to that apiary, create a second apiary with its own hive, then verify:
+ *   - selecting a single apiary filters the hive list to that apiary,
+ *   - "All apiaries" shows hives from every apiary (flat /hives list),
+ *   - the dashboard groups hives under each apiary in view-all mode.
+ *
+ * The active apiary is chosen through the switcher before creating each hive, so
+ * the hive form defaults to it (no dependency on the apiary <select> control).
  *
  * Requires a running stack (frontend + backend + database), e.g. the preview
  * environment. Run with: `BASE_URL=... pnpm --filter e2e test view-all-apiaries`.
  */
+
+const selectApiary = async (page: Page, name: string) => {
+  await page.getByTestId('apiary-switcher').click();
+  await page.getByRole('menuitem', { name: new RegExp(name) }).click();
+};
+
+const selectAllApiaries = async (page: Page) => {
+  await page.getByTestId('apiary-switcher').click();
+  await page.getByTestId('apiary-switcher-all').click();
+};
+
 test.describe('View all apiaries', () => {
   test('disabling the apiary filter shows hives from every apiary', async ({
     page,
-    onboardingPage,
   }) => {
     const suffix = Date.now().toString().slice(-5);
-    const apiaryA = `Meadow Alpha ${suffix}`;
+    const apiaryA = 'My Apiary'; // auto-created default apiary
     const apiaryB = `Ridge Bravo ${suffix}`;
     const hiveA = `Hive Anna ${suffix}`;
     const hiveB = `Hive Boris ${suffix}`;
 
-    // --- Register a brand-new user (lands on the onboarding welcome screen) ---
-    await page.goto('/login');
+    // --- Register a brand-new user (auto-creates "My Apiary") ---
     const email = `viewall-${Date.now()}@example.com`;
     const password = generateRandomString();
 
-    await page.getByRole('link', { name: 'Sign Up' }).click();
+    await page.goto('/register', { waitUntil: 'domcontentloaded' });
     await page.getByLabel('email').fill(email);
     await page
       .getByRole('textbox', { name: 'Password', exact: true })
@@ -45,47 +57,51 @@ test.describe('View all apiaries', () => {
       .click();
     await page.getByRole('button', { name: /register/i }).click();
 
-    // --- Onboarding: create the first apiary + hive ---
-    await onboardingPage.completeOnboarding({
-      apiaryName: apiaryA,
-      hiveName: hiveA,
+    // Wait for registration to complete (session cookie set + navigation away).
+    await page.waitForURL(url => !url.pathname.startsWith('/register'), {
+      timeout: 15000,
     });
-    await expect(page).toHaveURL('/');
 
-    // --- Create a second apiary ---
-    const apiaryForm = new ApiaryFormPage(page);
-    await page.goto('/apiaries/create');
-    await apiaryForm.fillApiaryForm({ name: apiaryB });
-    await apiaryForm.submitForm();
+    // The app shell (with the apiary switcher) is available on any app route.
+    await page.goto('/hives', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('apiary-switcher')).toBeVisible({
+      timeout: 15000,
+    });
 
-    // --- Create a hive in the second apiary ---
     const hiveForm = new HiveFormPage(page);
-    await page.goto('/hives/create');
-    await hiveForm.fillHiveForm({ name: hiveB, apiaryName: apiaryB });
+    const apiaryForm = new ApiaryFormPage(page);
+
+    // --- Add a hive to the default apiary (active by default) ---
+    await page.goto('/hives/create', { waitUntil: 'domcontentloaded' });
+    await hiveForm.fillHiveForm({ name: hiveA });
     await hiveForm.submitForm();
 
-    // --- Select the first apiary: dashboard is filtered to it ---
-    await page.goto('/');
-    await page.getByTestId('apiary-switcher').click();
-    await page.getByRole('menuitem', { name: new RegExp(apiaryA) }).click();
+    // --- Create a second apiary and make it the active one ---
+    await page.goto('/apiaries/create', { waitUntil: 'domcontentloaded' });
+    await apiaryForm.fillApiaryForm({ name: apiaryB });
+    await apiaryForm.submitForm();
+    await selectApiary(page, apiaryB);
 
+    // --- Add a hive to the second apiary (now active) ---
+    await page.goto('/hives/create', { waitUntil: 'domcontentloaded' });
+    await hiveForm.fillHiveForm({ name: hiveB });
+    await hiveForm.submitForm();
+
+    // --- Single apiary selected: /hives is filtered to that apiary ---
+    await page.goto('/hives', { waitUntil: 'domcontentloaded' });
+    await selectApiary(page, apiaryA);
     await expect(page.getByText(hiveA)).toBeVisible();
     await expect(page.getByText(hiveB)).toHaveCount(0);
 
-    // --- Switch to "All apiaries": both apiaries' hives are shown, grouped ---
-    await page.getByTestId('apiary-switcher').click();
-    await page.getByTestId('apiary-switcher-all').click();
+    // --- "All apiaries": /hives shows every hive across apiaries (flat list) ---
+    await selectAllApiaries(page);
+    await expect(page.getByText(hiveA)).toBeVisible();
+    await expect(page.getByText(hiveB)).toBeVisible();
 
-    // Both apiary group headings are present.
-    await expect(page.getByText(apiaryA, { exact: true })).toBeVisible();
+    // --- Dashboard groups hives under each apiary in view-all mode ---
+    await page.getByRole('button', { name: 'Dashboard' }).click();
+    await expect(page.getByText(hiveA)).toBeVisible();
+    await expect(page.getByText(hiveB)).toBeVisible();
     await expect(page.getByText(apiaryB, { exact: true })).toBeVisible();
-    // Both hives are visible on the dashboard.
-    await expect(page.getByText(hiveA)).toBeVisible();
-    await expect(page.getByText(hiveB)).toBeVisible();
-
-    // --- The /hives list shows every hive across apiaries (flat list) ---
-    await page.goto('/hives');
-    await expect(page.getByText(hiveA)).toBeVisible();
-    await expect(page.getByText(hiveB)).toBeVisible();
   });
 });
