@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
 import {
   FileUploadService,
   FileUploadConfig,
@@ -78,7 +81,7 @@ export class DocumentsService {
 
   async findOne(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<DocumentResponse> {
     const document = await this.prisma.document.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
@@ -93,7 +96,7 @@ export class DocumentsService {
 
   async getDownloadUrl(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     const document = await this.prisma.document.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),

@@ -18,7 +18,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PhotosService } from './photos.service';
 import { ZodValidation } from '../common';
@@ -72,10 +76,11 @@ export class PhotosController {
   }
 
   @Get()
+  @AllowAllApiaries()
   @ZodValidation(photoFilterSchema)
   async findAll(
     @Query() query: PhotoFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<PhotoResponse[]> {
     this.logger.log({
       message: 'Listing photos',
@@ -86,25 +91,33 @@ export class PhotosController {
       ...query,
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   async findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<PhotoResponse> {
     return this.photosService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Get(':id/download-url')
-  async getDownloadUrl(@Param('id') id: string, @Req() req: RequestWithApiary) {
+  @AllowAllApiaries()
+  async getDownloadUrl(
+    @Param('id') id: string,
+    @Req() req: RequestWithApiaryScope,
+  ) {
     return this.photosService.getDownloadUrl(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 

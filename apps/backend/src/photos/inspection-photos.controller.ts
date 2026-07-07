@@ -17,7 +17,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { PhotosService } from './photos.service';
 import { PhotoResponse } from 'shared-schemas';
@@ -59,26 +63,33 @@ export class InspectionPhotosController {
   }
 
   @Get()
+  @AllowAllApiaries()
   async findAll(
     @Param('inspectionId') inspectionId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<PhotoResponse[]> {
     return this.photosService.findByInspection(inspectionId, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Get(':photoId/download-url')
+  @AllowAllApiaries()
   async getDownloadUrl(
     @Param('inspectionId') inspectionId: string,
     @Param('photoId') photoId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     return this.photosService.getInspectionPhotoDownloadUrl(
       inspectionId,
       photoId,
-      { apiaryId: req.apiaryId, userId: req.user.id },
+      {
+        apiaryId: req.apiaryId,
+        userId: req.user.id,
+        allApiaries: req.allApiaries,
+      },
     );
   }
 

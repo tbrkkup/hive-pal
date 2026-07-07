@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { useApiaryStore } from '@/hooks/use-apiary';
+import { apiaryHeaderConfig } from './useHives';
 import {
   DocumentResponse,
   DocumentFilter,
@@ -7,8 +9,10 @@ import {
 
 export const DOCUMENT_KEYS = {
   all: ['documents'] as const,
-  list: (filters?: DocumentFilter) =>
-    [...DOCUMENT_KEYS.all, 'list', filters] as const,
+  // Scope ('all' or the selected apiary id) keeps single- and cross-apiary
+  // results in separate cache entries.
+  list: (scope: string | null, filters?: DocumentFilter) =>
+    [...DOCUMENT_KEYS.all, 'list', scope, filters] as const,
   detail: (id: string) => [...DOCUMENT_KEYS.all, 'detail', id] as const,
   downloadUrl: (id: string) =>
     [...DOCUMENT_KEYS.all, 'download-url', id] as const,
@@ -18,8 +22,11 @@ export const useDocuments = (
   filters?: DocumentFilter,
   options?: { enabled?: boolean },
 ) => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const viewAllApiaries = useApiaryStore(state => state.viewAllApiaries);
+  const scope = filters?.apiaryId ?? (viewAllApiaries ? 'all' : activeApiaryId);
   return useQuery<DocumentResponse[]>({
-    queryKey: DOCUMENT_KEYS.list(filters),
+    queryKey: DOCUMENT_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.set('hiveId', filters.hiveId);
@@ -27,8 +34,14 @@ export const useDocuments = (
       if (filters?.startDate) params.set('startDate', filters.startDate);
       if (filters?.endDate) params.set('endDate', filters.endDate);
       const query = params.toString();
+      // An explicit apiary filter forces that apiary regardless of view-all,
+      // so it wins over the interceptor's cross-apiary header.
+      const config = filters?.apiaryId
+        ? { headers: { 'x-apiary-id': filters.apiaryId } }
+        : undefined;
       const response = await apiClient.get<DocumentResponse[]>(
         `/api/documents${query ? `?${query}` : ''}`,
+        config,
       );
       return response.data;
     },
@@ -58,9 +71,16 @@ export const useCreateDocument = () => {
 export const useDeleteDocument = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, string>({
-    mutationFn: async id => {
-      await apiClient.delete(`/api/documents/${id}`);
+  // Accepts either a bare id (single-apiary mode) or { id, apiaryId } so that
+  // cross-apiary deletes in "view all" mode target the document's own apiary.
+  return useMutation<void, Error, string | { id: string; apiaryId?: string }>({
+    mutationFn: async arg => {
+      const { id, apiaryId } =
+        typeof arg === 'string' ? { id: arg, apiaryId: undefined } : arg;
+      await apiClient.delete(
+        `/api/documents/${id}`,
+        apiaryHeaderConfig(apiaryId),
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
