@@ -1,7 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { apiaryHeaderConfig } from './useHives';
 import { AlertResponse, AlertFilter, UpdateAlert } from 'shared-schemas';
 import type { UseQueryOptions } from '@tanstack/react-query';
+
+// A bare alert id (single-apiary mode) or { id, apiaryId } so cross-apiary
+// alert actions in "view all" mode target the alert's own apiary.
+type AlertMutationArg = string | { id: string; apiaryId?: string };
+const normalizeAlertArg = (
+  arg: AlertMutationArg,
+): { id: string; apiaryId?: string } =>
+  typeof arg === 'string' ? { id: arg, apiaryId: undefined } : arg;
 
 // Query keys
 const ALERTS_KEYS = {
@@ -87,9 +96,12 @@ export const useDismissAlert = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (arg: AlertMutationArg) => {
+      const { id, apiaryId } = normalizeAlertArg(arg);
       const response = await apiClient.post<AlertResponse>(
         `/api/alerts/${id}/dismiss`,
+        undefined,
+        apiaryHeaderConfig(apiaryId),
       );
       return response.data;
     },
@@ -110,9 +122,12 @@ export const useResolveAlert = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async (arg: AlertMutationArg) => {
+      const { id, apiaryId } = normalizeAlertArg(arg);
       const response = await apiClient.post<AlertResponse>(
         `/api/alerts/${id}/resolve`,
+        undefined,
+        apiaryHeaderConfig(apiaryId),
       );
       return response.data;
     },

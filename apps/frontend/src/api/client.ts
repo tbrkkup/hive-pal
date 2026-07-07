@@ -21,6 +21,8 @@ const VIEW_ALL_ENDPOINTS = [
   '/api/quick-checks',
   '/api/photos',
   '/api/documents',
+  '/api/calendar',
+  '/api/alerts',
 ];
 
 const supportsViewAll = (url: string | undefined) =>

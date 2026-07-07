@@ -18,8 +18,12 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { AlertsService } from './alerts.service';
 import { AlertsScheduler } from './alerts.scheduler';
 import {
@@ -41,6 +45,7 @@ export class AlertsController {
   ) {}
 
   @Get()
+  @AllowAllApiaries()
   @ApiOperation({ summary: 'Get all alerts for the current apiary' })
   @ApiResponse({
     status: 200,
@@ -48,17 +53,19 @@ export class AlertsController {
   })
   async findAll(
     @Query(new ZodValidationPipe(alertFilterSchema)) query: AlertFilter,
-    @Request() req: RequestWithApiary,
+    @Request() req: RequestWithApiaryScope,
   ): Promise<AlertResponse[]> {
     return this.alertsService.findAll({
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
       includeSuperseded: query?.includeSuperseded ?? false,
       ...(query || {}),
     });
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   @ApiOperation({ summary: 'Get a specific alert by ID' })
   @ApiResponse({
     status: 200,
@@ -70,11 +77,12 @@ export class AlertsController {
   })
   async findOne(
     @Param('id') id: string,
-    @Request() req: RequestWithApiary,
+    @Request() req: RequestWithApiaryScope,
   ): Promise<AlertResponse> {
     return this.alertsService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 

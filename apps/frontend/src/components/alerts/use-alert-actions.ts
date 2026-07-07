@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { formatDistance } from 'date-fns';
 import { AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { useDismissAlert, useResolveAlert } from '@/api/hooks';
+import { useHiveApiaryLookup } from '@/api/hooks/useHives';
 import type { AlertResponse } from 'shared-schemas';
 
 export const severityConfig = {
@@ -29,6 +30,10 @@ export function useAlertActions(alert: AlertResponse) {
   const [isLoading, setIsLoading] = useState(false);
   const dismissAlert = useDismissAlert();
   const resolveAlert = useResolveAlert();
+  const lookupApiaryId = useHiveApiaryLookup();
+  // Target the alert's own apiary (via its hive) so dismiss/resolve work on a
+  // foreign apiary's alert in cross-apiary "view all" mode.
+  const apiaryId = lookupApiaryId(alert.hiveId ?? undefined);
 
   const config = severityConfig[alert.severity];
   const Icon = config.icon;
@@ -36,7 +41,7 @@ export function useAlertActions(alert: AlertResponse) {
   const handleDismiss = async () => {
     setIsLoading(true);
     try {
-      await dismissAlert.mutateAsync(alert.id);
+      await dismissAlert.mutateAsync({ id: alert.id, apiaryId });
     } finally {
       setIsLoading(false);
     }
@@ -45,7 +50,7 @@ export function useAlertActions(alert: AlertResponse) {
   const handleResolve = async () => {
     setIsLoading(true);
     try {
-      await resolveAlert.mutateAsync(alert.id);
+      await resolveAlert.mutateAsync({ id: alert.id, apiaryId });
     } finally {
       setIsLoading(false);
     }
