@@ -5,7 +5,11 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
 import {
   FileUploadService,
   FileUploadConfig,
@@ -79,7 +83,7 @@ export class PhotosService {
     return photos.map((p) => this.mapToResponse(p));
   }
 
-  async findOne(id: string, filter: ApiaryUserFilter): Promise<PhotoResponse> {
+  async findOne(id: string, filter: ApiaryScopeFilter): Promise<PhotoResponse> {
     const photo = await this.prisma.photo.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
     });
@@ -93,7 +97,7 @@ export class PhotosService {
 
   async getDownloadUrl(
     id: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     const photo = await this.prisma.photo.findFirst({
       where: this.fileUpload.ownershipWhere(id, filter),
@@ -179,12 +183,16 @@ export class PhotosService {
 
   async findByInspection(
     inspectionId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<PhotoResponse[]> {
     const inspection = await this.prisma.inspection.findFirst({
       where: {
         id: inspectionId,
-        hive: { apiary: { id: filter.apiaryId } },
+        hive: {
+          apiary: filter.apiaryId
+            ? { id: filter.apiaryId }
+            : apiaryAccessWhere(filter.userId),
+        },
       },
     });
 
@@ -205,14 +213,18 @@ export class PhotosService {
   async getInspectionPhotoDownloadUrl(
     inspectionId: string,
     photoId: string,
-    filter: ApiaryUserFilter,
+    filter: ApiaryScopeFilter,
   ): Promise<{ downloadUrl: string; expiresIn: number }> {
     const photo = await this.prisma.photo.findFirst({
       where: {
         id: photoId,
         inspectionId,
         inspection: {
-          hive: { apiary: { id: filter.apiaryId } },
+          hive: {
+            apiary: filter.apiaryId
+              ? { id: filter.apiaryId }
+              : apiaryAccessWhere(filter.userId),
+          },
         },
       },
     });

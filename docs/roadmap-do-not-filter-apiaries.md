@@ -15,16 +15,18 @@ Bestätigte Richtungsentscheidungen: **1a** (Eintrag "Alle Bienenstände" im Swi
 ## Status & Verifikation
 
 **Phase 1 abgeschlossen** (Dashboard, `/hives`, `/inspections`, Switcher, cross-apiary
-Writes inkl. Inspektionen).
+Writes inkl. Inspektionen). **Phase 2a** (Todos, Queens, Harvests) **und Phase 2b/3b**
+(Timeline-Endpoints Actions/Quick-Checks/Photos/Documents + verschachtelte Detail-Reads +
+aggregierte Dashboard-Timeline) **abgeschlossen.**
 
 | Prüfung | Ergebnis |
 | --- | --- |
 | Backend-/Frontend-Typecheck | ✅ |
 | Frontend-Production-Build (inkl. SSR-Prerender) | ✅ |
-| Backend-Unit-Tests (vitest) | ✅ 118 grün / 33 skipped |
-| Guard-Spec inkl. Alle-Modus-Fälle | ✅ 11/11 |
+| Backend-Unit-Tests (vitest) | ✅ 118 grün |
+| Guard-Spec inkl. Alle-Modus-Fälle | ✅ |
 | API-E2E (echte Postgres): Einzelstand / `all` / Cross-User-Isolation / Gating | ✅ |
-| **Playwright-UI-E2E** (`apps/e2e/tests/view-all-apiaries.spec.ts`) | ✅ **vom User als bestanden anerkannt** (lokal 3× grün gegen Postgres + Prod-Build) |
+| **Playwright-UI-E2E** (`view-all-apiaries.spec.ts`, `view-all-phase2.spec.ts`, `view-all-phase2b-timeline.spec.ts`) | ✅ **lokal grün** (3 Specs gegen Postgres + Prod-Build, mehrfach) |
 | **Deploy-Test (Produktionsserver)** | ⏳ **offen – wird vom User später selbst durchgeführt** |
 
 Belege (Playwright, echter Browser gegen Backend + Postgres):
@@ -34,6 +36,8 @@ Belege (Playwright, echter Browser gegen Backend + Postgres):
 | Einzelstand „My Apiary" → nur dessen Hive | `docs/screenshots/view-all/01-single-apiary-filter.png` |
 | „Alle Bienenstände" → `/hives` flache Liste über alle Stände | `docs/screenshots/view-all/02-all-apiaries-hives-flat.png` |
 | Dashboard nach Stand gruppiert (BEEP-Stil) | `docs/screenshots/view-all/03-dashboard-grouped.png` |
+| **Phase 2b/3b:** Einzelstand-Dashboard → Timeline nur „Checked Anna" | `docs/screenshots/view-all/p2b-01-single-apiary-timeline.png` |
+| **Phase 2b/3b:** „Alle Bienenstände"-Dashboard → Timeline aggregiert „Anna" + „Boris" | `docs/screenshots/view-all/p3b-02-all-apiaries-timeline.png` |
 
 Lokaler Testlauf (Referenz): Postgres via `/usr/lib/postgresql/16/bin` (kein Docker nötig),
 Backend auf `:3000`, Prod-Build hinter einem kleinen Static-+`/api`-Proxy-Server auf `:5173`,
@@ -146,20 +150,52 @@ Queens `all` = 200, Todo-Write mit `all` = 400. Playwright grün & stabil
 | Einzelstand „My Apiary" → nur „Todo Anna" | `docs/screenshots/view-all/p2-01-single-apiary-todos.png` |
 | „Alle Bienenstände" → `/todos` über alle Stände | `docs/screenshots/view-all/p2-02-all-apiaries-todos.png` |
 
-**Phase 2b — ZURÜCKGESTELLT (später):** Kalender, Reports, Alerts, Measurements, Photos,
-Documents, Actions, Quick-Checks, Assistant/Weather. Gleiches Muster (Service um Alle-Scope
-via `apiaryAccessWhere` erweitern, GET-Handler `@AllowAllApiaries`, Hook `enabled`/Scope-Key,
-Endpoint in die Interceptor-Allowlist, Seite anpassen). Beim Aufnehmen jeweils die
-Sub-Routen-Regel unten beachten. Auf ausdrücklichen Wunsch bewusst offen gelassen.
+**Erledigt (Phase 2b — Timeline-Endpoints + verschachtelte Detail-Reads):**
+- **Actions** – `ActionsService.findAll` Alle-Scope (`hive.apiary` → `apiaryAccessWhere`),
+  `@AllowAllApiaries`, `useActions` Scope-Key + Store-Anbindung, Interceptor-Allowlist.
+- **Quick-Checks** – `QuickChecksService.findAll`/`findOne`/`getPhotoDownloadUrl` Alle-Scope,
+  `@AllowAllApiaries`, `useQuickChecks` Scope-Key, cross-apiary Delete (Header-Override).
+- **Photos & Documents** – geteilter `FileUploadService.buildWhereClause`/`ownershipWhere`
+  jetzt scope-fähig; `findAll`/`findOne`/`download-url` `@AllowAllApiaries`; `usePhotos`/
+  `useDocuments` Scope-Key + expliziter Header-Pin bei gesetztem `apiaryId`-Filter;
+  cross-apiary Delete (Header-Override).
+- **Verschachtelte Detail-Reads** (lagen unter den bestehenden Allowlist-Prefixes `/api/hives`
+  bzw. `/api/inspections` und bekamen dadurch bereits `x-apiary-id: all` → 400):
+  `inspections/:id/photos`, `inspections/:id/audio` (+ AI-Status/-Result/-Download),
+  `hives/:id/measurements` (+ `/latest`) sind jetzt `@AllowAllApiaries` und scopen im
+  Alle-Modus auf die Stände des Users. Dadurch laden Inspektions-/Hive-Detailseiten eines
+  Objekts aus einem *nicht-aktiven* Stand im Alle-Modus fehlerfrei.
+
+Verifikation Phase 2b/3b: `apps/e2e/tests/view-all-phase2b-timeline.spec.ts` (echter Browser,
+Postgres) — legt zwei Stände mit je einem Quick-Check an und prüft:
+1. die Endpoints `/api/actions`, `/api/quick-checks`, `/api/photos`, `/api/documents`
+   antworten mit `x-apiary-id: all` = **200**;
+2. der verschachtelte Read `/api/hives/:id/measurements` (+ `/latest`) = **200** mit `all`;
+3. Einzelstand-Dashboard zeigt nur den eigenen Quick-Check, „Alle Bienenstände" **beide**;
+4. **kein** Timeline-Endpoint liefert beim Laden im Alle-Modus einen 4xx/5xx.
+
+**Noch offen in Phase 2 (bewusst zurückgestellt, niedrige Priorität):** Kalender (Sub-Routen
+mit Pfad-`apiaryId`), Reports, Alerts, Assistant/Weather — gleiches Muster.
 
 Ebenfalls **zurückgestellt (später)** — dieselbe Klasse:
-- **Cross-apiary WRITES außerhalb Hive/Inspektion** (Queen-Transfer/-Edit, Actions,
+- **Cross-apiary WRITES außerhalb Hive/Inspektion/Timeline** (Queen-Transfer/-Edit,
   Batch-Inspektionen): senden im Alle-Modus noch den aktiven Stand → 404-Risiko bei
-  fremden Ständen. Fix analog (Ziel-`apiaryId` als Header-Override).
+  fremden Ständen. Fix analog (Ziel-`apiaryId` als Header-Override). (Timeline-Deletes für
+  Quick-Checks/Photos/Documents sind bereits umgestellt.)
 
 ### Fehleranalyse & Behebungen (aus Review „analoge Fehler")
 
 **Behoben:**
+- **Persistenz des „Alle Bienenstände"-Modus über Sitzungen** (`use-apiary.ts`): Die
+  Auswahl wird bereits seit Phase 1 in `localStorage` (`hive_pal_view_all_apiaries`)
+  gehalten. Gehärtet gegen einen Race beim kalten Neustart: der Auto-Select-Effekt
+  (der bei *null* Ständen `viewAll` abschaltet und sonst den ersten Stand als Schreib-Ziel
+  setzt) läuft jetzt erst, wenn die Apiary-Query **definitiv geladen** ist
+  (`isSuccess`) — ein transienter `undefined`/`[]`-Zwischenzustand während des Rehydrierens
+  kann die persistierte Auswahl nicht mehr auf „erster Einzelstand" zurücksetzen.
+  `localStorage`-Zugriffe zusätzlich SSR-sicher gekapselt. Regressionstest
+  `apps/e2e/tests/view-all-persistence.spec.ts` (Reload **und** kalter Reopen mit geleertem
+  Query-Cache → Switcher zeigt weiterhin „All apiaries", `localStorage` = `true`).
 - **Detail-/History-Reads im Alle-Modus** (Korrektheitsfehler): Beim Öffnen einer
   Detailseite (Hive/Inspektion/Todo/Queen) eines Objekts aus einem *nicht-aktiven*
   Stand kam vorher **400** (`x-apiary-id: all` auf nicht-opt-in-Handler) bzw. **404**
@@ -187,22 +223,35 @@ Ebenfalls **zurückgestellt (später)** — dieselbe Klasse:
 - **Todos aggregiert im Alle-Modus auf dem Dashboard**: `DashboardTodos` wird im Alle-Modus
   wieder eingeblendet (der Todos-Endpoint ist seit Phase 2a view-all-fähig) → zeigt offene
   Todos über alle Stände.
-- **Timeline bleibt im Alle-Modus versteckt**: `ApiaryTimeline` mischt Endpoints, die noch
-  nicht view-all-fähig sind (Actions, Quick-Checks, Photos, Documents). Volle Aggregation
-  hängt an Phase 2b → bis dahin bewusst ausgeblendet (im Code kommentiert).
+- **Timeline aggregiert im Alle-Modus (Phase 3b) ✅**: `ApiaryTimeline` wird auf dem
+  Dashboard nicht mehr ausgeblendet. Im Alle-Modus lässt sie den `apiaryId`-Filter weg, sodass
+  alle Endpoints (Inspections, Actions, Quick-Checks, Photos, Documents) via `x-apiary-id: all`
+  über alle Stände aggregieren. Der Inline-„Add Entry"-Button (braucht einen konkreten Ziel-
+  Stand) wird im Alle-Modus ausgeblendet; der Empty-State nutzt Alle-Modus-Wording
+  (`timeline.noActivityAll`).
 - **Scope-bewusster Empty-State**: Dashboard-„keine Hives" nutzt im Alle-Modus
   `empty.noHives.descriptionAll` („…any of your apiaries") statt „…this apiary".
-- Query-Cache-Konsistenz: Scope-Token in allen betroffenen Query-Keys (Phase 1/2) —
+- Query-Cache-Konsistenz: Scope-Token in allen betroffenen Query-Keys (Phase 1/2/2b) —
   single vs. `all` bleiben getrennt.
 
-Offen (Phase 3b, mit Phase 2b): aggregierte Timeline; ggf. aggregierter Dashboard-Header
-(Gesamt-Statistiken über Stände).
+Offen (optional, später): aggregierter Dashboard-Header (Gesamt-Statistiken über Stände).
 
 ### Phase 4 – Tests (Playwright)
-- E2E: Zwei Stände mit je Hives/Inspections; "Alle Bienenstände" zeigt beide (gruppiert),
-  Umschalten filtert wieder. Cross-apiary Edit funktioniert; Create fragt Stand ab.
-- Component-Test: ApiarySwitcher (Alle-Eintrag, Aktiv-State).
-- Backend: Guard-Spec um `all`-Fälle (GET erlaubt, nicht-GET 400) erweitern.
+- E2E `view-all-apiaries.spec.ts`: Zwei Stände mit je Hives; "Alle Bienenstände" zeigt beide
+  (Dashboard gruppiert, `/hives` flach), Umschalten filtert wieder; Öffnen eines Hives aus
+  einem nicht-aktiven Stand im Alle-Modus (Detail-Read-Regression). ✅
+- E2E `view-all-phase2.spec.ts`: Todos einzeln vs. „Alle Bienenstände"; Caption-Wechsel;
+  Dashboard-Todo-Aggregation. ✅
+- E2E `view-all-phase2b-timeline.spec.ts` (Phase 2b/3b): Endpoint-Opt-in (`all` = 200) für
+  Actions/Quick-Checks/Photos/Documents + verschachtelte Measurements; aggregierte
+  Dashboard-Timeline (einzeln vs. alle); keine 4xx/5xx im Alle-Modus. ✅
+- Backend: Guard-Spec um `all`-Fälle (GET erlaubt, nicht-GET 400). ✅
+
+**Lokaler Playwright-Runner (Referenz):** vorinstalliertes Chromium unter
+`/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; die Repo-`playwright.config.ts` pinnt
+keine `executablePath` (CI lädt Browser selbst). Für den lokalen Lauf wurde eine
+Wegwerf-Config mit `use.launchOptions.executablePath` verwendet
+(`BASE_URL=http://localhost:5173 npx playwright test view-all --config=<tmp>`).
 
 ### Phase 5 – Deploy-Test (durch den User)
 - User deployt Branch auf Produktionsserver und verifiziert. Claude liefert alles davor.

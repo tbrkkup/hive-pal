@@ -18,7 +18,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { QuickChecksService } from './quick-checks.service';
 import { ZodValidation } from '../common';
@@ -60,10 +64,11 @@ export class QuickChecksController {
   }
 
   @Get()
+  @AllowAllApiaries()
   @ZodValidation(quickCheckFilterSchema)
   async findAll(
     @Query() query: QuickCheckFilter,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QuickCheckResponse[]> {
     this.logger.log({
       message: 'Listing quick checks',
@@ -74,13 +79,15 @@ export class QuickChecksController {
       ...query,
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
   @Get(':id')
+  @AllowAllApiaries()
   async findOne(
     @Param('id') id: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<QuickCheckResponse> {
     this.logger.log({
       message: 'Getting quick check',
@@ -90,6 +97,7 @@ export class QuickChecksController {
     return this.quickChecksService.findOne(id, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
@@ -135,10 +143,11 @@ export class QuickChecksController {
   }
 
   @Get(':id/photos/:photoId/download-url')
+  @AllowAllApiaries()
   async getPhotoDownloadUrl(
     @Param('id') id: string,
     @Param('photoId') photoId: string,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ) {
     this.logger.log({
       message: 'Getting photo download URL',
@@ -149,6 +158,7 @@ export class QuickChecksController {
     return this.quickChecksService.getPhotoDownloadUrl(id, photoId, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
+      allApiaries: req.allApiaries,
     });
   }
 
