@@ -42,10 +42,31 @@ HIVE_PAL_PULL_IMAGE=ghcr.io/<owner>/hive-pal:main ./scripts/deploy.sh
 
 See the header of `scripts/deploy.sh` for the full list of options.
 
+## Working tree must be clean
+
+The script fast-forwards `main`, so it refuses to run with uncommitted changes.
+If it reports "Working tree is not clean", it now lists the offending files and
+your options:
+
+```bash
+# Keep your local edits: stash them, pull, deploy, then re-apply
+AUTO_STASH=1 ./scripts/deploy.sh
+
+# Deploy the code you already have checked out, without pulling
+SKIP_GIT=1 ./scripts/deploy.sh
+
+# Or handle it yourself
+git status          # see what changed
+git stash           # or: git checkout -- <file> to discard
+```
+
+Tip: keep server-specific tweaks out of tracked files — use `.env` and a
+gitignored `docker-compose.override.yaml` — so the tree stays clean across
+updates.
+
 ## Notes
 
-- The working tree must be clean (commit/stash local edits, or set `SKIP_GIT=1`
-  to deploy the current checkout as-is).
+- The working tree must be clean (see above), or use `AUTO_STASH=1` / `SKIP_GIT=1`.
 - **Uploads:** locally-stored files (`STORAGE_TYPE=local`) are only preserved if
   `/data/uploads` is a mounted volume in your compose file. The default prod
   compose assumes S3 storage.

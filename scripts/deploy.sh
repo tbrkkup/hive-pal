@@ -41,6 +41,7 @@
 #   BACKEND_SERVICE     Backend service name in compose      (default: backend)
 #   PG_USER / PG_DB     DB credentials for the dump          (default: postgres / beekeeper)
 #   SKIP_BACKUP=1       Skip the pre-deploy DB backup        (not recommended)
+#   AUTO_STASH=1        Stash local changes before pulling and restore them after
 #   SKIP_GIT=1          Do not touch git (deploy current checkout as-is)
 #   HEALTH_TIMEOUT      Seconds to wait for health           (default: 180)
 #
@@ -89,8 +90,21 @@ fi
 # --- 1. Update the checkout -----------------------------------------------------
 if [ "${SKIP_GIT:-0}" != "1" ]; then
   command -v git >/dev/null 2>&1 || die "git is required (or set SKIP_GIT=1)."
+  STASHED=0
   if [ -n "$(git status --porcelain)" ]; then
-    die "Working tree is not clean. Commit/stash your changes or set SKIP_GIT=1."
+    if [ "${AUTO_STASH:-0}" = "1" ]; then
+      log "Local changes detected — stashing them (AUTO_STASH=1) ..."
+      git stash push -u -m "deploy.sh auto-stash $(date +%F-%T)" >/dev/null
+      STASHED=1
+    else
+      warn "Working tree is not clean:"
+      git status --short >&2
+      warn "Options:"
+      warn "  • Keep & re-apply your edits:   AUTO_STASH=1 ./scripts/deploy.sh"
+      warn "  • Deploy the current checkout:  SKIP_GIT=1 ./scripts/deploy.sh   (no git pull)"
+      warn "  • Or discard/commit manually:   git stash   /   git checkout -- <file>"
+      die "Working tree is not clean (see options above)."
+    fi
   fi
   log "Fetching and fast-forwarding to origin/${HIVE_PAL_BRANCH} ..."
   git fetch --prune origin "${HIVE_PAL_BRANCH}"
@@ -98,8 +112,13 @@ if [ "${SKIP_GIT:-0}" != "1" ]; then
   git merge --ff-only "origin/${HIVE_PAL_BRANCH}" \
     || die "Cannot fast-forward ${HIVE_PAL_BRANCH}; resolve divergence manually."
   log "Now at $(git rev-parse --short HEAD): $(git log -1 --pretty=%s)"
+  if [ "${STASHED}" = "1" ]; then
+    log "Restoring your stashed local changes ..."
+    git stash pop \
+      || warn "Could not auto-restore stashed changes (conflict?). Run 'git stash list' and 'git stash pop' manually."
+  fi
 else
-  warn "SKIP_GIT=1 — deploying the current checkout as-is."
+  warn "SKIP_GIT=1 — deploying the current checkout as-is (no git pull)."
 fi
 
 # --- 2. Back up the database ----------------------------------------------------
