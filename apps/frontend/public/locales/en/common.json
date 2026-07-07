@@ -1431,5 +1431,10 @@
         }
       }
     }
+  },
+  "table": {
+    "columns": "Columns",
+    "toggleColumns": "Toggle columns",
+    "resetColumns": "Reset to default"
   }
 }
