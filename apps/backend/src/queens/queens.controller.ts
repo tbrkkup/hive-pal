@@ -17,7 +17,11 @@ import { QueensService } from './queens.service';
 import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
+import {
+  RequestWithApiary,
+  RequestWithApiaryScope,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { ZodValidation } from '../common';
 import {
@@ -73,15 +77,20 @@ export class QueensController {
   }
 
   @Get()
+  @AllowAllApiaries()
   @ApiOkResponse({ type: Object, isArray: true })
   findAll(
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
     @Query('status') status?: string,
     @Query('hiveId') hiveId?: string,
   ): Promise<QueenResponse[]> {
-    this.logger.log(`Finding all queens in apiary ${req.apiaryId}`);
+    this.logger.log(`Finding all queens in apiary ${req.apiaryId ?? 'ALL'}`);
     return this.queensService.findAll(
-      { apiaryId: req.apiaryId, userId: req.user.id },
+      {
+        apiaryId: req.apiaryId,
+        userId: req.user.id,
+        allApiaries: req.allApiaries,
+      },
       { status, hiveId },
     );
   }
