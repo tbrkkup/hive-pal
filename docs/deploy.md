@@ -42,31 +42,32 @@ HIVE_PAL_PULL_IMAGE=ghcr.io/<owner>/hive-pal:main ./scripts/deploy.sh
 
 See the header of `scripts/deploy.sh` for the full list of options.
 
-## Working tree must be clean
+## Local edits are handled for you
 
-The script fast-forwards `main`, so it refuses to run with uncommitted changes.
-If it reports "Working tree is not clean", it now lists the offending files and
-your options:
+Server-specific tweaks to tracked files (a customised `docker-compose.yaml`,
+etc.) are normal. By default the script **stashes them before pulling and
+restores them right after** — so a single command updates and deploys **with**
+your local config, no manual `git stash`/`pull`/`pop` dance:
 
 ```bash
-# Keep your local edits: stash them, pull, deploy, then re-apply
-AUTO_STASH=1 ./scripts/deploy.sh
-
-# Deploy the code you already have checked out, without pulling
-SKIP_GIT=1 ./scripts/deploy.sh
-
-# Or handle it yourself
-git status          # see what changed
-git stash           # or: git checkout -- <file> to discard
+HIVE_PAL_COMPOSE=docker-compose.yaml ./scripts/deploy.sh
 ```
 
-Tip: keep server-specific tweaks out of tracked files — use `.env` and a
-gitignored `docker-compose.override.yaml` — so the tree stays clean across
-updates.
+Variants:
 
-## Notes
+```bash
+# Require a clean tree instead of auto-stashing (fails if dirty)
+NO_STASH=1 ./scripts/deploy.sh
 
-- The working tree must be clean (see above), or use `AUTO_STASH=1` / `SKIP_GIT=1`.
+# Deploy the code you already have checked out, without pulling at all
+SKIP_GIT=1 ./scripts/deploy.sh
+```
+
+If your local edits ever *conflict* with an incoming change, the script stops
+before deploying and leaves your work safe in `git stash` for you to resolve.
+
+Tip: to avoid tracked-file edits entirely, keep tweaks in `.env` and a
+gitignored `docker-compose.override.yaml`.
 - **Uploads:** locally-stored files (`STORAGE_TYPE=local`) are only preserved if
   `/data/uploads` is a mounted volume in your compose file. The default prod
   compose assumes S3 storage.
