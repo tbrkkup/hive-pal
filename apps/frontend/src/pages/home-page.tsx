@@ -19,11 +19,13 @@ import {
   ArrowUpRight,
   ChevronDown,
   Clock,
+  HomeIcon,
   MapPin,
   Plus,
   Sparkles,
   X,
 } from 'lucide-react';
+import { ApiaryResponse, HiveResponse } from 'shared-schemas';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useApiaries, useHives, useTodos } from '@/api/hooks';
@@ -98,6 +100,45 @@ const EmptyStateCard = ({
   </Card>
 );
 
+// In "view all" mode the dashboard lists hives grouped under each apiary,
+// mirroring how BEEP presents apiaries with their hives.
+const GroupedHives = ({
+  hives,
+  apiaries,
+}: {
+  hives: HiveResponse[];
+  apiaries?: ApiaryResponse[];
+}) => {
+  const byApiary = new Map<string, HiveResponse[]>();
+  for (const hive of hives) {
+    const key = hive.apiaryId ?? '__none__';
+    const list = byApiary.get(key) ?? [];
+    list.push(hive);
+    byApiary.set(key, list);
+  }
+  // Preserve the apiary order from the switcher; only show apiaries with hives.
+  const groups = (apiaries ?? []).filter(a => byApiary.has(a.id));
+
+  return (
+    <div className="space-y-8">
+      {groups.map(apiary => (
+        <div key={apiary.id} className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="flex size-6 items-center justify-center rounded-md bg-sidebar-primary/10 text-amber-700 dark:text-amber-400">
+              <HomeIcon className="size-4" />
+            </div>
+            <h3 className="font-medium">{apiary.name}</h3>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {byApiary.get(apiary.id)?.length ?? 0}
+            </span>
+          </div>
+          <HiveList hives={byApiary.get(apiary.id) ?? []} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const DashboardTodos = () => {
   const { t } = useTranslation('todo');
   const { data } = useTodos();
@@ -118,7 +159,8 @@ const DashboardTodos = () => {
 export const HomePage = () => {
   const { t } = useTranslation('onboarding');
   const { data, isLoading, refetch } = useHives();
-  const { activeApiaryId, apiaries, activeApiary } = useApiary();
+  const { activeApiaryId, apiaries, activeApiary, viewAllApiaries } =
+    useApiary();
   const { pendingMemberships } = useApiaries();
   const [locationDismissed, setLocationDismissed] = useLocalStorageBoolean(
     `home-nudge:location-dismissed:${activeApiaryId ?? 'none'}`,
@@ -195,8 +237,10 @@ export const HomePage = () => {
     <PageGrid>
       <MainContent>
         <div className="space-y-6">
-          <ApiaryHeader />
-          {activeApiary &&
+          {/* Apiary-specific header only makes sense for a single apiary. */}
+          {!viewAllApiaries && <ApiaryHeader />}
+          {!viewAllApiaries &&
+            activeApiary &&
             activeApiary.latitude == null &&
             !locationDismissed && (
               <Card>
@@ -228,7 +272,8 @@ export const HomePage = () => {
                 </CardContent>
               </Card>
             )}
-          {activeApiaryId && (
+          {/* The hive-layout minimap is tied to one apiary's grid. */}
+          {activeApiaryId && !viewAllApiaries && (
             <CollapsibleSection
               storageKey="home-section:minimap"
               title="Hive Layout"
@@ -250,7 +295,11 @@ export const HomePage = () => {
             title="Hives"
           >
             {data && data.length > 0 ? (
-              <HiveList hives={data} />
+              viewAllApiaries ? (
+                <GroupedHives hives={data} apiaries={apiaries} />
+              ) : (
+                <HiveList hives={data} />
+              )
             ) : (
               <EmptyStateCard
                 icon={<Sparkles className="h-6 w-6 text-amber-600" />}
@@ -264,8 +313,10 @@ export const HomePage = () => {
               />
             )}
           </CollapsibleSection>
-          <DashboardTodos />
-          <ApiaryTimeline />
+          {/* Todos and the timeline are per-apiary; aggregation across all
+              apiaries is a later iteration, so hide them in view-all mode. */}
+          {!viewAllApiaries && <DashboardTodos />}
+          {!viewAllApiaries && <ApiaryTimeline />}
         </div>
       </MainContent>
       <PageAside>

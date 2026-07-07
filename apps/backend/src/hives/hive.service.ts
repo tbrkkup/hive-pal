@@ -10,7 +10,10 @@ import { InspectionsService } from '../inspections/inspections.service';
 import { MetricsService } from '../metrics/metrics.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
 import { FileUploadService } from '../storage/file-upload.service';
-import { ApiaryUserFilter } from '../interface/request-with.apiary';
+import {
+  ApiaryUserFilter,
+  ApiaryScopeFilter,
+} from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
 import { Box as PrismaBox } from '@/prisma/client';
 import { HiveCreatedEvent, HiveUpdatedEvent } from '../events/hive.events';
@@ -177,10 +180,10 @@ export class HiveService {
   }
 
   async findAll(
-    filter: ApiaryUserFilter & HiveFilter,
+    filter: ApiaryScopeFilter & HiveFilter,
   ): Promise<HiveResponse[]> {
     this.logger.log(
-      `Finding all hives for apiary ${filter.apiaryId} and user ${filter.userId}`,
+      `Finding all hives for apiary ${filter.apiaryId ?? 'ALL'} and user ${filter.userId}`,
     );
 
     const includeConfig = {

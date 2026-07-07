@@ -170,11 +170,16 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           status: data.status as HiveStatusEnum,
           installationDate: data.installationDate.toISOString(),
         },
+        apiaryId: finalData.apiaryId,
       });
       // The hive update endpoint ignores boxes; persist box/frame changes
       // through the dedicated boxes endpoint.
       if (finalData.boxes && finalData.boxes.length > 0) {
-        await updateHiveBoxes({ id: hiveId, boxes: finalData.boxes });
+        await updateHiveBoxes({
+          id: hiveId,
+          boxes: finalData.boxes,
+          apiaryId: finalData.apiaryId,
+        });
       }
       navigate(`/hives/${hiveId}`);
     } else {
