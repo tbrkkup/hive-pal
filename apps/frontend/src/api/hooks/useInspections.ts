@@ -30,17 +30,27 @@ import { usePendingBoxUpdatesStore } from '@/stores/pendingBoxUpdatesStore';
 const INSPECTIONS_KEYS = {
   all: ['inspections'] as const,
   lists: () => [...INSPECTIONS_KEYS.all, 'list'] as const,
-  list: (filters: InspectionFilter | undefined) =>
-    [...INSPECTIONS_KEYS.lists(), filters] as const,
+  // The apiary scope ('all' or a concrete id) is part of the key so a
+  // cross-apiary result is never served for a single apiary (or vice versa).
+  list: (scope: string | null, filters: InspectionFilter | undefined) =>
+    [...INSPECTIONS_KEYS.lists(), scope, filters] as const,
   details: () => [...INSPECTIONS_KEYS.all, 'detail'] as const,
   detail: (id: string) => [...INSPECTIONS_KEYS.details(), id] as const,
 };
 
+// Resolve the current apiary scope: 'all' in view-all mode, otherwise the
+// selected apiary id (or null when nothing is selected yet).
+const useApiaryScope = () => {
+  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const viewAllApiaries = useApiaryStore(state => state.viewAllApiaries);
+  return viewAllApiaries ? 'all' : activeApiaryId;
+};
+
 // Get all inspections with optional filtering
 export const useInspections = (filters?: InspectionFilter) => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<InspectionResponse[]>({
-    queryKey: INSPECTIONS_KEYS.list(filters),
+    queryKey: INSPECTIONS_KEYS.list(scope, filters),
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.hiveId) params.append('hiveId', filters.hiveId);
@@ -52,45 +62,45 @@ export const useInspections = (filters?: InspectionFilter) => {
       const response = await apiClient.get<InspectionResponse[]>(url);
       return response.data;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
 // Get overdue inspections
 export const useOverdueInspections = () => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<InspectionResponse[]>({
-    queryKey: ['inspections', 'overdue'],
+    queryKey: ['inspections', 'overdue', scope],
     queryFn: async () => {
       const response = await apiClient.get<InspectionResponse[]>(
         '/api/inspections/status/overdue',
       );
       return response.data;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
 // Get inspections due today
 export const useDueTodayInspections = () => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<InspectionResponse[]>({
-    queryKey: ['inspections', 'due-today'],
+    queryKey: ['inspections', 'due-today', scope],
     queryFn: async () => {
       const response = await apiClient.get<InspectionResponse[]>(
         '/api/inspections/status/due-today',
       );
       return response.data;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
 // Get upcoming inspections (future pending inspections)
 export const useUpcomingInspections = (limit?: number) => {
-  const activeApiaryId = useApiaryStore(state => state.activeApiaryId);
+  const scope = useApiaryScope();
   return useQuery<InspectionResponse[]>({
-    queryKey: ['inspections', 'upcoming', limit],
+    queryKey: ['inspections', 'upcoming', scope, limit],
     queryFn: async () => {
       // Get tomorrow's date as start
       const tomorrow = new Date();
@@ -112,7 +122,7 @@ export const useUpcomingInspections = (limit?: number) => {
 
       return limit ? sorted.slice(0, limit) : sorted;
     },
-    enabled: !!activeApiaryId,
+    enabled: !!scope,
   });
 };
 
