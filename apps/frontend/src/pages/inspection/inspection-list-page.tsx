@@ -597,6 +597,29 @@ const buildInspectionColumns = ({
         ),
     },
     {
+      id: 'notes',
+      header: t('inspection:fields.notes', { defaultValue: 'Notes' }),
+      menuLabel: t('inspection:fields.notes', { defaultValue: 'Notes' }),
+      // Off by default — the user enables it via the Columns menu. Abbreviated
+      // to a single truncated line; the full text shows on hover.
+      defaultHidden: true,
+      cellClassName: 'max-w-[16rem]',
+      cell: inspection => {
+        const notes = inspection.notes?.trim();
+        if (!notes) {
+          return <span className="text-muted-foreground">—</span>;
+        }
+        return (
+          <span
+            className="block truncate text-sm text-muted-foreground"
+            title={notes}
+          >
+            {notes}
+          </span>
+        );
+      },
+    },
+    {
       id: 'actions',
       header: t('common:actions.actions'),
       canHide: false,
