@@ -12,7 +12,12 @@ const ALL_APIARIES_HEADER = 'all';
 // (via @AllowAllApiaries). Only these receive x-apiary-id: all; every other
 // request falls back to the concrete selected apiary so it keeps working while
 // more endpoints gain all-apiaries support. Keep in sync with the backend.
-const VIEW_ALL_ENDPOINTS = ['/api/hives', '/api/inspections'];
+const VIEW_ALL_ENDPOINTS = [
+  '/api/hives',
+  '/api/inspections',
+  '/api/todos',
+  '/api/queens',
+];
 
 const supportsViewAll = (url: string | undefined) =>
   !!url && VIEW_ALL_ENDPOINTS.some(endpoint => url.startsWith(endpoint));
