@@ -19,14 +19,41 @@ import { generateRandomString } from './utils';
  * environment. Run with: `BASE_URL=... pnpm --filter e2e test view-all-apiaries`.
  */
 
+// Open the switcher dropdown and click an item. Background query refetches can
+// briefly re-render the menu, so wait for the item to settle before clicking
+// and retry once if it gets detached mid-click.
+const clickSwitcherItem = async (
+  page: Page,
+  item: ReturnType<Page['locator']>,
+) => {
+  // Let any in-flight query refetches settle first — selecting an apiary
+  // invalidates all queries, and the resulting re-render can detach the
+  // freshly-opened dropdown mid-click.
+  await page.waitForLoadState('networkidle').catch(() => {});
+  for (let attempt = 0; attempt < 5; attempt++) {
+    await page.getByTestId('apiary-switcher').click();
+    try {
+      await item.click({ timeout: 3000 });
+      return;
+    } catch {
+      // menu closed / re-rendered — dismiss, settle, and retry
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForLoadState('networkidle').catch(() => {});
+      await page.waitForTimeout(300);
+    }
+  }
+  throw new Error('Could not click switcher item');
+};
+
 const selectApiary = async (page: Page, name: string) => {
-  await page.getByTestId('apiary-switcher').click();
-  await page.getByRole('menuitem', { name: new RegExp(name) }).click();
+  await clickSwitcherItem(
+    page,
+    page.getByRole('menuitem', { name: new RegExp(name) }),
+  );
 };
 
 const selectAllApiaries = async (page: Page) => {
-  await page.getByTestId('apiary-switcher').click();
-  await page.getByTestId('apiary-switcher-all').click();
+  await clickSwitcherItem(page, page.getByTestId('apiary-switcher-all'));
 };
 
 test.describe('View all apiaries', () => {
@@ -39,11 +66,21 @@ test.describe('View all apiaries', () => {
     const hiveA = `Hive Anna ${suffix}`;
     const hiveB = `Hive Boris ${suffix}`;
 
+    // Abort external analytics and slow third-party-backed endpoints (weather,
+    // hive-scale) so they don't hold browser connections open and starve the
+    // session/list requests this test depends on.
+    await page.route('**/*', route => {
+      const url = route.request().url();
+      if (!url.startsWith('http://localhost:5173')) return route.abort();
+      if (/\/api\/(weather|hivescale)/.test(url)) return route.abort();
+      return route.continue();
+    });
+
     // --- Register a brand-new user (auto-creates "My Apiary") ---
     const email = `viewall-${Date.now()}@example.com`;
     const password = generateRandomString();
 
-    await page.goto('/register', { waitUntil: 'domcontentloaded' });
+    await page.goto('/register', { waitUntil: 'commit' });
     await page.getByLabel('email').fill(email);
     await page
       .getByRole('textbox', { name: 'Password', exact: true })
@@ -63,7 +100,7 @@ test.describe('View all apiaries', () => {
     });
 
     // The app shell (with the apiary switcher) is available on any app route.
-    await page.goto('/hives', { waitUntil: 'domcontentloaded' });
+    await page.goto('/hives', { waitUntil: 'commit' });
     await expect(page.getByTestId('apiary-switcher')).toBeVisible({
       timeout: 15000,
     });
@@ -72,36 +109,39 @@ test.describe('View all apiaries', () => {
     const apiaryForm = new ApiaryFormPage(page);
 
     // --- Add a hive to the default apiary (active by default) ---
-    await page.goto('/hives/create', { waitUntil: 'domcontentloaded' });
+    await page.goto('/hives/create', { waitUntil: 'commit' });
     await hiveForm.fillHiveForm({ name: hiveA });
     await hiveForm.submitForm();
 
     // --- Create a second apiary and make it the active one ---
-    await page.goto('/apiaries/create', { waitUntil: 'domcontentloaded' });
+    await page.goto('/apiaries/create', { waitUntil: 'commit' });
     await apiaryForm.fillApiaryForm({ name: apiaryB });
     await apiaryForm.submitForm();
     await selectApiary(page, apiaryB);
 
     // --- Add a hive to the second apiary (now active) ---
-    await page.goto('/hives/create', { waitUntil: 'domcontentloaded' });
+    await page.goto('/hives/create', { waitUntil: 'commit' });
     await hiveForm.fillHiveForm({ name: hiveB });
     await hiveForm.submitForm();
 
     // --- Single apiary selected: /hives is filtered to that apiary ---
-    await page.goto('/hives', { waitUntil: 'domcontentloaded' });
+    // (a hive name may render in both a card and a table row, so match .first())
+    await page.goto('/hives', { waitUntil: 'commit' });
     await selectApiary(page, apiaryA);
-    await expect(page.getByText(hiveA)).toBeVisible();
+    await expect(page.getByText(hiveA).first()).toBeVisible();
     await expect(page.getByText(hiveB)).toHaveCount(0);
 
     // --- "All apiaries": /hives shows every hive across apiaries (flat list) ---
     await selectAllApiaries(page);
-    await expect(page.getByText(hiveA)).toBeVisible();
-    await expect(page.getByText(hiveB)).toBeVisible();
+    await expect(page.getByText(hiveA).first()).toBeVisible();
+    await expect(page.getByText(hiveB).first()).toBeVisible();
 
     // --- Dashboard groups hives under each apiary in view-all mode ---
     await page.getByRole('button', { name: 'Dashboard' }).click();
-    await expect(page.getByText(hiveA)).toBeVisible();
-    await expect(page.getByText(hiveB)).toBeVisible();
-    await expect(page.getByText(apiaryB, { exact: true })).toBeVisible();
+    await expect(page.getByText(hiveA).first()).toBeVisible();
+    await expect(page.getByText(hiveB).first()).toBeVisible();
+    await expect(
+      page.getByText(apiaryB, { exact: true }).first(),
+    ).toBeVisible();
   });
 });
