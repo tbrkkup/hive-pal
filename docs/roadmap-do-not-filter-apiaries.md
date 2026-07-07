@@ -186,6 +186,16 @@ Ebenfalls **zurückgestellt (später)** — dieselbe Klasse:
 ### Fehleranalyse & Behebungen (aus Review „analoge Fehler")
 
 **Behoben:**
+- **Persistenz des „Alle Bienenstände"-Modus über Sitzungen** (`use-apiary.ts`): Die
+  Auswahl wird bereits seit Phase 1 in `localStorage` (`hive_pal_view_all_apiaries`)
+  gehalten. Gehärtet gegen einen Race beim kalten Neustart: der Auto-Select-Effekt
+  (der bei *null* Ständen `viewAll` abschaltet und sonst den ersten Stand als Schreib-Ziel
+  setzt) läuft jetzt erst, wenn die Apiary-Query **definitiv geladen** ist
+  (`isSuccess`) — ein transienter `undefined`/`[]`-Zwischenzustand während des Rehydrierens
+  kann die persistierte Auswahl nicht mehr auf „erster Einzelstand" zurücksetzen.
+  `localStorage`-Zugriffe zusätzlich SSR-sicher gekapselt. Regressionstest
+  `apps/e2e/tests/view-all-persistence.spec.ts` (Reload **und** kalter Reopen mit geleertem
+  Query-Cache → Switcher zeigt weiterhin „All apiaries", `localStorage` = `true`).
 - **Detail-/History-Reads im Alle-Modus** (Korrektheitsfehler): Beim Öffnen einer
   Detailseite (Hive/Inspektion/Todo/Queen) eines Objekts aus einem *nicht-aktiven*
   Stand kam vorher **400** (`x-apiary-id: all` auf nicht-opt-in-Handler) bzw. **404**
