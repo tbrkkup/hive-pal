@@ -44,7 +44,11 @@
     "stores": "Vorräte",
     "queen": "Königin",
     "overall": "Gesamt",
-    "warnings": "Warnungen"
+    "warnings": "Warnungen",
+    "override": "Überschreiben",
+    "resetToCalculated": "Auf berechneten Wert zurücksetzen",
+    "autoCalculated": "Automatisch berechnet",
+    "overridden": "Manuell"
   },
   "observations": {
     "title": "Beobachtungen",
@@ -56,9 +60,9 @@
     "pollenStores": "Pollenvorräte",
     "queenCells": "Weiselzellen",
     "swarmCells": "Schwarmzellen",
-    "swarmCellsDescription": "",
+    "swarmCellsDescription": "Am unteren Rand oder an den Seiten der Waben angelegt. Oft mehrere Zellen. Das Volk bereitet sich auf das Schwärmen vor.",
     "supersedureCells": "Umweiselungszellen",
-    "supersedureCellsDescription": "",
+    "supersedureCellsDescription": "Mitten in der Wabenfläche angelegt. Meist nur ein bis zwei Zellen. Das Volk ersetzt eine alte oder nachlassende Königin (stille Umweiselung).",
     "clearRating": "Bewertung zurücksetzen",
     "rateAs": "Bewerten als {{value}}",
     "broodPattern": "Brutbild",
@@ -95,7 +99,21 @@
       "requires_treatment": "Behandlung erforderlich",
       "low_stores": "Geringe Vorräte",
       "prepare_for_winter": "Auf Winter vorbereiten"
-    }
+    },
+    "frameCounts": {
+      "title": "Brutnest-Zählung",
+      "totalFrames": "{{count}} Rähmchen gesamt",
+      "framesOf": "/ {{total}} Rähmchen",
+      "frameDeltaHint": "Während dieser Durchsicht hinzugefügte/entfernte Rähmchen"
+    },
+    "eggsFrames": "Eier",
+    "uncappedBroodFrames": "Offene Brut",
+    "cappedBroodFrames": "Verdeckelte Brut",
+    "droneBroodFrames": "Drohnenbrut",
+    "pollenFrames": "Pollen",
+    "nectarFrames": "Nektar",
+    "honeyFrames": "Honig",
+    "emptyFrames": "Leer / Mittelwand"
   },
   "actions": {
     "details": "Details",
@@ -111,7 +129,10 @@
     "reschedule": "Neu planen",
     "cancel": "Abbrechen",
     "completeInspection": "Inspektion abschließen",
-    "print": "Drucken"
+    "print": "Drucken",
+    "mobileInspection": "Mobile Inspektion",
+    "audioInspection": "Audio-Inspektion",
+    "share": "Teilen"
   },
   "sidebar": {
     "actions": "Aktionen",
@@ -214,8 +235,8 @@
     "selectHive": "Bienenstock auswählen",
     "inspectionDate": "Inspektionsdatum",
     "pickDate": "Datum auswählen",
-    "allDay": "All day",
-    "specificTime": "Set specific time",
+    "allDay": "Ganztägig",
+    "specificTime": "Uhrzeit festlegen",
     "futureScheduled": "Diese Inspektion ist für die Zukunft geplant",
     "futureScheduledDescription": "Sie planen eine Inspektion für ein zukünftiges Datum.",
     "cancel": "Abbrechen",
@@ -254,8 +275,8 @@
         "syrup": "Sirup",
         "honey": "Honig",
         "candy": "Futterteig",
-        "proteinCandy": "Protein Candy",
-        "pollenPatty": "Pollen Patty",
+        "proteinCandy": "Eiweißfutterteig",
+        "pollenPatty": "Pollenfladen",
         "other": "Sonstige",
         "customFeedName": "Futtername",
         "customFeedNamePlaceholder": "Eigenen Futtertyp eingeben",
@@ -295,12 +316,34 @@
         "remove": "Entfernen",
         "saveNote": "Notiz speichern",
         "edit": "Bearbeiten"
+      },
+      "maintenance": "Wartung",
+      "maintenance_section": {
+        "title": "Wartung",
+        "component": "Bauteil",
+        "box": "Zarge",
+        "bottomBoard": "Beutenboden",
+        "cover": "Deckel",
+        "status": "Status",
+        "cleaned": "Gereinigt",
+        "replaced": "Ersetzt",
+        "notesOptional": "Notizen (optional)",
+        "notesPlaceholder": "Zusätzliche Notizen zur Wartung…"
       }
     },
     "audio": {
       "title": "Audio-Notizen",
       "pendingUpload": "{{count}} ausstehend zum Hochladen",
       "uploadWarning": "Audioaufnahmen werden beim Speichern der Inspektion hochgeladen."
+    },
+    "photos": {
+      "title": "Fotos",
+      "takePhoto": "Foto aufnehmen",
+      "addPhoto": "Foto hinzufügen",
+      "pendingUpload": "{{count}} ausstehend zum Hochladen",
+      "uploadWarning": "Fotos werden beim Speichern der Inspektion hochgeladen.",
+      "deleteConfirm": "Dieses Foto löschen?",
+      "maxReached": "Maximal {{max}} Fotos pro Inspektion"
     }
   },
   "detailSidebar": {
@@ -319,7 +362,8 @@
     "frameModificationRemoved": "Bei dieser Inspektion wurden {{count}} Rähmchen aus dem Bienenstock entfernt.",
     "frameModificationQuestion": "Möchten Sie die aktualisierte Rähmchenzahl beibehalten oder zurücksetzen?",
     "deleteKeepFrames": "Löschen & Rähmchenzahl beibehalten",
-    "deleteRevertFrames": "Löschen & Rähmchenzahl zurücksetzen"
+    "deleteRevertFrames": "Löschen & Rähmchenzahl zurücksetzen",
+    "deleteFailed": "Inspektion konnte nicht gelöscht werden"
   },
   "timeline": {
     "scheduledInspections": "Geplante Inspektionen",
@@ -391,5 +435,67 @@
     "dueToday": "Heute fällig",
     "overdueCount": "{{count}} Inspektion{{count, plural, one {} other{en}}} überfällig",
     "dueTodayCount": "{{count}} Inspektion{{count, plural, one {} other{en}}} heute fällig"
+  },
+  "mobile": {
+    "vitals": {
+      "title": "Stärke & Brut",
+      "hint": "Volksstärke, verdeckelte und offene Brut"
+    },
+    "stores": {
+      "title": "Vorräte",
+      "hint": "Honig und Pollen"
+    },
+    "queen": {
+      "title": "Königin",
+      "hint": "Hast du sie gesehen? Weiselzellen vorhanden?",
+      "yes": "Gesehen",
+      "no": "Nicht gesehen",
+      "notLooked": "Nicht gesucht"
+    },
+    "mediaNotes": {
+      "title": "Medien & Notizen",
+      "hint": "Optionale Fotos, Audio oder Notizen",
+      "addPhoto": "Foto hinzufügen",
+      "recordingNumber": "Aufnahme {{n}}",
+      "removeRecording": "Aufnahme entfernen",
+      "removePhoto": "Foto entfernen",
+      "notesPlaceholder": "Sonst noch etwas Erwähnenswertes?"
+    },
+    "review": {
+      "title": "Überprüfung",
+      "hint": "Prüfe die Zusammenfassung und speichere dann.",
+      "readyToSave": "Bereit zum Speichern",
+      "save": "Inspektion speichern",
+      "invalid": "Bitte überprüfe deine Eingaben",
+      "hasNotes": "Notizen hinzugefügt",
+      "cellTypes": "Zelltypen"
+    }
+  },
+  "audioQuick": {
+    "recordingFor": "Audio-Inspektion für",
+    "prompt": "Tippe, um die Aufnahme zu starten. Die Inspektion wird beim Aufnahmebeginn erstellt.",
+    "tapToStart": "Zum Starten tippen",
+    "tapToStop": "Zum Stoppen und Speichern tippen",
+    "start": "Aufnahme starten",
+    "starting": "Startet…",
+    "stop": "Aufnahme stoppen",
+    "uploading": "Aufnahme wird gespeichert…",
+    "uploadFailed": "Aufnahme konnte nicht hochgeladen werden. Die Inspektion wurde gespeichert.",
+    "tryAgain": "Erneut versuchen",
+    "unsupported": "Audioaufnahme wird in diesem Browser nicht unterstützt."
+  },
+  "pendingBoxUpdate": {
+    "updatingTitle": "Beutenkonfiguration wird aktualisiert",
+    "updatingDescription": "Deine Inspektion wurde gespeichert. Die Beutenkonfiguration wird im Hintergrund aktualisiert.",
+    "failedTitle": "Aktualisierung der Beutenkonfiguration fehlgeschlagen",
+    "failedDescription": "Die Beutenkonfiguration konnte nicht aktualisiert werden. Bitte erneut versuchen oder diese Meldung ausblenden.",
+    "retry": "Erneut versuchen",
+    "retrySuccess": "Beutenkonfiguration erfolgreich aktualisiert",
+    "retryFailed": "Erneuter Versuch fehlgeschlagen. Bitte versuche es noch einmal.",
+    "retryDisabled": "Erneute Versuche deaktiviert (5 Versuche erreicht)",
+    "dismiss": "Ausblenden",
+    "stalePayload": "Die Bienenstock-Konfiguration hat sich geändert. Die Aktualisierung der Beute kann nicht wiederholt werden.",
+    "stalePayloadMessage": "Die Bienenstock-Konfiguration hat sich seit dem fehlgeschlagenen Versuch geändert. Bitte lade die Seite neu, um den aktuellen Stand zu sehen.",
+    "maxRetriesReached": "Maximale Anzahl an Versuchen erreicht. Bitte kontaktiere den Support, falls das Problem weiterhin besteht."
   }
 }
