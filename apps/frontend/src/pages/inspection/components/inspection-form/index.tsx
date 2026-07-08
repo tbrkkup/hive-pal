@@ -184,6 +184,15 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
           };
         }
 
+        if (action.details.type === ActionType.STATUS_CHANGE) {
+          const details = action.details;
+          return {
+            type: ActionType.STATUS_CHANGE,
+            notes: action.notes ?? '',
+            toStatus: details.toStatus,
+          };
+        }
+
         if (action.details.type === ActionType.BOX_CONFIGURATION) {
           const details = action.details;
           return {
@@ -587,6 +596,8 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                 hiveId={selectedHive?.id}
                 baseBroodFrames={baseBroodFrames}
                 broodFrameCapacity={broodFrameCapacity}
+                enableStatusChange
+                hiveStatus={selectedHive?.status}
                 isAiSuggested={isAiSuggested}
                 aiMergeState={aiMergeState}
                 onAcceptSuggestion={acceptAiSuggestion}
