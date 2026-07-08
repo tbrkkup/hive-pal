@@ -26,8 +26,16 @@
     "files": "Dateien",
     "calendar": "Kalender",
     "equipment": "Ausstattung",
-    "actions": "Aktionen",
-    "liebefelder": "Liebefelder Methode"
+    "actions": "Sammelerfassung",
+    "liebefelder": "Liebefelder Methode",
+    "allQueens": "Alle Königinnen",
+    "todos": "Aufgaben",
+    "allTodos": "Alle Aufgaben",
+    "tools": "Werkzeuge",
+    "syrupCalculator": "Sirup-Rechner",
+    "broodTimeline": "Brutkalender",
+    "swarmManagement": "Schwarmkontrolle",
+    "documentation": "Dokumentation"
   },
   "liebefelder": {
     "title": "Liebefelder Schätzmethode",
@@ -311,7 +319,34 @@
     "changePassword": "Kontopasswort ändern",
     "saveSettings": "Einstellungen speichern",
     "preferencesUpdated": "Ihre Einstellungen wurden erfolgreich aktualisiert.",
-    "saving": "Speichern..."
+    "saving": "Speichern...",
+    "passkeys": "Passkeys",
+    "passkeysDescription": "Melden Sie sich ohne Passwort per Biometrie oder Sicherheitsschlüssel Ihres Geräts an",
+    "passkeyNamePlaceholder": "Name (z. B. MacBook Touch ID)",
+    "passkeyAdd": "Passkey hinzufügen",
+    "passkeyAdding": "Wird hinzugefügt…",
+    "passkeyRemove": "Entfernen",
+    "passkeyUnnamed": "Unbenannter Passkey",
+    "passkeyAddedOn": "Hinzugefügt am {{date}}",
+    "passkeysLoading": "Wird geladen…",
+    "passkeysEmpty": "Noch keine Passkeys.",
+    "passkeysLoadFailed": "Passkeys konnten nicht geladen werden",
+    "passkeyAddFailed": "Passkey konnte nicht hinzugefügt werden",
+    "passkeyAddCancelled": "Passkey-Registrierung abgebrochen oder fehlgeschlagen",
+    "passkeyDeleteFailed": "Passkey konnte nicht gelöscht werden",
+    "dangerZone": "Gefahrenzone",
+    "dangerZoneDescription": "Unwiderrufliche Aktionen für Ihr Konto.",
+    "deleteAccount": "Konto löschen",
+    "deleteAccountDescription": "Löschen Sie Ihr Konto und alle Ihre Bienenstände, Bienenstöcke, Durchsichten, Fotos und sonstigen Daten dauerhaft. Dies kann nicht rückgängig gemacht werden. Exportieren Sie zuvor Ihre Daten, wenn Sie eine Kopie behalten möchten.",
+    "deleteAccountConfirmTitle": "Konto löschen?",
+    "deleteAccountConfirmDescription": "Dadurch werden Ihr Konto und alle Daten, die Ihnen gehören, dauerhaft gelöscht. Bienenstände, die andere mit Ihnen geteilt haben, sind nicht betroffen; Inhalte, die Sie zu fremden Bienenständen beigetragen haben, bleiben erhalten, werden aber anonymisiert. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteAccountExportReminder": "Möchten Sie eine Kopie behalten? Exportieren Sie Ihre Daten vor dem Löschen.",
+    "deleteAccountExportLink": "Meine Daten exportieren",
+    "deleteAccountTypeEmail": "Geben Sie zur Bestätigung Ihre E-Mail-Adresse {{email}} ein:",
+    "deleteAccountButton": "Mein Konto löschen",
+    "deleteAccountDeleting": "Konto wird gelöscht…",
+    "accountDeleted": "Ihr Konto wurde gelöscht.",
+    "deleteAccountFailed": "Konto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
   },
   "feedback": {
     "title": "Feedback senden",
@@ -402,7 +437,13 @@
     "queenNotSeen": "Königin nicht gesehen",
     "photos": "Fotos",
     "documents": "Dokumente",
-    "fromInspection": "Aus Durchsicht"
+    "fromInspection": "Aus Durchsicht",
+    "maintenance": "Wartung",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "filterEventType": "Typ",
+    "filterDateRange": "Zeitraum",
+    "filterHive": "Bienenstock"
   },
   "reports": {
     "title": "Berichte",
@@ -450,7 +491,8 @@
     "widget": {
       "title": "Bienenstand-Statistiken",
       "viewReports": "Berichte anzeigen",
-      "noApiary": "Wählen Sie einen Bienenstand aus, um Statistiken anzuzeigen"
+      "noApiary": "Wählen Sie einen Bienenstand aus, um Statistiken anzuzeigen",
+      "apiaryDetails": "Bienenstand-Details"
     }
   },
   "photo": {
@@ -467,7 +509,9 @@
     "uploadFailed": "Foto hochladen fehlgeschlagen",
     "deleteTitle": "Foto löschen?",
     "deleteDescription": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Foto wird dadurch endgültig gelöscht.",
-    "deleted": "Foto gelöscht"
+    "deleted": "Foto gelöscht",
+    "replace": "Ersetzen",
+    "featurePhoto": "Titelbild"
   },
   "document": {
     "uploading": "Hochladen...",
@@ -501,14 +545,32 @@
     "size": "Größe",
     "download": "Download",
     "delete": "Löschen",
-    "title": "Dateien"
+    "title": "Dateien",
+    "audio": "Audio",
+    "status": "Status",
+    "sendToAi": "An KI senden",
+    "sendAllPending": "Alle an KI senden ({{count}})",
+    "sentToAi": "KI für {{count}} Aufnahmen gestartet",
+    "audioStatus": {
+      "notTranscribed": "Nicht transkribiert",
+      "queued": "In Warteschlange",
+      "transcribing": "Wird transkribiert…",
+      "failed": "Transkription fehlgeschlagen",
+      "transcribed": "Transkribiert",
+      "analyzing": "Wird analysiert…",
+      "analysisFailed": "Analyse fehlgeschlagen",
+      "ready": "KI-Vorschläge bereit"
+    },
+    "audioDeleteTitle": "Audioaufnahme löschen?",
+    "audioDeleted": "Audio gelöscht"
   },
   "quickAdd": {
     "title": "Eintrag hinzufügen",
     "quickCheck": "Schnellprüfung",
     "action": "Aktion",
     "photo": "Foto",
-    "document": "Dokument"
+    "document": "Dokument",
+    "inspection": "Inspektion"
   },
   "swarmManagement": {
     "backToOverview": "Back to Swarm Management",
@@ -775,5 +837,20 @@
     "columns": "Spalten",
     "toggleColumns": "Spalten ein-/ausblenden",
     "resetColumns": "Auf Standard zurücksetzen"
+  },
+  "months": {
+    "selectMonth": "Monat auswählen",
+    "january": "Januar",
+    "february": "Februar",
+    "march": "März",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember"
   }
 }
