@@ -222,10 +222,10 @@
     "newHive": "Neuer Bienenstock",
     "language": "Sprache",
     "logout": "Abmelden",
-    "newInspection": "Neue Inspektion",
-    "scheduleInspection": "Inspektion planen",
+    "newInspection": "Neue Durchsicht",
+    "scheduleInspection": "Durchsicht planen",
     "newQueen": "Neue Königin",
-    "recentInspections": "Letzte Inspektionen"
+    "recentInspections": "Letzte Durchsichten"
   },
   "status": {
     "loading": "Wird geladen...",
@@ -305,8 +305,8 @@
     "receiveEmailUpdates": "Updates per E-Mail erhalten",
     "pushNotifications": "Push-Benachrichtigungen",
     "receiveBrowserNotifications": "Browser-Benachrichtigungen erhalten",
-    "inspectionReminders": "Inspektions-Erinnerungen",
-    "upcomingInspectionsNotify": "Benachrichtigung über bevorstehende Inspektionen",
+    "inspectionReminders": "Durchsichts-Erinnerungen",
+    "upcomingInspectionsNotify": "Benachrichtigung über bevorstehende Durchsichten",
     "harvestReminders": "Ernte-Erinnerungen",
     "harvestSchedulesNotify": "Benachrichtigung über Erntepläne",
     "accountSettings": "Kontoeinstellungen",
@@ -378,7 +378,7 @@
   "calendar": {
     "title": "Kalender",
     "both": "Beides",
-    "inspections": "Inspektionen",
+    "inspections": "Durchsichten",
     "actions": "Aktionen",
     "today": "Heute",
     "noEventsScheduled": "Kein Event geplant",
@@ -389,8 +389,8 @@
     "nextWeek": "Nächste Woche",
     "dayHeader": "{{date}}",
     "noEvents": "Keine Events",
-    "overdueInspections": "Überfällige Inspektionen ({{overdueInspectionsSize}})",
-    "viewInspection": "Inspektion anzeigen"
+    "overdueInspections": "Überfällige Durchsichten ({{overdueInspectionsSize}})",
+    "viewInspection": "Durchsicht anzeigen"
   },
   "quickCheck": {
     "title": "Schnellprüfung",
@@ -424,13 +424,13 @@
     "showLess": "Weniger anzeigen",
     "notesAvailable": "Notizen verfügbar",
     "boxConfiguration": "Beutenkonfiguration",
-    "inspection": "Inspektion",
+    "inspection": "Durchsicht",
     "overdue": "Überfällig",
     "scheduled": "Geplant",
     "cancelled": "Abgebrochen",
-    "doInspection": "Inspektion durchführen",
+    "doInspection": "Durchsicht durchführen",
     "reschedule": "Umplanen",
-    "inspectHive": "{{hiveName}} inspizieren",
+    "inspectHive": "{{hiveName}} durchsehen",
     "strength": "Stärke",
     "honey": "Honig",
     "queenSeen": "Königin gesehen",
@@ -570,7 +570,7 @@
     "action": "Aktion",
     "photo": "Foto",
     "document": "Dokument",
-    "inspection": "Inspektion"
+    "inspection": "Durchsicht"
   },
   "swarmManagement": {
     "backToOverview": "Back to Swarm Management",

@@ -65,7 +65,7 @@
   },
   "mapping": {
     "title": "Waagenzuordnung",
-    "description": "Diese Bezeichnungen bleiben in HiveScale. Später ist dies der richtige Ort, um Waage 1/2 für Inspektionsmarkierungen den HivePal-Bienenstock-IDs zuzuordnen.",
+    "description": "Diese Bezeichnungen bleiben in HiveScale. Später ist dies der richtige Ort, um Waage 1/2 für Durchsichtsmarkierungen den HivePal-Bienenstock-IDs zuzuordnen.",
     "scale1Label": "Anzeigename für Waage 1",
     "scale2Label": "Anzeigename für Waage 2",
     "hiveNamePlaceholder": "Bienenstocknamen auswählen oder eingeben",
@@ -361,7 +361,7 @@
       "pressure": "Luftdruck"
     },
     "marker": {
-      "inspection": "Inspektion",
+      "inspection": "Durchsicht",
       "boxAdded": "Zarge hinzugefügt",
       "action": {
         "maintenance": "Wartung",
