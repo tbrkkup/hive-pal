@@ -13,7 +13,7 @@
         "success": "Königin erfolgreich aktualisiert"
     },
     "delete": {
-        "confirm": "Möchten Sie diese Königin wirklich löschen?",
+        "confirm": "Möchtest du diese Königin wirklich löschen?",
         "success": "Königin erfolgreich gelöscht"
     },
     "fields": {
@@ -53,7 +53,8 @@
         "addQueen": "Königin hinzufügen",
         "editQueen": "Königin bearbeiten",
         "viewDetails": "Details anzeigen",
-        "manageQueen": "Königin verwalten"
+        "manageQueen": "Königin verwalten",
+        "transferQueen": "Königin umsetzen"
     },
     "form": {
         "selectHive": "Bienenstock auswählen",
