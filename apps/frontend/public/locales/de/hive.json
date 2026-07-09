@@ -15,7 +15,7 @@
     "noHivesMatchingSearch": "Keine Bienenstöcke gefunden für \"{{searchTerm}}\"",
     "noHivesWithStatus": "Keine {{status}} Bienenstöcke gefunden",
     "clearFilters": "Filter zurücksetzen",
-    "createFirst": "Erstellen Sie Ihren ersten Bienenstock"
+    "createFirst": "Erstelle deinen ersten Bienenstock"
   },
   "create": {
     "title": "Neuen Bienenstock erstellen",
@@ -26,7 +26,7 @@
     "success": "Bienenstock erfolgreich aktualisiert"
   },
   "delete": {
-    "confirm": "Möchten Sie diesen Bienenstock wirklich löschen?",
+    "confirm": "Möchtest du diesen Bienenstock wirklich löschen?",
     "success": "Bienenstock erfolgreich gelöscht"
   },
   "fields": {
@@ -51,13 +51,13 @@
   },
   "boxConfigurator": {
     "title": "Beutenkonfiguration",
-    "description": "Visualisieren und konfigurieren Sie den Aufbau Ihres Bienenstocks. Die Zargen werden von unten nach oben angezeigt.",
+    "description": "Visualisiere und konfiguriere den Aufbau deines Bienenstocks. Die Zargen werden von unten nach oben angezeigt.",
     "editConfiguration": "Konfiguration bearbeiten",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "addBox": "Zarge hinzufügen",
     "noBoxes": "Noch keine Zargen konfiguriert",
-    "clickToAdd": "Klicken Sie auf \"Zarge hinzufügen\", um Ihren Bienenstock aufzubauen",
+    "clickToAdd": "Klicke auf „Zarge hinzufügen“, um deinen Bienenstock aufzubauen",
     "saveSuccess": "Zargenkonfiguration erfolgreich gespeichert",
     "saveError": "Zargenkonfiguration konnte nicht gespeichert werden",
     "boxProperties": "Zargeneigenschaften",
@@ -156,7 +156,7 @@
     "grid": "Raster",
     "unpositionedHives": "Nicht platzierte Bienenstöcke",
     "noHivesInApiary": "Noch keine Bienenstöcke in diesem Bienenstand vorhanden.",
-    "dragToOrganize": "Fügen Sie Bienenstöcke hinzu und ziehen Sie sie in das Raster oben, um Ihren Bienenstand zu organisieren."
+    "dragToOrganize": "Füge Bienenstöcke hinzu und ziehe sie in das Raster oben, um deinen Bienenstand zu organisieren."
   },
   "equipment":{
     "currentHives": "Aktuelle Bienenstöcke",
