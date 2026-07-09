@@ -16,18 +16,18 @@
       "Frische Erkenntnisse aus dem Stock werden gesammelt...",
       "Die Arbeiterinnen sortieren noch die Waben...",
       "Das süße Gold wird geschleudert...",
-      "Wir summen uns durch Ihre Daten...",
+      "Wir summen uns durch deine Daten...",
       "Auf Sammelflug nach Informationen...",
-      "Es fließt wie Honig – Ihre Anfrage wird bearbeitet...",
+      "Es fließt wie Honig – deine Anfrage wird bearbeitet...",
       "Das Schwarmgehirn denkt nach...",
       "Die neuesten Daten werden entdeckelt...",
       "Bee-tte um etwas Geduld, die Ergebnisse sind unterwegs...",
-      "Ihr Dashboard wird bestäubt...",
+      "Dein Dashboard wird bestäubt...",
       "Schwänzeltanz läuft...",
       "Die Aufzeichnungen der Königin werden geprüft...",
       "Wir schwärmen durch die Datenbank...",
       "Wabe um Wabe, Zelle für Zelle...",
-      "Wir haben Ihre Daten schon im Stock...",
+      "Wir haben deine Daten schon im Stock...",
       "Hinter den Bee-ulissen passiert die Magie...",
       "Datensätze werden kreuzbestäubt...",
       "Eine frische Ladung Stock-Kennzahlen wird vorbereitet..."
@@ -35,18 +35,18 @@
   },
   "page": {
     "title": "HiveScale",
-    "subtitle": "Live-Visualisierung von Gewicht und Temperatur aus Ihrem separaten HiveScale-Backend.",
+    "subtitle": "Live-Visualisierung von Gewicht und Temperatur aus deinem separaten HiveScale-Backend.",
     "refresh": "Aktualisieren",
     "refreshing": "Wird aktualisiert…",
     "refreshError": "HiveScale-Daten konnten nicht aktualisiert werden.",
-    "removeConfirm": "{{name}} aus Ihrem HivePal-Konto entfernen? Sie können das Gerät mit dem Claim-Code wieder hinzufügen, sofern kein anderer Benutzer mehr Zugriff hat.",
-    "removeSuccess": "HiveScale-Gerät aus Ihrem Konto entfernt."
+    "removeConfirm": "{{name}} aus deinem HivePal-Konto entfernen? Du kannst das Gerät mit dem Claim-Code wieder hinzufügen, sofern kein anderer Benutzer mehr Zugriff hat.",
+    "removeSuccess": "HiveScale-Gerät aus deinem Konto entfernt."
   },
   "setup": {
     "title": "Geräte",
-    "description": "Wählen oder entfernen Sie ein beanspruchtes HiveScale-Gerät. Öffnen Sie die Einrichtung, um Geräte zu beanspruchen, den Status zu prüfen, Waagen zuzuordnen und die Rohwerte zu kalibrieren.",
+    "description": "Wähle oder entferne ein beanspruchtes HiveScale-Gerät. Öffne die Einrichtung, um Geräte zu beanspruchen, den Status zu prüfen, Waagen zuzuordnen und die Rohwerte zu kalibrieren.",
     "removeScale": "Waage entfernen",
-    "noDevices": "Noch keine Geräte beansprucht – öffnen Sie die Einrichtung, um eines hinzuzufügen.",
+    "noDevices": "Noch keine Geräte beansprucht – öffne die Einrichtung, um eines hinzuzufügen.",
     "hide": "Einrichtung ausblenden",
     "show": "Einrichtung anzeigen"
   },
@@ -60,7 +60,7 @@
     "claiming": "Wird beansprucht…",
     "success": "HiveScale-Gerät beansprucht.",
     "errors": {
-      "missingCode": "Geben Sie den auf dem Gerät aufgedruckten/konfigurierten Claim-Code ein."
+      "missingCode": "Gib den auf dem Gerät aufgedruckten/konfigurierten Claim-Code ein."
     }
   },
   "mapping": {
@@ -89,7 +89,7 @@
     "accessRevoked": "Zugriff entzogen.",
     "revokeAccess": "Zugriff entziehen",
     "errors": {
-      "missingEmail": "Geben Sie die E-Mail-Adresse eines bestehenden HivePal-Benutzers ein."
+      "missingEmail": "Gib die E-Mail-Adresse eines bestehenden HivePal-Benutzers ein."
     }
   },
   "calibration": {
@@ -121,26 +121,26 @@
     },
     "wizard": {
       "title": "Assistent zur Waagenkalibrierung",
-      "description": "Folgen Sie den Schritten der Reihe nach. Die App verwendet nur frische Rohwerte aus dem Kalibrierungsmodus, speichert dann und beendet den Schnellmodus automatisch.",
+      "description": "Folge den Schritten der Reihe nach. Die App verwendet nur frische Rohwerte aus dem Kalibrierungsmodus, speichert dann und beendet den Schnellmodus automatisch.",
       "alertActiveTitle": "Schnelle Messwerte sind aktiv",
       "alertActiveDescription": "Letzter Messwert: {{time}}.",
       "alertQueuedTitle": "Kalibrierungsmodus ist in Warteschlange",
       "alertQueuedDescription": "Das Gerät muss einmal normal aufwachen, bevor es den Befehl empfangen kann.",
-      "alertStartTitle": "Starten Sie zuerst den Kalibrierungsmodus",
+      "alertStartTitle": "Starte zuerst den Kalibrierungsmodus",
       "alertStartDescription": "Dadurch wird die störende Tiefschlaf-Verzögerung für etwa 10 Minuten deaktiviert.",
       "starting": "Wird gestartet…",
       "fastModeActive": "Schnellmodus aktiv",
       "startFastMode": "Schnellmodus starten",
       "stopping": "Wird gestoppt…",
       "stopFastMode": "Schnellmodus stoppen",
-      "whichScale": "Welche Waage kalibrieren Sie?",
+      "whichScale": "Welche Waage kalibrierst du?",
       "latestRaw": "Neuester Rohwert {{value}}",
       "emptyScale": "Leere Waage",
-      "emptyScaleHint": "Entfernen Sie das Gewicht von {{scaleName}} und warten Sie dann auf einen schnellen Messwert.",
+      "emptyScaleHint": "Entferne das Gewicht von {{scaleName}} und warte dann auf einen schnellen Messwert.",
       "captured": "Erfasst: {{value}}",
       "captureEmptyRaw": "Leeren Rohwert erfassen",
       "knownWeight": "Bekanntes Gewicht",
-      "knownWeightHint": "Legen Sie das Gewicht auf und geben Sie seinen Wert in kg ein.",
+      "knownWeightHint": "Leg das Gewicht auf und gib seinen Wert in kg ein.",
       "weightKg": "Gewicht / kg",
       "captureWeightRaw": "Belasteten Rohwert erfassen",
       "saveResult": "Ergebnis speichern",
@@ -149,7 +149,7 @@
       "factorRawPerKg": "Faktor / Roh pro kg",
       "saveAndStop": "Speichern und Schnellmodus beenden",
       "noChangeTitle": "Keine verwertbare Rohwert-Änderung erkannt",
-      "noChangeDescription": "Prüfen Sie, ob das bekannte Gewicht auf der richtigen Waage liegt, und warten Sie auf einen weiteren schnellen Messwert."
+      "noChangeDescription": "Prüfe, ob das bekannte Gewicht auf der richtigen Waage liegt, und warte auf einen weiteren schnellen Messwert."
     },
     "advanced": {
       "title": "Erweiterte manuelle Einstellungen",
@@ -162,15 +162,15 @@
       "calculate": "Berechnen",
       "factorLabel": "Faktor / Rohwerte pro kg",
       "saveManual": "Manuelle Konfiguration speichern",
-      "configVersion": "Konfigurationsversion {{version}}. Verwenden Sie die erweiterten Einstellungen nur zur Feinabstimmung oder Wiederherstellung."
+      "configVersion": "Konfigurationsversion {{version}}. Verwende die erweiterten Einstellungen nur zur Feinabstimmung oder Wiederherstellung."
     },
     "toasts": {
       "modeQueued": "Kalibrierungsmodus in Warteschlange. Die Waage wechselt zu schnellen Messwerten, sobald sie aufwacht.",
       "stopQueued": "Stopp des Kalibrierungsmodus in Warteschlange.",
-      "startModeFirst": "Starten Sie den Kalibrierungsmodus und warten Sie, bis schnelle Messwerte aktiv sind.",
-      "captureEmptyFirst": "Erfassen Sie zuerst die leere Waage.",
-      "enterKnownWeightFirst": "Geben Sie zuerst das bekannte Gewicht in kg ein.",
-      "waitForNewReading": "Warten Sie nach dem Auflegen des bekannten Gewichts auf einen neuen schnellen Messwert und erfassen Sie dann erneut.",
+      "startModeFirst": "Starte den Kalibrierungsmodus und warte, bis schnelle Messwerte aktiv sind.",
+      "captureEmptyFirst": "Erfasse zuerst die leere Waage.",
+      "enterKnownWeightFirst": "Gib zuerst das bekannte Gewicht in kg ein.",
+      "waitForNewReading": "Warte nach dem Auflegen des bekannten Gewichts auf einen neuen schnellen Messwert und erfasse dann erneut.",
       "emptyCaptured": "Leerer Messwert von {{scaleName}} erfasst.",
       "weightedCaptured": "Belasteter Messwert von {{scaleName}} erfasst.",
       "calibrationSaved": "Kalibrierung von {{scaleName}} gespeichert.",
@@ -179,13 +179,13 @@
       "factorCalculated": "Faktor von {{scaleName}} berechnet: {{factor}}"
     },
     "errors": {
-      "sendInterval": "Verwenden Sie ein ganzzahliges Intervall von mindestens 60 Sekunden.",
+      "sendInterval": "Verwende ein ganzzahliges Intervall von mindestens 60 Sekunden.",
       "offsetsWhole": "Waagen-Offsets müssen ganze Rohwert-Zahlen sein.",
       "factorsNonZero": "Waagenfaktoren müssen von null verschiedene Zahlen sein.",
       "noLatestRaw": "Für {{scaleName}} ist noch kein aktueller Rohwert verfügbar.",
-      "validOffset": "Geben Sie zuerst einen gültigen Offset für {{scaleName}} ein.",
-      "knownWeight": "Geben Sie für {{scaleName}} ein bekanntes Gewicht größer als 0 kg ein.",
-      "factorNotCalculated": "Faktor für {{scaleName}} konnte nicht berechnet werden. Prüfen Sie den neuesten Rohwert, den Offset und das bekannte Gewicht."
+      "validOffset": "Gib zuerst einen gültigen Offset für {{scaleName}} ein.",
+      "knownWeight": "Gib für {{scaleName}} ein bekanntes Gewicht größer als 0 kg ein.",
+      "factorNotCalculated": "Faktor für {{scaleName}} konnte nicht berechnet werden. Prüfe den neuesten Rohwert, den Offset und das bekannte Gewicht."
     },
     "tempco": {
       "title": "Temperaturkompensation",
@@ -219,7 +219,7 @@
   },
   "firmware": {
     "title": "Firmware-Upload",
-    "description": "Laden Sie eine Firmware-Binärdatei hoch und registrieren Sie sie als Release. Neue Geräte des passenden Typs übernehmen sie bei ihrer nächsten Update-Prüfung.",
+    "description": "Lade eine Firmware-Binärdatei hoch und registriere sie als Release. Neue Geräte des passenden Typs übernehmen sie bei ihrer nächsten Update-Prüfung.",
     "type": "Firmware-Typ",
     "selectType": "Firmware-Typ auswählen",
     "version": "Version",
@@ -229,7 +229,7 @@
     "success": "Firmware {{version}} ({{target}}) hochgeladen und registriert.",
     "update": {
       "title": "Firmware-Update",
-      "description": "Waagen aktualisieren sich nie von selbst – Sie geben hier jede neue Version frei, bevor diese Waage sie installiert.",
+      "description": "Waagen aktualisieren sich nie von selbst – du gibst hier jede neue Version frei, bevor diese Waage sie installiert.",
       "unavailable": "Firmware-Status ist derzeit nicht verfügbar.",
       "availableTitle": "Firmware {{version}} ist verfügbar",
       "availableBody": "Diese Waage läuft mit {{current}}. Übernehmen, um sie auf {{version}} zu aktualisieren.",
@@ -242,12 +242,12 @@
       "viewerNotice": "Nur Gerätebesitzer und Admins können Firmware-Updates übernehmen."
     },
     "notice": {
-      "noPermission": "Nur Gerätebesitzer und Admins können Firmware hochladen. Ihre Rolle ist „{{role}}“.",
-      "selectDevice": "Wählen Sie ein beanspruchtes Gerät aus, um Firmware hochzuladen."
+      "noPermission": "Nur Gerätebesitzer und Admins können Firmware hochladen. Deine Rolle ist „{{role}}“.",
+      "selectDevice": "Wähle ein beanspruchtes Gerät aus, um Firmware hochzuladen."
     },
     "errors": {
-      "missingFile": "Wählen Sie eine Firmware-Binärdatei (.bin) zum Hochladen aus.",
-      "missingVersion": "Geben Sie eine Version ein, z. B. 0.6.3."
+      "missingFile": "Wähle eine Firmware-Binärdatei (.bin) zum Hochladen aus.",
+      "missingVersion": "Gib eine Version ein, z. B. 0.6.3."
     },
     "hiveinsideOta": {
       "title": "HiveInside-OTA auslösen",
@@ -263,7 +263,7 @@
   },
   "sdData": {
     "title": "SD-Karten-Daten importieren",
-    "description": "Laden Sie die Daten hoch, die Sie im AP-Modus von der Waage heruntergeladen haben. Das erneute Hochladen derselben Datei ist unbedenklich – vorhandene Messwerte werden automatisch übersprungen.",
+    "description": "Lade die Daten hoch, die du im AP-Modus von der Waage heruntergeladen hast. Das erneute Hochladen derselben Datei ist unbedenklich – vorhandene Messwerte werden automatisch übersprungen.",
     "file": "SD-Sicherungsdatei",
     "accepts": "Akzeptiert measurements.ndjson oder den Download hivescale-sd-data.tar.",
     "upload": "SD-Daten hochladen",
@@ -271,11 +271,11 @@
     "importSuccess_one": "{{count}} neuer Messwert importiert ({{duplicates}} Duplikate übersprungen).",
     "importSuccess_other": "{{count}} neue Messwerte importiert ({{duplicates}} Duplikate übersprungen).",
     "notice": {
-      "noPermission": "Nur Gerätebesitzer und Admins können SD-Daten importieren. Ihre Rolle ist „{{role}}“.",
-      "selectDevice": "Wählen Sie ein beanspruchtes Gerät aus, um dessen SD-Karten-Daten zu importieren."
+      "noPermission": "Nur Gerätebesitzer und Admins können SD-Daten importieren. Deine Rolle ist „{{role}}“.",
+      "selectDevice": "Wähle ein beanspruchtes Gerät aus, um dessen SD-Karten-Daten zu importieren."
     },
     "errors": {
-      "missingFile": "Wählen Sie die .ndjson-Sicherung oder den .tar-SD-Download zum Hochladen aus."
+      "missingFile": "Wähle die .ndjson-Sicherung oder den .tar-SD-Download zum Hochladen aus."
     },
     "result": {
       "imported": "{{inserted}} neue Messwerte importiert, {{duplicates}} Duplikate übersprungen.",
@@ -394,7 +394,7 @@
     "micRightFallback": "Mikro rechts",
     "noDataForChannel": "Keine Daten für {{name}} in diesem Zeitraum.",
     "bandReference": "Band-Referenz",
-    "thresholds": "Von der Insights-Engine verwendete Schwellenwerte: Tüten > −45 dBFS, Stress > −38 dBFS, weiselloses Summen > −40 dBFS bei leisem Tüten. Kalibrieren Sie anhand Ihres eigenen Ausgangswerts.",
+    "thresholds": "Von der Insights-Engine verwendete Schwellenwerte: Tüten > −45 dBFS, Stress > −38 dBFS, weiselloses Summen > −40 dBFS bei leisem Tüten. Kalibriere anhand deines eigenen Ausgangswerts.",
     "status": {
       "noData": "Keine Daten",
       "micError": "Mikrofonfehler",
