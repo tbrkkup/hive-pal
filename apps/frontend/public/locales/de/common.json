@@ -26,8 +26,16 @@
     "files": "Dateien",
     "calendar": "Kalender",
     "equipment": "Ausstattung",
-    "actions": "Aktionen",
-    "liebefelder": "Liebefelder Methode"
+    "actions": "Sammelerfassung",
+    "liebefelder": "Liebefelder Methode",
+    "allQueens": "Alle Königinnen",
+    "todos": "Aufgaben",
+    "allTodos": "Alle Aufgaben",
+    "tools": "Werkzeuge",
+    "syrupCalculator": "Sirup-Rechner",
+    "broodTimeline": "Brutkalender",
+    "swarmManagement": "Schwarmkontrolle",
+    "documentation": "Dokumentation"
   },
   "liebefelder": {
     "title": "Liebefelder Schätzmethode",
@@ -214,10 +222,10 @@
     "newHive": "Neuer Bienenstock",
     "language": "Sprache",
     "logout": "Abmelden",
-    "newInspection": "Neue Inspektion",
-    "scheduleInspection": "Inspektion planen",
+    "newInspection": "Neue Durchsicht",
+    "scheduleInspection": "Durchsicht planen",
     "newQueen": "Neue Königin",
-    "recentInspections": "Letzte Inspektionen"
+    "recentInspections": "Letzte Durchsichten"
   },
   "status": {
     "loading": "Wird geladen...",
@@ -233,7 +241,7 @@
     "archived": "Archiviert"
   },
   "messages": {
-    "confirmDelete": "Möchten Sie dieses Element wirklich löschen?",
+    "confirmDelete": "Möchtest du dieses Element wirklich löschen?",
     "changesSaved": "Änderungen erfolgreich gespeichert",
     "errorOccurred": "Ein Fehler ist aufgetreten",
     "noData": "Keine Daten verfügbar",
@@ -247,7 +255,7 @@
     "version": "Version {{version}}",
     "released": "Veröffentlicht am {{date}}",
     "newVersionAvailable": "Neue Version v{{version}} ist verfügbar!",
-    "checkLatestFeatures": "Entdecken Sie die neuesten Funktionen und Verbesserungen.",
+    "checkLatestFeatures": "Entdecke die neuesten Funktionen und Verbesserungen.",
     "whatsNew": "Was ist neu",
     "dismiss": "Schließen"
   },
@@ -266,7 +274,7 @@
     "seconds": "Sekunden"
   },
   "weather": {
-    "selectHiveToView": "Wählen Sie einen Bienenstock mit Bienenstand, um das Wetter anzuzeigen",
+    "selectHiveToView": "Wähle einen Bienenstock mit Bienenstand, um das Wetter anzuzeigen",
     "unableToLoad": "Wetterdaten konnten nicht geladen werden",
     "noWeatherData": "Keine Wetterdaten verfügbar",
     "currentWeather": "Aktuelles Wetter",
@@ -278,7 +286,7 @@
     "weatherForecast": "Wettervorhersage"
   },
   "settings": {
-    "managePreferences": "Verwalten Sie Ihre Konto- und Anwendungseinstellungen",
+    "managePreferences": "Verwalte deine Konto- und Anwendungseinstellungen",
     "generalSettings": "Allgemeine Einstellungen",
     "configureLanguageRegional": "Sprache und regionale Einstellungen konfigurieren",
     "dateFormat": "Datumsformat",
@@ -286,23 +294,23 @@
     "metric": "Metrisch (kg, km, °C)",
     "imperial": "Imperial (lbs, Meilen, °F)",
     "displayPreferences": "Anzeigeeinstellungen",
-    "customizeAppearance": "Passen Sie das Erscheinungsbild der Anwendung an",
+    "customizeAppearance": "Passe das Erscheinungsbild der Anwendung an",
     "theme": "Design",
     "light": "Hell",
     "dark": "Dunkel",
     "system": "System",
     "notificationPreferences": "Benachrichtigungseinstellungen",
-    "chooseNotificationMethod": "Wählen Sie, wie Sie über wichtige Ereignisse informiert werden möchten",
+    "chooseNotificationMethod": "Wähle, wie du über wichtige Ereignisse informiert werden möchtest",
     "emailNotifications": "E-Mail-Benachrichtigungen",
     "receiveEmailUpdates": "Updates per E-Mail erhalten",
     "pushNotifications": "Push-Benachrichtigungen",
     "receiveBrowserNotifications": "Browser-Benachrichtigungen erhalten",
-    "inspectionReminders": "Inspektions-Erinnerungen",
-    "upcomingInspectionsNotify": "Benachrichtigung über bevorstehende Inspektionen",
+    "inspectionReminders": "Durchsichts-Erinnerungen",
+    "upcomingInspectionsNotify": "Benachrichtigung über bevorstehende Durchsichten",
     "harvestReminders": "Ernte-Erinnerungen",
     "harvestSchedulesNotify": "Benachrichtigung über Erntepläne",
     "accountSettings": "Kontoeinstellungen",
-    "manageAccountInfo": "Verwalten Sie Ihre Kontoinformationen",
+    "manageAccountInfo": "Verwalte deine Kontoinformationen",
     "name": "Name",
     "enterName": "Name eingeben",
     "email": "E-Mail",
@@ -310,12 +318,39 @@
     "password": "Passwort",
     "changePassword": "Kontopasswort ändern",
     "saveSettings": "Einstellungen speichern",
-    "preferencesUpdated": "Ihre Einstellungen wurden erfolgreich aktualisiert.",
-    "saving": "Speichern..."
+    "preferencesUpdated": "Deine Einstellungen wurden erfolgreich aktualisiert.",
+    "saving": "Speichern...",
+    "passkeys": "Passkeys",
+    "passkeysDescription": "Melde dich ohne Passwort per Biometrie oder Sicherheitsschlüssel deines Geräts an",
+    "passkeyNamePlaceholder": "Name (z. B. MacBook Touch ID)",
+    "passkeyAdd": "Passkey hinzufügen",
+    "passkeyAdding": "Wird hinzugefügt…",
+    "passkeyRemove": "Entfernen",
+    "passkeyUnnamed": "Unbenannter Passkey",
+    "passkeyAddedOn": "Hinzugefügt am {{date}}",
+    "passkeysLoading": "Wird geladen…",
+    "passkeysEmpty": "Noch keine Passkeys.",
+    "passkeysLoadFailed": "Passkeys konnten nicht geladen werden",
+    "passkeyAddFailed": "Passkey konnte nicht hinzugefügt werden",
+    "passkeyAddCancelled": "Passkey-Registrierung abgebrochen oder fehlgeschlagen",
+    "passkeyDeleteFailed": "Passkey konnte nicht gelöscht werden",
+    "dangerZone": "Gefahrenzone",
+    "dangerZoneDescription": "Unwiderrufliche Aktionen für dein Konto.",
+    "deleteAccount": "Konto löschen",
+    "deleteAccountDescription": "Lösche dein Konto und alle deine Bienenstände, Bienenstöcke, Durchsichten, Fotos und sonstigen Daten dauerhaft. Dies kann nicht rückgängig gemacht werden. Exportiere zuvor deine Daten, wenn du eine Kopie behalten möchtest.",
+    "deleteAccountConfirmTitle": "Konto löschen?",
+    "deleteAccountConfirmDescription": "Dadurch werden dein Konto und alle Daten, die dir gehören, dauerhaft gelöscht. Bienenstände, die andere mit dir geteilt haben, sind nicht betroffen; Inhalte, die du zu fremden Bienenständen beigetragen hast, bleiben erhalten, werden aber anonymisiert. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteAccountExportReminder": "Möchtest du eine Kopie behalten? Exportiere deine Daten vor dem Löschen.",
+    "deleteAccountExportLink": "Meine Daten exportieren",
+    "deleteAccountTypeEmail": "Gib zur Bestätigung deine E-Mail-Adresse {{email}} ein:",
+    "deleteAccountButton": "Mein Konto löschen",
+    "deleteAccountDeleting": "Konto wird gelöscht…",
+    "accountDeleted": "Dein Konto wurde gelöscht.",
+    "deleteAccountFailed": "Konto konnte nicht gelöscht werden. Bitte versuch es erneut."
   },
   "feedback": {
     "title": "Feedback senden",
-    "description": "Ihr Feedback ist uns wichtig! Helfen Sie uns, HivePal zu verbessern, indem Sie Ihre Meinung teilen, Fehler melden oder neue Funktionen vorschlagen.",
+    "description": "Dein Feedback ist uns wichtig! Hilf uns, HivePal zu verbessern, indem du deine Meinung teilst, Fehler meldest oder neue Funktionen vorschlägst.",
     "sendFeedback": "Feedback senden",
     "type": "Feedback-Typ",
     "selectType": "Feedback-Typ auswählen",
@@ -323,15 +358,15 @@
     "typeSuggestion": "Funktionsvorschlag",
     "typeOther": "Sonstiges",
     "subject": "Betreff",
-    "subjectPlaceholder": "Kurze Zusammenfassung Ihres Feedbacks",
+    "subjectPlaceholder": "Kurze Zusammenfassung deines Feedbacks",
     "message": "Nachricht",
-    "messagePlaceholder": "Bitte geben Sie detaillierte Informationen zu Ihrem Feedback an...",
+    "messagePlaceholder": "Bitte gib detaillierte Informationen zu deinem Feedback an...",
     "email": "E-Mail (optional)",
     "emailPlaceholder": "ihre@email.de",
-    "emailDescription": "Geben Sie Ihre E-Mail an, wenn Sie eine Antwort erhalten möchten",
+    "emailDescription": "Gib deine E-Mail an, wenn du eine Antwort erhalten möchtest",
     "submit": "Feedback absenden",
     "thankYou": "Vielen Dank!",
-    "submittedMessage": "Ihr Feedback wurde erfolgreich übermittelt. Wir schätzen Ihre Rückmeldung und werden sie zeitnah prüfen.",
+    "submittedMessage": "Dein Feedback wurde erfolgreich übermittelt. Wir schätzen deine Rückmeldung und werden sie zeitnah prüfen.",
     "submitAnother": "Weiteres Feedback senden"
   },
   "alerts": {
@@ -343,7 +378,7 @@
   "calendar": {
     "title": "Kalender",
     "both": "Beides",
-    "inspections": "Inspektionen",
+    "inspections": "Durchsichten",
     "actions": "Aktionen",
     "today": "Heute",
     "noEventsScheduled": "Kein Event geplant",
@@ -354,8 +389,8 @@
     "nextWeek": "Nächste Woche",
     "dayHeader": "{{date}}",
     "noEvents": "Keine Events",
-    "overdueInspections": "Überfällige Inspektionen ({{overdueInspectionsSize}})",
-    "viewInspection": "Inspektion anzeigen"
+    "overdueInspections": "Überfällige Durchsichten ({{overdueInspectionsSize}})",
+    "viewInspection": "Durchsicht anzeigen"
   },
   "quickCheck": {
     "title": "Schnellprüfung",
@@ -389,24 +424,30 @@
     "showLess": "Weniger anzeigen",
     "notesAvailable": "Notizen verfügbar",
     "boxConfiguration": "Beutenkonfiguration",
-    "inspection": "Inspektion",
+    "inspection": "Durchsicht",
     "overdue": "Überfällig",
     "scheduled": "Geplant",
     "cancelled": "Abgebrochen",
-    "doInspection": "Inspektion durchführen",
+    "doInspection": "Durchsicht durchführen",
     "reschedule": "Umplanen",
-    "inspectHive": "{{hiveName}} inspizieren",
+    "inspectHive": "{{hiveName}} durchsehen",
     "strength": "Stärke",
     "honey": "Honig",
     "queenSeen": "Königin gesehen",
     "queenNotSeen": "Königin nicht gesehen",
     "photos": "Fotos",
     "documents": "Dokumente",
-    "fromInspection": "Aus Durchsicht"
+    "fromInspection": "Aus Durchsicht",
+    "maintenance": "Wartung",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "filterEventType": "Typ",
+    "filterDateRange": "Zeitraum",
+    "filterHive": "Bienenstock"
   },
   "reports": {
     "title": "Berichte",
-    "selectApiary": "Wählen Sie einen Bienenstand aus, um Berichte anzuzeigen",
+    "selectApiary": "Wähle einen Bienenstand aus, um Berichte anzuzeigen",
     "tabs": {
       "overview": "Übersicht",
       "charts": "Diagramme",
@@ -450,7 +491,8 @@
     "widget": {
       "title": "Bienenstand-Statistiken",
       "viewReports": "Berichte anzeigen",
-      "noApiary": "Wählen Sie einen Bienenstand aus, um Statistiken anzuzeigen"
+      "noApiary": "Wähle einen Bienenstand aus, um Statistiken anzuzeigen",
+      "apiaryDetails": "Bienenstand-Details"
     }
   },
   "photo": {
@@ -467,7 +509,9 @@
     "uploadFailed": "Foto hochladen fehlgeschlagen",
     "deleteTitle": "Foto löschen?",
     "deleteDescription": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Foto wird dadurch endgültig gelöscht.",
-    "deleted": "Foto gelöscht"
+    "deleted": "Foto gelöscht",
+    "replace": "Ersetzen",
+    "featurePhoto": "Titelbild"
   },
   "document": {
     "uploading": "Hochladen...",
@@ -476,7 +520,7 @@
     "deleteDescription": "Dieser Vorgang kann nicht rückgängig gemacht werden. Das Dokument wird dadurch endgültig gelöscht.",
     "deleteFailed": "Das Löschen des Dokuments ist fehlgeschlagen",
     "title": "Dokument hinzufügen",
-    "description": "Laden Sie ein PDF-Dokument oder ein gescanntes Dokument hoch.",
+    "description": "Lade ein PDF-Dokument oder ein gescanntes Dokument hoch.",
     "titleField": "Titel",
     "titlePlaceholder": "Titel des Dokuments",
     "notes": "Notizen",
@@ -501,14 +545,32 @@
     "size": "Größe",
     "download": "Download",
     "delete": "Löschen",
-    "title": "Dateien"
+    "title": "Dateien",
+    "audio": "Audio",
+    "status": "Status",
+    "sendToAi": "An KI senden",
+    "sendAllPending": "Alle an KI senden ({{count}})",
+    "sentToAi": "KI für {{count}} Aufnahmen gestartet",
+    "audioStatus": {
+      "notTranscribed": "Nicht transkribiert",
+      "queued": "In Warteschlange",
+      "transcribing": "Wird transkribiert…",
+      "failed": "Transkription fehlgeschlagen",
+      "transcribed": "Transkribiert",
+      "analyzing": "Wird analysiert…",
+      "analysisFailed": "Analyse fehlgeschlagen",
+      "ready": "KI-Vorschläge bereit"
+    },
+    "audioDeleteTitle": "Audioaufnahme löschen?",
+    "audioDeleted": "Audio gelöscht"
   },
   "quickAdd": {
     "title": "Eintrag hinzufügen",
     "quickCheck": "Schnellprüfung",
     "action": "Aktion",
     "photo": "Foto",
-    "document": "Dokument"
+    "document": "Dokument",
+    "inspection": "Durchsicht"
   },
   "swarmManagement": {
     "backToOverview": "Back to Swarm Management",
@@ -775,5 +837,20 @@
     "columns": "Spalten",
     "toggleColumns": "Spalten ein-/ausblenden",
     "resetColumns": "Auf Standard zurücksetzen"
+  },
+  "months": {
+    "selectMonth": "Monat auswählen",
+    "january": "Januar",
+    "february": "Februar",
+    "march": "März",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember"
   }
 }

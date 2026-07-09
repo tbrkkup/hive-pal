@@ -15,7 +15,7 @@
     "noHivesMatchingSearch": "Keine Bienenstöcke gefunden für \"{{searchTerm}}\"",
     "noHivesWithStatus": "Keine {{status}} Bienenstöcke gefunden",
     "clearFilters": "Filter zurücksetzen",
-    "createFirst": "Erstellen Sie Ihren ersten Bienenstock"
+    "createFirst": "Erstelle deinen ersten Bienenstock"
   },
   "create": {
     "title": "Neuen Bienenstock erstellen",
@@ -26,7 +26,7 @@
     "success": "Bienenstock erfolgreich aktualisiert"
   },
   "delete": {
-    "confirm": "Möchten Sie diesen Bienenstock wirklich löschen?",
+    "confirm": "Möchtest du diesen Bienenstock wirklich löschen?",
     "success": "Bienenstock erfolgreich gelöscht"
   },
   "fields": {
@@ -38,7 +38,7 @@
     "location": "Standort",
     "notes": "Notizen",
     "queen": "Königin",
-    "lastInspection": "Letzte Inspektion",
+    "lastInspection": "Letzte Durchsicht",
     "installationDate": "Aufstellungsdatum",
     "established": "Etabliert",
     "boxes": "Zargen",
@@ -46,18 +46,18 @@
     "position": "Position",
     "apiary": "Bienenstand",
     "notSpecified": "Nicht angegeben",
-    "noInspectionYet": "Noch keine Inspektion",
+    "noInspectionYet": "Noch keine Durchsicht",
     "noNotes": "Keine Notizen"
   },
   "boxConfigurator": {
-    "title": "Zargenkonfiguration",
-    "description": "Visualisieren und konfigurieren Sie den Aufbau Ihres Bienenstocks. Die Zargen werden von unten nach oben angezeigt.",
+    "title": "Beutenkonfiguration",
+    "description": "Visualisiere und konfiguriere den Aufbau deines Bienenstocks. Die Zargen werden von unten nach oben angezeigt.",
     "editConfiguration": "Konfiguration bearbeiten",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "addBox": "Zarge hinzufügen",
     "noBoxes": "Noch keine Zargen konfiguriert",
-    "clickToAdd": "Klicken Sie auf \"Zarge hinzufügen\", um Ihren Bienenstock aufzubauen",
+    "clickToAdd": "Klicke auf „Zarge hinzufügen“, um deinen Bienenstock aufzubauen",
     "saveSuccess": "Zargenkonfiguration erfolgreich gespeichert",
     "saveError": "Zargenkonfiguration konnte nicht gespeichert werden",
     "boxProperties": "Zargeneigenschaften",
@@ -88,11 +88,11 @@
   },
   "card": {
     "showDetails": "Details anzeigen",
-    "lastInspected": "Zuletzt inspiziert am {{date}}",
-    "noInspection": "Noch keine Inspektion",
+    "lastInspected": "Zuletzt durchgesehen am {{date}}",
+    "noInspection": "Noch keine Durchsicht",
     "score": "Bewertung:",
-    "strength": "",
-    "inspectionWarnings": "",
+    "strength": "Stärke:",
+    "inspectionWarnings": "Durchsichtswarnungen",
     "feeding": "Fütterung:"
   },
   "scores": {
@@ -117,7 +117,7 @@
   },
   "actions": {
     "title": "Aktionen Bienenstock",
-    "inspect": "Inspektion durchführen",
+    "inspect": "Durchsicht durchführen",
     "addBox": "Zarge hinzufügen",
     "removeBox": "Zarge entfernen",
     "addQueen": "Königin hinzufügen",
@@ -156,7 +156,7 @@
     "grid": "Raster",
     "unpositionedHives": "Nicht platzierte Bienenstöcke",
     "noHivesInApiary": "Noch keine Bienenstöcke in diesem Bienenstand vorhanden.",
-    "dragToOrganize": "Fügen Sie Bienenstöcke hinzu und ziehen Sie sie in das Raster oben, um Ihren Bienenstand zu organisieren."
+    "dragToOrganize": "Füge Bienenstöcke hinzu und ziehe sie in das Raster oben, um deinen Bienenstand zu organisieren."
   },
   "equipment":{
     "currentHives": "Aktuelle Bienenstöcke",
@@ -180,7 +180,16 @@
       "extra": "Auf Lager",
       "needed": "Erforderlich",
       "status": "Status",
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "deleteItem": "Ausstattung löschen",
+      "hideItem": "Ausstattung ausblenden",
+      "deleteConfirm": "Möchtest du „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "hideConfirm": "Dadurch wird „{{name}}“ aus deiner Ausstattungsliste ausgeblendet. Du kannst sie später wiederherstellen.",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "hide": "Ausblenden",
+      "showHidden": "{{count}} ausgeblendete(s) Element(e) anzeigen",
+      "restore": "Wiederherstellen"
     }
   },
   "llmPrompt": {
@@ -209,7 +218,7 @@
       "sourceValue": "Quelle: {{source}}",
       "installedValue": "Installiert: {{installedAt}}",
       "noActiveQueenRecorded": "Es wurde keine aktive Königin erfasst.",
-      "boxConfiguration": "Boxkonfiguration",
+      "boxConfiguration": "Beutenkonfiguration",
       "position": "Position {{position}}: {{type}}",
       "variant": "Variante= {{variant}}",
       "frames": "Rähmchen",
@@ -224,8 +233,8 @@
       "activeAlerts": "Aktive Warnungen",
       "hiveSettings": "Bienenstockeinstellungen",
       "autumnFeeding": "Fütterung im Herbst: {{amountKg}} kg, Monate {{startMonth}}–{{endMonth}}",
-      "inspectionFrequency": "Inspektionshäufigkeit: alle {{frequencyDays}} Tage",
-      "recentInspections": "Letzte Inspektionen (letzte {{completedInspections}})",
+      "inspectionFrequency": "Durchsichtshäufigkeit: alle {{frequencyDays}} Tage",
+      "recentInspections": "Letzte Durchsichten (letzte {{completedInspections}})",
       "temperature": "Temperatur: {{temperature}}°C",
       "weather": "Wetter: {{weatherConditions}}",
       "colonyStrength": "Volksstärke: {{strength}}/10",
@@ -237,7 +246,7 @@
       "llmPromptYes": "Ja",
       "llmPromptNo": "Nein",
       "swarmCells": "Schwarmzellen: {{swarmCells}}",
-      "supersedureCells": "Ersetzungszellen: {{supersedureCells}}",
+      "supersedureCells": "Umweiselungszellen: {{supersedureCells}}",
       "queenSeen": "Königin gesehen: {{queenSeen}}",
       "broodPattern": "Brutmuster: {{broodPattern}}",
       "additionalObservations": "Zusätzliche Beobachtungen: {{additionalObservations}}",
@@ -249,13 +258,13 @@
       "queenScore": "Königin= {{queenScore}}",
       "scores": "Bewertungen: {{scores}}",
       "scoreWarnings": "Bewertungswarnungen: {{scoreWarnings}}",
-      "noRecentInspections": "Letzte Inspektionen",
-      "noCompletedInspections": "Keine abgeschlossenen Inspektionen erfasst.",
+      "noRecentInspections": "Letzte Durchsichten",
+      "noCompletedInspections": "Keine abgeschlossenen Durchsichten erfasst.",
       "closingPromptTitle": "Basierend auf den obigen Daten, bitte gib an:",
       "closingPromptFirst": "Eine allgemeine Beurteilung des Gesundheitszustands dieses Bienenstocks",
       "closingPromptSecond": "Alle Probleme oder Fragen, die dir auffallen",
       "closingPromptThird": "Empfohlene Maßnahmen für den Imker",
-      "closingPromptFourth": "Saisonale Überlegungen auf der Grundlage der bisherigen Inspektionsergebnisse",
+      "closingPromptFourth": "Saisonale Überlegungen auf der Grundlage der bisherigen Durchsichtsergebnisse",
       "fed": "Fütterung: {{amount}} {{unit}} von {{feedType}}{{concentration}}",
       "feeding": "Gefüttert",
       "treatedWith": "Behandelt mit {{product}} ({{quantity}} {{unit}})",
@@ -265,7 +274,37 @@
       "frameManagement": "Rahmenverwaltung",
       "harvested": "Geerntet {{amount}} {{unit}}",
       "harvest": "Ernte",
-      "note": "Notiz"
+      "note": "Notiz",
+      "maintenance": "{{status}} {{component}}",
+      "maintenanceDefault": "Wartung"
     }
+  },
+  "settings": {
+    "title": "Bienenstock-Einstellungen",
+    "description": "Lege Fütterungszeiträume und Durchsichtsintervalle speziell für diesen Bienenstock fest.",
+    "advancedTitle": "Erweiterte Einstellungen",
+    "advancedDescription": "Lege Fütterungs- und Durchsichtseinstellungen für diesen Bienenstock fest",
+    "autumnFeeding": "Herbstauffütterung",
+    "autumnFeedingDescription": "Lege Zeitraum und Zielmenge der Herbstauffütterung für diesen Bienenstock fest.",
+    "feedingStart": "Beginn der Herbstauffütterung",
+    "feedingEnd": "Ende der Herbstauffütterung",
+    "targetFeedingKg": "Ziel-Herbstauffütterung (kg)",
+    "startMonth": "Startmonat",
+    "startMonthDescription": "Wann die Herbstauffütterung beginnt",
+    "endMonth": "Endmonat",
+    "endMonthDescription": "Wann die Herbstauffütterung endet",
+    "targetAmount": "Zielmenge (kg)",
+    "targetAmountDescription": "Ziel-Futtermenge in Zuckeräquivalent",
+    "inspectionSchedule": "Durchsichtsplan",
+    "inspectionScheduleDescription": "Lege das bevorzugte Durchsichtsintervall für diesen Bienenstock fest.",
+    "inspectionFrequency": "Durchsichtsintervall (Tage)",
+    "inspectionFrequencyDescription": "Wie oft dieser Bienenstock durchgesehen werden soll (in Tagen)",
+    "showInCalendar": "Im Kalender anzeigen",
+    "showInCalendarDescription": "Geplante Durchsichten im Kalender-Feed anzeigen",
+    "configureBoxes": "Anfänglichen Beutenaufbau konfigurieren",
+    "save": "Einstellungen speichern",
+    "saving": "Speichert…",
+    "updateSuccess": "Bienenstock-Einstellungen erfolgreich aktualisiert",
+    "updateError": "Bienenstock-Einstellungen konnten nicht aktualisiert werden"
   }
 }
