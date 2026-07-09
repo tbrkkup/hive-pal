@@ -7,7 +7,11 @@ export const PageGrid: React.FC<PropsWithChildren> = ({ children }) => {
 };
 
 export const MainContent: React.FC<PropsWithChildren> = ({ children }) => {
-  return <div className={'md:col-span-2'}>{children}</div>;
+  // `min-w-0` lets this grid column shrink below its content's intrinsic width,
+  // so a wide child (e.g. a table with many/optional columns) scrolls inside its
+  // own `overflow-x-auto` container instead of pushing its last column off the
+  // edge / under the aside.
+  return <div className={'md:col-span-2 min-w-0'}>{children}</div>;
 };
 
 export const PageAside: React.FC<PropsWithChildren> = ({ children }) => {
