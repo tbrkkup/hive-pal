@@ -9,6 +9,7 @@ import {
   InspectionStatus,
 } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
+import { ActionTypeBadges } from './components/action-type-badges';
 import { ScheduledInspectionCard } from './components/scheduled-inspection-card';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
@@ -624,8 +625,21 @@ const buildInspectionColumns = ({
       },
     },
     {
+      // The beekeeping actions recorded in the inspection (feeding, treatment,
+      // frames, …), shown as compact chips. This is what "Actions" means here.
       id: 'actions',
-      header: t('common:actions.actions'),
+      header: t('inspection:fields.actions', { defaultValue: 'Actions' }),
+      menuLabel: t('inspection:fields.actions', { defaultValue: 'Actions' }),
+      cell: inspection => (
+        <ActionTypeBadges actions={inspection.actions ?? []} />
+      ),
+    },
+    {
+      // Row action: opens the inspection. Non-hideable and deliberately
+      // unlabeled so it isn't confused with the "Actions" column above.
+      id: 'details',
+      header: <span className="sr-only">{t('inspection:actions.details')}</span>,
+      menuLabel: t('inspection:actions.details'),
       canHide: false,
       headerClassName: 'text-right',
       cellClassName: 'text-right',

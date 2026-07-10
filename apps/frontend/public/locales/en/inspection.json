@@ -32,6 +32,7 @@
     "status": "Status",
     "queenSeen": "Queen Seen",
     "notes": "Notes",
+    "actions": "Actions",
     "temperature": "Temperature",
     "weatherConditions": "Weather Conditions",
     "notRecorded": "Not recorded",
