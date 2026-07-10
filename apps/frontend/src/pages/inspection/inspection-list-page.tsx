@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApiary } from '@/hooks/use-apiary';
+import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useTranslation } from 'react-i18next';
 import { useHives, useInspections } from '@/api/hooks';
 import {
@@ -9,19 +10,21 @@ import {
   InspectionStatus,
 } from 'shared-schemas';
 import { InspectionActionSidebar } from './components';
+import { ActionTypeBadges } from './components/action-type-badges';
 import { ScheduledInspectionCard } from './components/scheduled-inspection-card';
 import { isFuture, isPast, isToday, parseISO } from 'date-fns';
 import {
   ActivityIcon,
   CalendarClockIcon,
   CalendarIcon,
-  ChevronRight,
   ClipboardCheckIcon,
   CloudIcon,
   CloudRainIcon,
   CrownIcon,
+  EyeIcon,
   HistoryIcon,
   InfoIcon,
+  PencilIcon,
   SearchIcon,
   SunIcon,
   ThermometerIcon,
@@ -76,6 +79,7 @@ export const InspectionListPage = () => {
 
   const navigate = useNavigate();
   const { activeApiary } = useApiary();
+  const { canEdit } = useApiaryPermission();
   const isSubjective = activeApiary?.settings?.inspectionType === 'subjective';
   const [searchTerm, setSearchTerm] = useState<string | undefined>('');
   const [selectedHiveId, setSelectedHiveId] = useState<string | undefined>(
@@ -105,8 +109,9 @@ export const InspectionListPage = () => {
         isSubjective,
         activeTab,
         navigate,
+        canEdit,
       }),
-    [t, hivesData, isSubjective, activeTab, navigate],
+    [t, hivesData, isSubjective, activeTab, navigate, canEdit],
   );
 
   // User-toggleable, persisted column visibility (shared across the tabs).
@@ -480,8 +485,9 @@ const renderStrengthCell = (
 
 /**
  * Declarative column set for the inspection tables. Every column carries a
- * stable `id` used for persisted visibility; `actions` cannot be hidden so a
- * row always has an affordance to open its detail page.
+ * stable `id` used for persisted visibility; the leading `rowActions` column
+ * cannot be hidden so a row always has an affordance to open (and, with edit
+ * permission, edit) the inspection.
  */
 const buildInspectionColumns = ({
   t,
@@ -489,12 +495,14 @@ const buildInspectionColumns = ({
   isSubjective,
   activeTab,
   navigate,
+  canEdit,
 }: {
   t: TFn;
   hives: HiveResponse[];
   isSubjective: boolean;
   activeTab: InspectionTab;
   navigate: (path: string) => void;
+  canEdit: boolean;
 }): DataTableColumn<InspectionResponse>[] => {
   const strengthHeader =
     activeTab === InspectionTab.UPCOMING || isSubjective
@@ -502,6 +510,43 @@ const buildInspectionColumns = ({
       : 'Strength';
 
   return [
+    {
+      // Leading row actions: open the inspection and (with edit permission) jump
+      // straight to its edit form. Kept on the left so it stays visible even
+      // when a wide table scrolls horizontally, and non-hideable so every row
+      // always has these affordances. Icon-only with accessible labels.
+      id: 'rowActions',
+      header: <span className="sr-only">{t('inspection:actions.view')}</span>,
+      menuLabel: t('inspection:actions.view'),
+      canHide: false,
+      cellClassName: 'w-0 whitespace-nowrap',
+      cell: inspection => (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            aria-label={t('inspection:actions.view')}
+            title={t('inspection:actions.view')}
+            onClick={() => navigate(`/inspections/${inspection.id}`)}
+          >
+            <EyeIcon className="h-4 w-4" />
+          </Button>
+          {canEdit && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              aria-label={t('inspection:actions.edit')}
+              title={t('inspection:actions.edit')}
+              onClick={() => navigate(`/inspections/${inspection.id}/edit`)}
+            >
+              <PencilIcon className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      ),
+    },
     {
       id: 'dateTime',
       header: t('inspection:fields.dateTime'),
@@ -620,21 +665,13 @@ const buildInspectionColumns = ({
       },
     },
     {
+      // The beekeeping actions recorded in the inspection (feeding, treatment,
+      // frames, …), shown as compact chips. This is what "Actions" means here.
       id: 'actions',
-      header: t('common:actions.actions'),
-      canHide: false,
-      headerClassName: 'text-right',
-      cellClassName: 'text-right',
+      header: t('inspection:fields.actions', { defaultValue: 'Actions' }),
+      menuLabel: t('inspection:fields.actions', { defaultValue: 'Actions' }),
       cell: inspection => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(`/inspections/${inspection.id}`)}
-          className="flex items-center"
-        >
-          {t('inspection:actions.details')}{' '}
-          <ChevronRight className="ml-1 h-4 w-4" />
-        </Button>
+        <ActionTypeBadges actions={inspection.actions ?? []} />
       ),
     },
   ];

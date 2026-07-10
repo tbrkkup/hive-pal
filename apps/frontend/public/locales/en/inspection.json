@@ -32,6 +32,7 @@
     "status": "Status",
     "queenSeen": "Queen Seen",
     "notes": "Notes",
+    "actions": "Actions",
     "temperature": "Temperature",
     "weatherConditions": "Weather Conditions",
     "notRecorded": "Not recorded",
@@ -119,6 +120,8 @@
   },
   "actions": {
     "details": "Details",
+    "view": "View",
+    "edit": "Edit",
     "createInspection": "Create Inspection",
     "addInspection": "Add Inspection",
     "mobileInspection": "Mobile Inspection",
