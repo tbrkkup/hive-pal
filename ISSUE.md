@@ -2,9 +2,19 @@
 
 ## Summary
 When creating a new inspection, the **"All day"** toggle is always enabled by
-default, so the time picker is hidden. Beekeepers who record the actual time of
-their inspections have to turn off "All day" and re-enter the time **every
-single time**.
+default, so beekeepers who record the actual time have to turn it off and
+re-enter the time **every single time**.
+
+Many beekeepers carry out their inspections at similar times of day (for
+example, in the evening after their day job ends), so pre-filling the last-used
+time saves that repetitive step for a lot of users.
+
+There is also a related oddity in the current **"All day"** behaviour worth
+noting: "All day" does not store a time-agnostic date — it stores the timestamp
+at **00:00 UTC**. For a user in, e.g., Central European Summer Time (UTC+2) this
+then renders as **"02:00 AM"** in the inspection list, which is confusing (the
+several "02:00 AM" rows in the list are actually all-day inspections). Handling
+the default time better also reduces this confusion.
 
 ## Proposed change
 Remember the last time-related choice the user made and pre-fill it on the next
@@ -35,3 +45,6 @@ new inspection:
 - The shared `InspectionDateTimePicker` already restores the previous time when
   toggling "All day" **within a single form**; this issue extends that memory
   **across forms/sessions** by seeding the form's default value.
+- The "All day = 00:00 UTC renders as 02:00" issue is noted here as motivation;
+  whether to additionally fix all-day rendering (show a true all-day event
+  without a misleading local time) can be done here or split into a follow-up.
