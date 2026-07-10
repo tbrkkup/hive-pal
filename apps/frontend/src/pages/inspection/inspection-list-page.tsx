@@ -30,6 +30,7 @@ import { TrendIndicator } from '@/components/common/trend-indicator';
 import { largestRemainder } from '@/utils/math';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
 import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 import {
   MainContent,
@@ -99,6 +100,8 @@ export const InspectionListPage = () => {
     includeInactive: true,
   });
 
+  const { formatTime } = useDateFormat();
+
   // Declarative columns for the inspection tables. Kept stable per relevant
   // input so `useColumnVisibility` doesn't churn.
   const columns = useMemo(
@@ -109,8 +112,9 @@ export const InspectionListPage = () => {
         isSubjective,
         activeTab,
         navigate,
+        formatTime,
       }),
-    [t, hivesData, isSubjective, activeTab, navigate],
+    [t, hivesData, isSubjective, activeTab, navigate, formatTime],
   );
 
   // User-toggleable, persisted column visibility (shared across the tabs).
@@ -493,12 +497,14 @@ const buildInspectionColumns = ({
   isSubjective,
   activeTab,
   navigate,
+  formatTime,
 }: {
   t: TFn;
   hives: HiveResponse[];
   isSubjective: boolean;
   activeTab: InspectionTab;
   navigate: (path: string) => void;
+  formatTime: (date: Date | string) => string;
 }): DataTableColumn<InspectionResponse>[] => {
   const strengthHeader =
     activeTab === InspectionTab.UPCOMING || isSubjective
@@ -521,10 +527,7 @@ const buildInspectionColumns = ({
           })}
           <br />
           <span className="text-xs text-muted-foreground">
-            {new Date(inspection.date).toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+            {formatTime(new Date(inspection.date))}
           </span>
         </div>
       ),
