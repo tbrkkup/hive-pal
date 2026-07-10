@@ -43,6 +43,9 @@
 #   SKIP_BACKUP=1       Skip the pre-deploy DB backup        (not recommended)
 #   NO_STASH=1          Require a clean tree instead of auto-stashing local edits
 #   SKIP_GIT=1          Do not touch git (deploy current checkout as-is)
+#   FAST=1              Quick local-iteration lane: implies SKIP_GIT + SKIP_BACKUP
+#                       (build & deploy the current checkout; relies on the
+#                       Dockerfile's turbo/pnpm build cache for fast rebuilds)
 #
 # By default, local edits to tracked files are stashed before the pull and
 # restored right after (before the deploy), so `./scripts/deploy.sh` alone
@@ -89,6 +92,22 @@ ENV_FILE="${HIVE_PAL_ENV:-.env}"
 if [ -f "${ENV_FILE}" ]; then
   COMPOSE_ARGS+=(--env-file "${ENV_FILE}")
   log "Using env file: ${ENV_FILE}"
+fi
+
+# --- Fast mode + BuildKit -------------------------------------------------------
+# BuildKit is required for the Dockerfile's cache mounts (pnpm store + turbo
+# cache) that keep image rebuilds incremental. Enable it for every run.
+export DOCKER_BUILDKIT="${DOCKER_BUILDKIT:-1}"
+export COMPOSE_DOCKER_CLI_BUILD="${COMPOSE_DOCKER_CLI_BUILD:-1}"
+
+# FAST=1 is the quick local-iteration lane: build & deploy the CURRENT checkout
+# with no git pull and no DB backup. Combined with the Dockerfile's turbo cache,
+# an unchanged frontend is a cache hit, so re-deploys take seconds, not minutes.
+# (Individual SKIP_* still win if set explicitly.)
+if [ "${FAST:-0}" = "1" ]; then
+  SKIP_GIT="${SKIP_GIT:-1}"
+  SKIP_BACKUP="${SKIP_BACKUP:-1}"
+  log "FAST mode: no git pull, no DB backup — building & deploying the current checkout."
 fi
 
 # --- 1. Update the checkout -----------------------------------------------------
