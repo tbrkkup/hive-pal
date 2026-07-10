@@ -1,4 +1,14 @@
 {
+  "actionTypes": {
+    "feeding": "Feeding",
+    "treatment": "Treatment",
+    "frame": "Frames",
+    "harvest": "Harvest",
+    "boxConfiguration": "Box config",
+    "maintenance": "Maintenance",
+    "note": "Note",
+    "other": "Other"
+  },
   "navigation": {
     "home": "Home",
     "dashboard": "Dashboard",
