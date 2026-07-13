@@ -262,6 +262,32 @@
       "label": "Notizen",
       "placeholder": "Gib Beobachtungen, Erkenntnisse oder durchgeführte Maßnahmen ein..."
     },
+    "weights": {
+      "title": "Gewicht",
+      "description": "Erfasse Beutengewichte. Halte fest, wo du die Waage angesetzt hast — lass die Seite leer für eine Wägung der ganzen Beute, und nutze „ganz unten“ zum Anheben der ganzen Beute vom Boden.",
+      "empty": "Noch keine Gewichtswerte.",
+      "add": "Wert hinzufügen",
+      "remove": "Wert entfernen",
+      "value": "Gewicht ({{unit}})",
+      "position": "Position",
+      "wholeHive": "Ganze Beute (ganz unten)",
+      "boxLabel": "Zarge {{position}} · {{type}}",
+      "boxType": {
+        "BROOD": "Brutraum",
+        "HONEY": "Honigraum",
+        "FEEDER": "Futterzarge"
+      },
+      "side": "Seite",
+      "wholeWeight": "Ganz (keine Seite)",
+      "sides": {
+        "FRONT": "Vorne (Flugloch)",
+        "BACK": "Hinten",
+        "LEFT": "Links",
+        "RIGHT": "Rechts"
+      },
+      "chartTitle": "Gewicht",
+      "chartDescription": "Erfasste Beutengewichte über die Zeit ({{unit}}), gruppiert nach Position und Seite"
+    },
     "actions": {
       "title": "Aktionen",
       "titleSingular": "Aktion",

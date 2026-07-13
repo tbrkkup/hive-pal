@@ -1,12 +1,13 @@
 import {
   Injectable,
   NotFoundException,
+  BadRequestException,
   Inject,
   forwardRef,
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
-import { Observation, Prisma } from '@/prisma/client';
+import { Measurement, Observation, Prisma } from '@/prisma/client';
 import { MetricsService } from '../metrics/metrics.service';
 import { PrometheusService } from '../health/prometheus/prometheus.service';
 import {
@@ -29,6 +30,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 type InspectionWithIncludes = Prisma.InspectionGetPayload<{
   include: {
     observations: true;
+    measurements: true;
     notes: true;
     actions: {
       include: {
@@ -77,6 +79,9 @@ import {
   ScoreResult,
   parseApiaryInspectionType,
   calculateScores,
+  WeightReading,
+  WeightReadingResponse,
+  WEIGHT_METRIC,
 } from 'shared-schemas';
 
 const ACTION_INCLUDE = {
@@ -96,6 +101,7 @@ const ACTION_INCLUDE = {
  */
 const INSPECTION_INCLUDE = {
   observations: true,
+  measurements: true,
   notes: true,
   actions: {
     include: ACTION_INCLUDE,
@@ -250,6 +256,7 @@ export class InspectionsService {
       observations,
       notes,
       actions,
+      weights,
       score: scoreOverride,
       ...inspectionData
     } = createInspectionDto;
@@ -295,6 +302,17 @@ export class InspectionsService {
               text: notes,
             },
           });
+        }
+
+        // Persist manual weight readings captured during the inspection
+        if (weights && weights.length > 0) {
+          await this.createWeightMeasurements(
+            tx,
+            inspection.hiveId,
+            inspection.id,
+            inspection.date,
+            weights,
+          );
         }
 
         // Add actions using ActionsService
@@ -431,6 +449,7 @@ export class InspectionsService {
       observations,
       notes,
       actions,
+      weights,
       score: scoreOverride,
       ...inspectionData
     } = updateInspectionDto;
@@ -513,6 +532,22 @@ export class InspectionsService {
           where: { id },
           data: updateData,
         });
+
+        // Replace weight readings when the payload includes them (delete-and-
+        // recreate, mirroring how observations are handled above).
+        if (weights !== undefined) {
+          await tx.measurement.deleteMany({
+            where: { inspectionId: id, metric: WEIGHT_METRIC },
+          });
+          await this.createWeightMeasurements(
+            tx,
+            inspection.hiveId,
+            id,
+            updated.date,
+            weights,
+          );
+        }
+
         return {
           date: updated.date.toISOString(),
           id: updated.id,
@@ -636,6 +671,73 @@ export class InspectionsService {
     });
 
     return this.mapInspectionsToDto(inspections);
+  }
+
+  /**
+   * Persists manual weight readings captured during an inspection as
+   * `Measurement` rows (metric = "weight"). Validates that any referenced box
+   * belongs to the inspection's hive. Values are stored as received (canonical
+   * kg); recordedAt defaults to the inspection date.
+   */
+  private async createWeightMeasurements(
+    tx: Prisma.TransactionClient,
+    hiveId: string,
+    inspectionId: string,
+    inspectionDate: Date,
+    weights: WeightReading[],
+  ): Promise<void> {
+    if (!weights || weights.length === 0) return;
+
+    const boxIds = [
+      ...new Set(
+        weights
+          .map((w) => w.boxId)
+          .filter((b): b is string => typeof b === 'string'),
+      ),
+    ];
+    if (boxIds.length > 0) {
+      const boxes = await tx.box.findMany({
+        where: { id: { in: boxIds }, hiveId },
+        select: { id: true },
+      });
+      const validBoxIds = new Set(boxes.map((b) => b.id));
+      const invalid = boxIds.filter((id) => !validBoxIds.has(id));
+      if (invalid.length > 0) {
+        throw new BadRequestException(
+          `Box(es) ${invalid.join(', ')} do not belong to hive ${hiveId}`,
+        );
+      }
+    }
+
+    await tx.measurement.createMany({
+      data: weights.map((w) => ({
+        hiveId,
+        inspectionId,
+        metric: WEIGHT_METRIC,
+        value: w.value,
+        unit: w.unit ?? 'kg',
+        recordedAt: w.recordedAt ? new Date(w.recordedAt) : inspectionDate,
+        source: 'inspection',
+        boxId: w.boxId ?? null,
+        side: w.side ?? null,
+      })),
+    });
+  }
+
+  private mapWeightsToDto(
+    measurements: Measurement[],
+  ): WeightReadingResponse[] {
+    return measurements
+      .filter((m) => m.metric === WEIGHT_METRIC)
+      .sort((a, b) => a.recordedAt.getTime() - b.recordedAt.getTime())
+      .map((m) => ({
+        id: m.id,
+        value: m.value,
+        unit: m.unit,
+        boxId: m.boxId,
+        side: m.side,
+        recordedAt: m.recordedAt.toISOString(),
+      }));
   }
 
   private buildObservationRecords(observations: ObservationSchemaType) {
@@ -804,6 +906,7 @@ export class InspectionsService {
         weatherConditions: inspection.weatherConditions ?? null,
         notes: inspection.notes?.[0]?.text ?? null,
         observations: metrics,
+        weights: this.mapWeightsToDto(inspection.measurements),
         status: inspection.status as InspectionStatus,
         score,
         actions,
