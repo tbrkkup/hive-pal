@@ -166,7 +166,7 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
         ]
       : []),
     {
-      title: t('navigation.hivescale', { defaultValue: 'HiveScale' }),
+      title: t('navigation.hivehub', { defaultValue: 'HiveHub' }),
       url: '/hivescale',
       icon: Scale,
       isActive: true,
@@ -199,6 +199,12 @@ const getNavData = (t: TFunction<'common'>, aiEnabled: boolean) => ({
             defaultValue: 'Liebefelder Method',
           }),
           url: '/tools/liebefelder',
+        },
+        {
+          title: t('navigation.varroaManagement', {
+            defaultValue: 'Varroa Management',
+          }),
+          url: '/tools/varroa-management',
         },
       ],
     },
