@@ -118,6 +118,8 @@
   },
   "actions": {
     "details": "Details",
+    "view": "Ansehen",
+    "edit": "Bearbeiten",
     "createInspection": "Durchsicht erstellen",
     "addInspection": "Durchsicht hinzufügen",
     "scheduleInspection": "Durchsicht planen",
