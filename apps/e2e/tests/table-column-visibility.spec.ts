@@ -106,6 +106,11 @@ test('inspections table columns can be hidden and the choice persists', async ({
   await expect(page.getByText('Frames', { exact: false }).first()).toBeVisible();
   await expect(page.getByText('×2').first()).toBeVisible();
 
+  // --- Each row has leading View + Edit icon actions (the apiary owner can
+  // edit, so both are present). These open the detail / edit routes. ---
+  await expect(page.getByRole('button', { name: 'View' }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Edit' }).first()).toBeVisible();
+
   // --- Hide the Weather column via the Columns menu ---
   const SHOT_DIR =
     process.env.SHOT_DIR ||
