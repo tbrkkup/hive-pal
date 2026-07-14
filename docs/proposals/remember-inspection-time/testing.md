@@ -35,4 +35,10 @@ B4-after-allday allDay=true timeInputs=0 time=null
   handled in PR A.
 
 ## Reviewer feedback
-_(to be filled in after review)_
+
+- **Issue draft:** reviewer asked to add that many beekeepers inspect at similar
+  times (e.g. after their day job), so a pre-selection helps, and to document the
+  "All day = 00:00 UTC → shows as 02:00 in CEST" oddity as motivation — both added.
+  Confirmed: keep the issue in English.
+- **Implementation & screenshots:** approved. Merge to `main` requested, with the
+  issue/test docs kept in a sensible structure (→ `docs/proposals/<feature>/`).
