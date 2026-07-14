@@ -25,4 +25,10 @@ Vite frontend on :5173), seeded user `test@test.com`. Four inspections on
 - Defaults for a brand-new user: Monday / 24-hour (per the issue rationale).
 
 ## Reviewer feedback
-_(to be filled in after review)_
+
+- **Issue draft:** original status-quo wording ("times always 24h") was wrong —
+  times are actually mixed (12h in the list, 24h in the create form); corrected.
+  Reviewer asked for data-backed defaults → added rationale + sources. Confirmed:
+  keep the issue in English; default **Monday** for first day of week.
+- **Implementation & screenshots:** approved. Merge to `main` requested, with the
+  issue/test docs kept in a sensible structure (→ `docs/proposals/<feature>/`).
