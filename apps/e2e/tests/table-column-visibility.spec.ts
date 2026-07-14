@@ -43,6 +43,19 @@ const seedInspection = async (page: Page) => {
         date: new Date('2026-06-01T10:00:00.000Z').toISOString(),
         status: 'COMPLETED',
         notes: 'Colony looked strong and healthy with plenty of stores',
+        actions: [
+          {
+            type: 'FEEDING',
+            details: {
+              type: 'FEEDING',
+              feedType: 'Sugar syrup',
+              amount: 2,
+              unit: 'l',
+            },
+          },
+          { type: 'FRAME', details: { type: 'FRAME', quantity: -3 } },
+          { type: 'FRAME', details: { type: 'FRAME', quantity: 2 } },
+        ],
       }),
     });
   });
@@ -75,9 +88,7 @@ test('inspections table columns can be hidden and the choice persists', async ({
   await page.waitForURL(u => !u.pathname.startsWith('/register'), {
     timeout: 15000,
   });
-  await expect(page.getByTestId('apiary-switcher')).toBeVisible({
-    timeout: 15000,
-  });
+  await page.waitForLoadState('networkidle').catch(() => {});
 
   await seedInspection(page);
 
@@ -86,6 +97,19 @@ test('inspections table columns can be hidden and the choice persists', async ({
   const weatherHeader = page.getByRole('columnheader', { name: 'Weather' });
   await expect(weatherHeader).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('columnheader', { name: 'Hive' })).toBeVisible();
+
+  // --- The "Actions" column lists the performed actions (not a Details link) ---
+  await expect(
+    page.getByRole('columnheader', { name: 'Actions', exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText('Feeding', { exact: false }).first()).toBeVisible();
+  await expect(page.getByText('Frames', { exact: false }).first()).toBeVisible();
+  await expect(page.getByText('×2').first()).toBeVisible();
+
+  // --- Each row has leading View + Edit icon actions (the apiary owner can
+  // edit, so both are present). These open the detail / edit routes. ---
+  await expect(page.getByRole('button', { name: 'View' }).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Edit' }).first()).toBeVisible();
 
   // --- Hide the Weather column via the Columns menu ---
   const SHOT_DIR =

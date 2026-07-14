@@ -544,13 +544,17 @@ export class WeatherService {
    * Returns the best available weather record for the given date
    */
   async getWeatherForDate(apiaryId: string, date: string) {
-    // Parse date and create date range for the entire day
-    const targetDate = new Date(date);
-    const startOfDay = new Date(targetDate);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(targetDate);
-    endOfDay.setHours(23, 59, 59, 999);
+    // Build the day range in the server's local time zone. Weather timestamps
+    // are stored as local times (Open-Meteo `timezone: 'auto'` returns naive
+    // local strings that `new Date()` parses in server-local time), so the
+    // window must be anchored the same way. Parsing "YYYY-MM-DD" with
+    // `new Date(date)` treats it as UTC midnight, which — on servers with a
+    // non-UTC offset — shifts the window onto the wrong calendar day and makes
+    // this return null even when data exists. Construct the boundaries from the
+    // date parts instead so they always match the intended local day.
+    const [year, month, day] = date.split('-').map(Number);
+    const startOfDay = new Date(year, month - 1, day, 0, 0, 0, 0);
+    const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999);
 
     // Get all weather records for that date
     const weatherRecords = await this.prisma.weather.findMany({
