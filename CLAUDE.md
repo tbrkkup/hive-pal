@@ -144,5 +144,4 @@ SENTRY_DSN=                # Optional error tracking
 - API responses follow consistent structure with proper HTTP status codes
 
 ### Handling modifications / push
- - do not push any modifications to github
  - when the user explicitly asks for a handoff (e.g. "package these changes", "give me a zip"), put modified files in a .zip archive with the relevant repository structure. Do not do this for normal edits.
