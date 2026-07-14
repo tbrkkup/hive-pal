@@ -11,6 +11,7 @@ import {
   NotesCard,
   ObservationsCard,
   PendingBoxUpdateBanner,
+  WeightsCard,
 } from './components';
 import { AudioCard } from './components/audio-card';
 import {
@@ -177,6 +178,10 @@ export const InspectionDetailPage = () => {
               inspectionType={hive.inspectionType ?? 'data_driven'}
             />
             <ActionsCard actions={inspection.actions ?? []} />
+            <WeightsCard
+              weights={inspection.weights}
+              hiveBoxes={hive.boxes ?? []}
+            />
             <NotesCard notes={inspection.notes} />
             <AudioCard inspectionId={inspection.id} />
           </div>
