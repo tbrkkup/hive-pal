@@ -582,7 +582,7 @@ const buildInspectionColumns = ({
       cell: inspection => {
         const name = getHiveName(inspection.hiveId, hives, t);
         return (
-          <span className="block max-w-[9rem] truncate" title={name}>
+          <span className="block max-w-[7rem] truncate" title={name}>
             {name}
           </span>
         );
