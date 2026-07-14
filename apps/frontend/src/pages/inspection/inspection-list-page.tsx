@@ -577,7 +577,16 @@ const buildInspectionColumns = ({
     {
       id: 'hive',
       header: t('inspection:fields.hive'),
-      cell: inspection => getHiveName(inspection.hiveId, hives, t),
+      // Cap the width so long hive names don't stretch the column; the full
+      // name stays available on hover.
+      cell: inspection => {
+        const name = getHiveName(inspection.hiveId, hives, t);
+        return (
+          <span className="block max-w-[9rem] truncate" title={name}>
+            {name}
+          </span>
+        );
+      },
     },
     {
       id: 'weather',
@@ -652,7 +661,7 @@ const buildInspectionColumns = ({
       // Off by default — the user enables it via the Columns menu. Abbreviated
       // to a single truncated line; the full text shows on hover.
       defaultHidden: true,
-      cellClassName: 'max-w-[16rem]',
+      cellClassName: 'max-w-[12rem]',
       cell: inspection => {
         const notes = inspection.notes?.trim();
         if (!notes) {
