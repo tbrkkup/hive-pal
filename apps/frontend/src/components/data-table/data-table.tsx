@@ -43,7 +43,7 @@ export function DataTable<T>({
   }
 
   return (
-    <Table>
+    <Table containerClassName="scroll-shadow-x">
       {caption && <TableCaption>{caption}</TableCaption>}
       <TableHeader>
         <TableRow>
