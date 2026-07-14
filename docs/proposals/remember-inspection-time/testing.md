@@ -10,10 +10,10 @@ switch exposes `aria-checked`; the time `<input type="time">` only renders when
 
 | # | Steps | Expected | Result | Screenshot |
 |---|-------|----------|--------|------------|
-| 1 | Clear stored pref, open new inspection | "All day" ON, no time input (unchanged default for first-ever use) | PASS — `aria-checked=true`, 0 time inputs | `B1-create-default-allday.png` |
-| 2 | Create inspection: Hive 01, All day OFF, time 17:00, Save; open new inspection | "All day" OFF and 17:00 pre-filled | PASS — `aria-checked=false`, time=`17:00` | `B2-create-prefill-1700.png` |
-| 3 | Reload the new-inspection page | Pre-fill survives reload | PASS — `aria-checked=false`, time=`17:00` | `B3-create-after-reload.png` |
-| 4 | Create an all-day inspection, Save; open new inspection | "All day" ON restored, no time input | PASS — `aria-checked=true`, 0 time inputs | `B4-create-allday-restored.png` |
+| 1 | Clear stored pref, open new inspection | "All day" ON, no time input (unchanged default for first-ever use) | PASS — `aria-checked=true`, 0 time inputs | `screenshots/B1-create-default-allday.png` |
+| 2 | Create inspection: Hive 01, All day OFF, time 17:00, Save; open new inspection | "All day" OFF and 17:00 pre-filled | PASS — `aria-checked=false`, time=`17:00` | `screenshots/B2-create-prefill-1700.png` |
+| 3 | Reload the new-inspection page | Pre-fill survives reload | PASS — `aria-checked=false`, time=`17:00` | `screenshots/B3-create-after-reload.png` |
+| 4 | Create an all-day inspection, Save; open new inspection | "All day" ON restored, no time input | PASS — `aria-checked=true`, 0 time inputs | `screenshots/B4-create-allday-restored.png` |
 
 Raw assertion log:
 ```
