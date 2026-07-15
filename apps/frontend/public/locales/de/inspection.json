@@ -239,6 +239,7 @@
     "inspectionDate": "Durchsichtsdatum",
     "pickDate": "Datum auswählen",
     "allDay": "Ganztägig",
+    "now": "Jetzt",
     "specificTime": "Uhrzeit festlegen",
     "futureScheduled": "Diese Durchsicht ist für die Zukunft geplant",
     "futureScheduledDescription": "Du planst eine Durchsicht für ein zukünftiges Datum.",
