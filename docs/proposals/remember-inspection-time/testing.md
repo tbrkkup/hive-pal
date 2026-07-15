@@ -14,6 +14,7 @@ switch exposes `aria-checked`; the time `<input type="time">` only renders when
 | 2 | Create inspection: Hive 01, All day OFF, time 17:00, Save; open new inspection | "All day" OFF and 17:00 pre-filled | PASS — `aria-checked=false`, time=`17:00` | `screenshots/B2-create-prefill-1700.png` |
 | 3 | Reload the new-inspection page | Pre-fill survives reload | PASS — `aria-checked=false`, time=`17:00` | `screenshots/B3-create-after-reload.png` |
 | 4 | Create an all-day inspection, Save; open new inspection | "All day" ON restored, no time input | PASS — `aria-checked=true`, 0 time inputs | `screenshots/B4-create-allday-restored.png` |
+| 5 | Clear stored pref (default = All day), open new inspection, click **"Now"** | Date/time set to the current moment and "All day" turned off | PASS — before `aria-checked=true`; after `aria-checked=false`, time=`22:05` (current), date shows `July 15th, 2026 22:05` | `screenshots/N2-after-now-click.png` |
 
 Raw assertion log:
 ```
@@ -21,6 +22,8 @@ B1-baseline   allDay=true  timeInputs=0 time=null
 B2-after-1700 allDay=false timeInputs=1 time=17:00
 B3-after-reload allDay=false timeInputs=1 time=17:00
 B4-after-allday allDay=true timeInputs=0 time=null
+Now-before    allDay=true
+Now-after     allDay=false time=22:05 (current time)
 ```
 
 ## Notes
