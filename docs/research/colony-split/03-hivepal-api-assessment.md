@@ -41,14 +41,45 @@ Telling detail: the queen-transfer dialog's reason placeholder literally reads
 **"e.g., Hive split, requeen…"** (`queen-transfer-dialog.tsx:134`) — the domain is
 already anticipated.
 
-### 4. Multi-hive, frame-moving operation — `Harvest` is the best template
-`Harvest` + `HarvestHive` (`schema.prisma:516–549`) model an operation spanning
-several hives with **`framesTaken` per hive** and a `DRAFT → IN_PROGRESS →
-COMPLETED` state machine that **finalizes into per-hive timeline actions**
-(`harvests.service.ts` `create` 30–86, `finalize` 244–324). This is the closest
-architectural precedent for a split that spans a **source** hive and a **new**
-hive and needs to record frame counts on each. `BatchInspection` (837–871) is a
-second "verify a set of hives + ordered join rows" precedent.
+### 4. `Harvest` — a code *pattern* to learn from, NOT a feature to reuse
+> ⚠️ Clarification (per review feedback): the **harvest feature is for the honey
+> harvest** and should **not** be repurposed for splits. It is cited here only as
+> an existing *code pattern* ("a multi-hive operation with per-hive frame counts
+> that finalizes into timeline actions"). We would build the split's own tables —
+> the point is the shape, not the entity. And even that shape is heavier than a
+> split needs (see the verdict at the end).
+
+**How the harvest flow actually works** (`harvests.service.ts`,
+`schema.prisma:516–549`):
+- `Harvest` belongs to an **apiary**, has a `date`, a `status`
+  (`DRAFT → IN_PROGRESS → COMPLETED`) and a `totalWeight`. `HarvestHive` is a join
+  row per contributing hive holding **`framesTaken`** and the computed
+  `honeyAmount`/`honeyPercentage`.
+- **`create`** (→ DRAFT, lines 30–86): pick hives and how many honey frames were
+  taken from each; verifies every hive belongs to the apiary.
+- **`setWeight`** (→ IN_PROGRESS, 179–242): enter the **total extracted weight**;
+  `calculateHoneyDistribution` (496–536) splits that weight across the hives
+  **proportionally to `framesTaken`**.
+- **`finalize`** (→ COMPLETED, 244–324): writes **one `HARVEST` action +
+  `HarvestAction` detail per hive** ("Harvested X kg (N frames)") so each hive's
+  timeline shows it. `reopen` (326–390) deletes those actions again.
+
+**Why this is only *partly* relevant to a split:** the genuinely reusable idea is
+the last step — *record a per-hive frame count and write a timeline action per
+hive*. But a harvest's whole reason for the `DRAFT → weigh → distribute →
+finalize` **lifecycle** is that you don't know the honey weight until after
+extraction, so it's split over time. **A colony split has no such deferred
+measurement** — it's a single atomic act ("move these frames now"). So the
+harvest **state machine is overkill** for a split; only the per-hive-frames +
+finalize-to-actions concept carries over, and that concept is already available
+more cheaply from the `Action` framework (§5) + the box `frameCount` accounting
+(§2). `BatchInspection` (837–871) is a second "verify a set of hives" precedent
+with the same caveat.
+
+**Verdict:** treat harvest as *prior art that proves the per-hive-frames +
+timeline-action pattern exists*, not as a base to extend. The split should be a
+small, atomic operation — see the recommended **action-pair** design in
+`04-roadmap.md`.
 
 ### 5. Timeline event — the extensible Action framework
 Base `Action` + 1:1 typed detail table per `ActionType`
@@ -68,10 +99,11 @@ soft-delete→`ARCHIVED` precedent (`hive.service.ts:604–631`), and the
 `STATUS_CHANGE` action + `recomputeHiveStatusFromChanges` (`157–172`) are exactly
 what the "dissolve the old colony into two new ones" interpretation needs.
 
-### 7. Positioning the new hive
-`Hive.positionRow/positionCol` exist (client-chosen). **No backend
-next-free-slot helper exists** — the UI would pick a free cell (layout UI:
-`hives-layout.tsx`, minimap `hive-minimap.tsx`).
+### 7. Positioning the new hive — **low priority** (deprioritized per review)
+`Hive.positionRow/positionCol` exist and are client-chosen; there is no backend
+next-free-slot helper. Per review feedback the apiary layout isn't used in
+practice, so **the split can simply leave the new hive's position unset** and we
+skip any auto-placement work. Noted only for completeness.
 
 ### 8. Prior art already in the app
 - **"Pagden split" guide is an explicit placeholder for a future feature** —
@@ -88,20 +120,22 @@ next-free-slot helper exists** — the UI would pick a free cell (layout UI:
 |---|---|
 | Create daughter hive + brood box | `HiveService.create` + `createHiveSchema` (`boxes[]`) |
 | Debit mother's frames + log it | `Box.frameCount` + `updateBoxes` delta → auto `BOX_CONFIGURATION` action |
-| Two-hive operation w/ per-hive frames | `Harvest`/`HarvestHive` (`framesTaken`, DRAFT→COMPLETED→finalize-to-actions) |
+| Two-hive event w/ per-hive frames | **Recommended: a paired `SPLIT` action** (one per hive, shared `splitId`). `Harvest` shows the per-hive-frames pattern exists, but its DRAFT→weigh→finalize lifecycle is overkill for an atomic split |
 | Queen disposition | `QueenMovement` + `recordTransfer`; nullable `queen.hiveId`; `getHiveQueenHistory` |
 | Timeline entry on both hives | `Action` + new `SPLIT` detail type (STATUS_CHANGE = template) |
 | Dissolve/mark old colony | `HiveStatus` + `STATUS_CHANGE` action + soft-delete→ARCHIVED |
-| Place new hive | `positionRow/Col` (client-chosen; no backend auto-placement) |
+| Place new hive | `positionRow/Col` — **optional/deprioritized**; leave unset |
 
 ## Gaps to design around
 1. **No per-frame model** → frame moves are **integer accounting** (counts, not
    identified frames). Fine for a Stockkarte, but can't track *which* comb moved.
-2. **Standalone actions are single-hive** → a split needs a dedicated two-hive
-   construct (harvest-style module) **or** two linked `SPLIT` actions
-   (one on the mother, one on the daughter, sharing a `splitId`).
-3. **No lineage field** on `Hive` today → need a `parentHiveId`/`originHiveId`
-   (or a `ColonySplit` join) to make mother⇄daughter traceable.
-4. **No backend auto-placement** for the new hive's apiary position.
+2. **Standalone actions are single-hive** (`createStandaloneActionSchema.hiveId`)
+   → a split is two-hive. **Recommended:** two linked `SPLIT` actions (mother +
+   daughter, sharing a `splitId`) written by one dedicated endpoint. A heavier
+   `Harvest`-style entity is possible but unnecessary (see §4 verdict).
+3. **No origin field** on `Hive` → an optional `parentHiveId` records the
+   daughter's **provenance** (how it was created), *not* an ongoing biological
+   lineage — see the note in `04-roadmap.md`.
+4. **No backend auto-placement** — not needed; positioning is deprioritized.
 
 See `04-roadmap.md` for a concrete implementation proposal built on these.
