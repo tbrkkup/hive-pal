@@ -28,6 +28,7 @@ type ActionWithRelations = Prisma.ActionGetPayload<{
     harvestAction: true;
     boxConfigurationAction: true;
     maintenanceAction: true;
+    splitAction: true;
     createdByUser: { select: { name: true; email: true } };
   };
 }>;
@@ -301,6 +302,9 @@ export class ActionsService {
       await tx.maintenanceAction.deleteMany({
         where: { actionId: action.id },
       });
+      await tx.splitAction.deleteMany({
+        where: { actionId: action.id },
+      });
     }
 
     // Delete all actions
@@ -371,6 +375,7 @@ export class ActionsService {
         harvestAction: true,
         boxConfigurationAction: true,
         maintenanceAction: true,
+        splitAction: true,
         createdByUser: { select: { name: true, email: true } },
       },
     });
@@ -440,6 +445,7 @@ export class ActionsService {
           harvestAction: true,
           boxConfigurationAction: true,
           maintenanceAction: true,
+          splitAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -487,6 +493,7 @@ export class ActionsService {
         harvestAction: true,
         boxConfigurationAction: true,
         maintenanceAction: true,
+        splitAction: true,
         createdByUser: { select: { name: true, email: true } },
       },
     });
@@ -537,6 +544,7 @@ export class ActionsService {
           harvestAction: true,
           boxConfigurationAction: true,
           maintenanceAction: true,
+          splitAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -605,6 +613,7 @@ export class ActionsService {
     await tx.harvestAction.deleteMany({ where: { actionId } });
     await tx.boxConfigurationAction.deleteMany({ where: { actionId } });
     await tx.maintenanceAction.deleteMany({ where: { actionId } });
+    await tx.splitAction.deleteMany({ where: { actionId } });
   }
 
   // Prisma-to-Domain Transformation Function
@@ -827,6 +836,34 @@ export class ActionsService {
           details: {
             type: ActionType.NOTE,
             content: prismaAction.notes || '',
+          },
+        };
+
+      case ActionType.SPLIT:
+        if (!prismaAction.splitAction) {
+          this.logger.warn(
+            `Split action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
+        }
+        return {
+          ...base,
+          type: ActionType.SPLIT,
+          details: {
+            type: ActionType.SPLIT,
+            splitId: prismaAction.splitAction.splitId,
+            role: prismaAction.splitAction.role as 'SOURCE' | 'NEW',
+            counterpartHiveId:
+              prismaAction.splitAction.counterpartHiveId ?? undefined,
+            framesMoved: prismaAction.splitAction.framesMoved,
+            queenDisposition: prismaAction.splitAction.queenDisposition as
+              | 'STAYED_WITH_SOURCE'
+              | 'MOVED_TO_NEW'
+              | 'NEW_IS_QUEENLESS',
           },
         };
 
