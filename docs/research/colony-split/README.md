@@ -13,6 +13,8 @@ dissolving one colony into two).
 3. [`03-hivepal-api-assessment.md`](./03-hivepal-api-assessment.md) — existing
    HivePal primitives usable for a split.
 4. [`04-roadmap.md`](./04-roadmap.md) — proposed API + UI implementation.
+5. [`05-phase1-implementation.md`](./05-phase1-implementation.md) — **Phase 1
+   (data model + migration) — implemented.**
 
 ## Executive summary
 

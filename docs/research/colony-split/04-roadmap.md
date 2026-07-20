@@ -49,44 +49,45 @@ model Hive {
 
 **2. `SPLIT` action type + detail table** (mirrors the recent `STATUS_CHANGE`
 work exactly). One base `Action` **per hive**, both sharing a `splitId` so the
-two entries are a matched pair (mother side + daughter side):
+two entries are a matched pair (mother side + daughter side). Simplified for v1
+per decisions — a plain "normal Ableger": total (brood) frames only, no
+`method`/`reason`/food breakdown (a free-text reason still fits `Action.notes`):
 ```prisma
 enum ActionType { /* … */ SPLIT }
 
 model SplitAction {
-  id               String   @id @default(uuid())
-  actionId         String   @unique
-  action           Action   @relation(fields: [actionId], references: [id], onDelete: Cascade)
-  splitId          String   // groups the mother-side and daughter-side entries
-  role             String   // 'SOURCE' | 'NEW'
+  id                String  @id @default(uuid())
+  actionId          String  @unique
+  action            Action  @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  splitId           String  // groups the source-side and new-side entries
+  role              String  // 'SOURCE' | 'NEW'
   counterpartHiveId String? // the other hive in the split (SetNull-safe)
-  framesMoved      Int
-  broodFramesMoved Int?     // optional finer breakdown …
-  foodFramesMoved  Int?     // … (see open question on granularity)
-  queenDisposition String   // 'STAYED_WITH_SOURCE' | 'MOVED_TO_NEW' | 'NEW_IS_QUEENLESS'
-  method           String   // 'ABLEGER' | 'SAMMELBRUTABLEGER' | 'FLUGLING_BRUTLING' | 'KUNSTSCHWARM' | 'OTHER'
-  reason           String?  // 'SWARM_PREVENTION' | 'INCREASE' | 'VARROA' | free text
+  framesMoved       Int     // number of (brood) frames moved
+  queenDisposition  String  // 'STAYED_WITH_SOURCE' | 'MOVED_TO_NEW' | 'NEW_IS_QUEENLESS'
   @@index([splitId])
 }
 ```
 
 **3. Shared Zod** (`packages/shared-schemas/src/actions/details.schema.ts`,
-add to the `actionDetailsSchema` discriminated union — same shape as
-`statusChangeActionDetailsSchema`):
+added to the `actionDetailsSchema` discriminated union — same shape as
+`statusChangeActionDetailsSchema`; `splitId`/`role`/`counterpartHiveId` are set by
+the backend, hence optional on input):
 ```ts
+export const splitRoleSchema = z.enum(['SOURCE', 'NEW']);
+export const queenDispositionSchema = z.enum([
+  'STAYED_WITH_SOURCE', 'MOVED_TO_NEW', 'NEW_IS_QUEENLESS',
+]);
 export const splitActionDetailsSchema = z.object({
   type: z.literal(ActionType.SPLIT),
-  splitId: z.string().uuid(),
-  role: z.enum(['SOURCE', 'NEW']),
+  splitId: z.string().uuid().optional(),
+  role: splitRoleSchema.optional(),
   counterpartHiveId: z.string().uuid().nullish(),
   framesMoved: z.number().int().min(0),
-  broodFramesMoved: z.number().int().min(0).optional(),
-  foodFramesMoved: z.number().int().min(0).optional(),
-  queenDisposition: z.enum(['STAYED_WITH_SOURCE', 'MOVED_TO_NEW', 'NEW_IS_QUEENLESS']),
-  method: z.enum(['ABLEGER', 'SAMMELBRUTABLEGER', 'FLUGLING_BRUTLING', 'KUNSTSCHWARM', 'OTHER']),
-  reason: z.string().optional(),
+  queenDisposition: queenDispositionSchema,
 });
 ```
+*(Method/reason/food-frame breakdown intentionally dropped for v1; add later as a
+migration if a method picker is wanted. See `05-phase1-implementation.md`.)*
 
 **Why an action-pair and not a `ColonySplit` entity?** A dedicated entity (à la
 `Harvest`) buys a DRAFT→COMPLETED lifecycle we don't need — a split happens in one
@@ -97,27 +98,23 @@ if we later want a multi-step "planned split" workflow (see open questions).
 
 ### Backend endpoint — `POST /hives/:id/split`
 
-**Request** (`splitHiveSchema`; source `hiveId` from the route):
+**Request** (`splitHiveSchema`; source `hiveId` from the route) — v1 "normal
+Ableger", no method/dissolve:
 ```ts
 export const splitHiveSchema = z.object({
   date: z.string().datetime(),
   newHive: z.object({          // the daughter
     name: z.string().min(1),
     apiaryId: z.string().uuid().optional(),   // default = mother's apiary
-    // position intentionally omitted (deprioritized); can add later
+    // position intentionally omitted (deprioritized)
   }),
-  framesMoved: z.array(z.object({             // which source box(es) to debit
+  framesMoved: z.array(z.object({             // which brood box(es) to debit
     boxId: z.string().uuid(),
     count: z.number().int().min(1),
-    broodCount: z.number().int().min(0).optional(),
-    foodCount: z.number().int().min(0).optional(),
   })).min(1),
-  queenDisposition: z.enum(['STAYED_WITH_SOURCE', 'MOVED_TO_NEW', 'NEW_IS_QUEENLESS']),
+  queenDisposition: queenDispositionSchema,
   queenId: z.string().uuid().optional(),      // required when disposition = MOVED_TO_NEW
-  method: z.enum(['ABLEGER', 'SAMMELBRUTABLEGER', 'FLUGLING_BRUTLING', 'KUNSTSCHWARM', 'OTHER']),
-  reason: z.string().optional(),
-  notes: z.string().optional(),
-  dissolveSource: z.boolean().default(false),
+  notes: z.string().optional(),               // free-text reason lives here
 });
 ```
 **Response:** `{ splitId, sourceHiveId, newHiveId }`.
@@ -193,9 +190,9 @@ Both hives then show the split on their **timelines** (SPLIT action) and an
 - **Phase 0 — spec & schema** *(this research + sign-off)*: finalize
   `SplitAction` fields, the two-model behavior, and i18n keys. Fill in the
   existing **"Pagden split" placeholder** guide.
-- **Phase 1 — data model + migration**: `Hive.parentHiveId`, `SPLIT` `ActionType`
-  + `SplitAction` table + shared Zod schemas. (Mirrors the recent `STATUS_CHANGE`
-  work end-to-end.)
+- **Phase 1 — data model + migration** ✅ **done**: `Hive.parentHiveId`, `SPLIT`
+  `ActionType` + `SplitAction` table + shared Zod schemas + migration. See
+  `05-phase1-implementation.md`.
 - **Phase 2 — backend endpoint**: `POST /hives/:id/split` transaction reusing
   create / **direct frame decrement** / recordTransfer; the SPLIT action pair;
   the auto follow-up `Todo`; and the **undo** endpoint (`DELETE /splits/:splitId`).
@@ -213,9 +210,11 @@ Both hives then show the split on their **timelines** (SPLIT action) and an
 All confirmed with the maintainer during review:
 1. **Model:** lightweight **action-pair** (no `ColonySplit` entity). ✅
 2. **Scope:** **mother + daughter only**; "dissolve into two" deferred. ✅
-3. **Frame source:** frames come from the **brood box only** — honey-super frames
-   are never moved in a split (see chat explanation). Record **total** brood
-   frames moved (optionally note how many are food/pollen frames). ✅
+3. **Frame source:** frames come from the **brood box only** — the maintainer uses
+   **Dadant**, where honey frames have different dimensions and are never moved.
+   Record **total** brood frames moved; **no food-frame counter** (a = no). ✅
+11. **Method:** v1 is a single **"normal Ableger"** (take X frames into a new
+    box) — **no method picker** (Ableger/Sammelbrutableger/… deferred). ✅
 4. **Frame debit:** **direct `frameCount` decrement** on the brood box, *not*
    `updateBoxes` (keeps box IDs stable; consistency comes from the `SPLIT`
    action). ✅
@@ -233,13 +232,9 @@ All confirmed with the maintainer during review:
   biological family tree. ✅
 - **Apiary position:** skipped (layout unused). ✅
 
-## Still to confirm (minor)
-- **Food frame (Q3 nuance):** you move brood frames — do you also want to log an
-  optional *food/pollen frame* count (a Futterwabe taken from the brood-box edge),
-  or keep it a pure brood-frame total? *(Default: total brood frames, optional
-  food-frame note.)*
-- **Method presets (Q10):** see the four methods explained in chat — tell me which
-  to offer as presets (default: all four + "Other").
+## All questions resolved
+Both remaining minor points are now answered: **no food-frame counter**, and v1 is
+a **single normal Ableger** (no method presets). The v1 spec is complete.
 
 ## Effort estimate (rough)
 Phases 1–3 are comparable to the `STATUS_CHANGE` feature but larger (two hives +
