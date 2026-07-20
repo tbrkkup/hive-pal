@@ -77,6 +77,38 @@ Distilled from the above, a faithful digital model of a split needs:
 - It should appear on **both hives' timelines** and create a **new hive** whose
   origin is traceable to the mother.
 
+## Split methods (glossary)
+The German methods a split UI might offer as presets, and how they differ:
+
+- **Ableger** (nuc / basic split): the umbrella term. Take **brood frames + bees**
+  (usually + one food frame) from a strong colony into a new box. Typically starts
+  **queenless** and is requeened (raises own / given a queen cell / introduced
+  mated queen). Frames come from the **brood box**.
+- **Sammelbrutableger** (collected-brood split): combine brood frames from
+  **several** donor colonies into **one** strong new colony. Doubles as a **Varroa
+  measure** (removes capped brood from the donors) and a good base for queen
+  rearing. (Multi-donor → a v2 concern; v1 is single-mother.)
+- **Flugling / Brutling** (flyer/brood split by bee age, using location):
+  - **Flugling** = the box left at the **old location** collects the **flying
+    bees** (they return home); usually keeps the **queen**; little/no brood.
+  - **Brutling** = the box moved to a **new location** keeps the **brood + young
+    nurse bees**; becomes **queenless** → raises a queen.
+  Also a Varroa method (brood break on the flyer side).
+- **Kunstschwarm** (artificial/shook swarm, ≈ a "package"): shake **bees only** —
+  **no frames, no brood** — into a new box with a queen. Used for queen breeding,
+  Varroa-clean starts (no brood to treat around), or making up packages.
+- **Pagden split** (a.k.a. *Pagden artificial swarm*): a **swarm-control** variant
+  of the Flugling/Brutling idea. The original hive is moved aside; a new box goes
+  on the **old stand** with the **queen** + a frame — the **flying bees return to
+  the old stand** and join her (this box "is the swarm", brood-free → swarm urge
+  satisfied). The moved-aside original keeps the **brood + queen cells** and raises
+  a new queen. (This is the method behind the app's existing "Pagden split"
+  placeholder guide.)
+
+Note for the model: **Ableger** and **Flugling/Brutling** are the common
+single-mother cases v1 targets; **Kunstschwarm** moves *no* frames (a special case
+where `framesMoved = 0`); **Sammelbrutableger** is multi-donor (later).
+
 ## Sources
 - [beeventure.de – Stockkarte](http://www.beeventure.de/imkerei/werkzeug/stockkarte)
 - [imkado.de – Wie verwende ich eine Stockkarte?](https://imkado.de/pages/erklarung-pocket-stockkarte)
