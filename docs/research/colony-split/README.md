@@ -36,21 +36,23 @@ queen disposition) is rare — a clear **differentiation opportunity**.
 do: `HiveService.create` (seeds boxes) for the daughter; integer `Box.frameCount`
 + the `updateBoxes` delta that auto-logs a `BOX_CONFIGURATION` action for the
 mother; **`QueenMovement` + `recordTransfer`** (the closest analog — its dialog
-already hints *"e.g., Hive split"*); the **`Harvest`/`HarvestHive`** multi-hive
-`framesTaken` pattern as the architectural template; and the extensible **Action**
-timeline (add a `SPLIT` type like the recent `STATUS_CHANGE`). There's even a
-**"Pagden split" placeholder guide** already in the app. Gaps: no per-frame model
-(integer accounting only), standalone actions are single-hive, no `parentHiveId`
-lineage field, no backend auto-placement.
+already hints *"e.g., Hive split"*); and the extensible **Action** timeline (add a
+`SPLIT` type like the recent `STATUS_CHANGE`). The **`Harvest`/`HarvestHive`** flow
+is a *pattern reference only* (per-hive frames + finalize-to-actions) — **not to
+be reused**, since its honey-weighing DRAFT→COMPLETED lifecycle doesn't fit an
+atomic split. There's even a **"Pagden split" placeholder guide** already in the
+app. Gaps: no per-frame model (integer accounting only), standalone actions are
+single-hive, no origin field on `Hive`.
 
 **4. Roadmap (recommended).** A dedicated atomic **`POST /hives/:id/split`**
 transaction that creates the daughter (with a seeded brood box), debits the
 mother's frames, handles queen disposition via `recordTransfer`, and writes a
-paired **`SPLIT`** action on both hives, plus a `Hive.parentHiveId` lineage link —
-driven by a frontend **split wizard**. Support mother+daughter by default and
-"dissolve into two" as a toggle. Phased: (0) spec, (1) schema+migration, (2)
-backend endpoint, (3) frontend wizard + timeline, (4) lineage UX, (5) polish.
-See `04-roadmap.md` for open questions needing sign-off.
+paired **`SPLIT`** action on both hives, plus an **optional `Hive.parentHiveId`
+origin marker** (provenance, *not* biological lineage — you can clear it later).
+Driven by a frontend **split wizard**; mother+daughter by default with
+"dissolve into two" as a later option. Phased: (0) spec, (1) schema+migration,
+(2) backend endpoint, (3) frontend wizard + timeline, (4) provenance UX, (5)
+polish. See `04-roadmap.md` for the expanded open questions needing sign-off.
 
 ---
 *Read-only research; no application code changed. Sources are linked in each file.*
