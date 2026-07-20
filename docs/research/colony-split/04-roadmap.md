@@ -158,7 +158,7 @@ to an existing primitive:
 > Every step is an existing operation sequenced inside one transaction — the new
 > code is the orchestration + the `SPLIT` action type, not new subsystems.
 
-### Undo (`DELETE /splits/:splitId`)
+### Undo (`DELETE /hives/:id/splits/:splitId`)
 A split is **reversible** (per *Decisions* Q7). Undo, in one transaction: add the
 `framesMoved` back to the mother's brood box, delete the daughter hive (cascades
 its boxes/queen-less state), delete the `SPLIT` action pair, revert the queen
@@ -193,10 +193,10 @@ Both hives then show the split on their **timelines** (SPLIT action) and an
 - **Phase 1 — data model + migration** ✅ **done**: `Hive.parentHiveId`, `SPLIT`
   `ActionType` + `SplitAction` table + shared Zod schemas + migration. See
   `05-phase1-implementation.md`.
-- **Phase 2 — backend endpoint**: `POST /hives/:id/split` transaction reusing
-  create / **direct frame decrement** / recordTransfer; the SPLIT action pair;
-  the auto follow-up `Todo`; and the **undo** endpoint (`DELETE /splits/:splitId`).
-  Unit/e2e tests (testcontainers) for frame accounting, queen disposition, undo.
+- **Phase 2 — backend endpoint** ✅ **done**: `POST /hives/:id/split` transaction
+  (create / direct frame decrement / queen move) + SPLIT action pair + auto
+  follow-up `Todo` + **undo** `DELETE /hives/:id/splits/:splitId`. e2e tests
+  written. See `06-phase2-implementation.md`.
 - **Phase 3 — frontend wizard**: the stepper above + timeline rendering for the
   SPLIT action (icon/label, from→to hive, frames moved) in
   `timeline-event-list.tsx` and `actions-card.tsx`.

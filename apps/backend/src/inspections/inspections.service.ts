@@ -39,6 +39,7 @@ type InspectionWithIncludes = Prisma.InspectionGetPayload<{
         boxConfigurationAction: true;
         maintenanceAction: true;
         statusChangeAction: true;
+        splitAction: true;
         createdByUser: { select: { name: true; email: true } };
       };
     };
@@ -87,6 +88,7 @@ const ACTION_INCLUDE = {
   boxConfigurationAction: true,
   maintenanceAction: true,
   statusChangeAction: true,
+  splitAction: true,
   createdByUser: { select: { name: true, email: true } },
 };
 

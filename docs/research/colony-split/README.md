@@ -15,6 +15,8 @@ dissolving one colony into two).
 4. [`04-roadmap.md`](./04-roadmap.md) — proposed API + UI implementation.
 5. [`05-phase1-implementation.md`](./05-phase1-implementation.md) — **Phase 1
    (data model + migration) — implemented.**
+6. [`06-phase2-implementation.md`](./06-phase2-implementation.md) — **Phase 2
+   (split + undo API) — implemented.**
 
 ## Executive summary
 
