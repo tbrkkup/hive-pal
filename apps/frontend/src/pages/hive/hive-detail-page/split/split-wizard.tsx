@@ -13,8 +13,15 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { useSplitHive, useUndoSplit } from '@/api/hooks';
+import { useSplitHive, useUndoSplit, useApiaries } from '@/api/hooks';
 import type { HiveDetailResponse } from 'shared-schemas';
 
 type QueenDisposition = 'STAYED_WITH_SOURCE' | 'MOVED_TO_NEW';
@@ -56,10 +63,17 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
   const [nameEdited, setNameEdited] = useState(false);
   const [queen, setQueen] = useState<QueenDisposition>('STAYED_WITH_SOURCE');
   const [followUpDays, setFollowUpDays] = useState(24);
+  // Target apiary for the daughter — defaults to the mother's apiary.
+  const [targetApiaryId, setTargetApiaryId] = useState(hive.apiaryId ?? '');
 
   const split = useSplitHive();
   const undo = useUndoSplit();
   const hasQueen = Boolean(hive.activeQueen);
+  const { data: apiaries } = useApiaries();
+  const apiaryOptions = apiaries ?? [];
+  const targetApiaryName = apiaryOptions.find(
+    (a) => a.id === (targetApiaryId || hive.apiaryId),
+  )?.name;
 
   const reset = () => {
     setStep(0);
@@ -69,6 +83,7 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
     setNameEdited(false);
     setQueen('STAYED_WITH_SOURCE');
     setFollowUpDays(24);
+    setTargetApiaryId(hive.apiaryId ?? '');
   };
 
   const close = (openState: boolean) => {
@@ -93,6 +108,7 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
         data: {
           date: splitDate.toISOString(),
           newHiveName: name.trim(),
+          apiaryId: targetApiaryId || undefined,
           framesMoved: [{ boxId: broodBox.id, count: frames }],
           queenDisposition: queen,
           followUpDays,
@@ -273,11 +289,35 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
                   </h4>
                   <p className="text-sm text-muted-foreground">
                     {t('split.newColonyHint', {
-                      defaultValue:
-                        "It inherits the mother's settings and stays in the same apiary.",
+                      defaultValue: "It inherits the mother's settings.",
                     })}
                   </p>
                 </div>
+                {apiaryOptions.length > 1 && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="split-apiary">
+                      {t('split.apiaryLabel', { defaultValue: 'Apiary' })}
+                    </Label>
+                    <Select
+                      value={targetApiaryId || hive.apiaryId || ''}
+                      onValueChange={setTargetApiaryId}
+                    >
+                      <SelectTrigger id="split-apiary">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {apiaryOptions.map((a) => (
+                          <SelectItem key={a.id} value={a.id}>
+                            {a.name}
+                            {a.id === hive.apiaryId
+                              ? ` (${t('split.apiarySource', { defaultValue: 'current' })})`
+                              : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div className="space-y-1.5">
                   <Label htmlFor="split-date">
                     {t('split.dateLabel', { defaultValue: 'Date of split' })}
@@ -404,6 +444,12 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
                     k={t('split.stepNewHive', { defaultValue: 'New hive' })}
                     v={name.trim()}
                   />
+                  {targetApiaryName && (
+                    <Row
+                      k={t('split.apiaryLabel', { defaultValue: 'Apiary' })}
+                      v={targetApiaryName}
+                    />
+                  )}
                   <Row
                     k={t('split.queenRow', { defaultValue: 'Queen' })}
                     v={

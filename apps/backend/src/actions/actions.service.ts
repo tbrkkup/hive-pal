@@ -610,6 +610,19 @@ export class ActionsService {
           });
         }
 
+        // The daughter colony came into existence at the split, so its
+        // installation date follows the (corrected) split date.
+        const daughterHiveId =
+          existingAction.splitAction?.role === 'NEW'
+            ? existingAction.hiveId
+            : counterpart?.hiveId;
+        if (daughterHiveId) {
+          await tx.hive.updateMany({
+            where: { id: daughterHiveId },
+            data: { installationDate: newDate },
+          });
+        }
+
         // Shift the follow-up reminder (it lives on the queenless side — one of
         // the two hives) by the same amount the split moved.
         const deltaMs = newDate.getTime() - existingAction.date.getTime();

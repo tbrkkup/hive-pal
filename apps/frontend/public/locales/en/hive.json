@@ -148,7 +148,9 @@
     "framesLower": "frames",
     "afterWord": "after",
     "newColony": "New colony",
-    "newColonyHint": "It inherits the mother's settings and stays in the same apiary.",
+    "newColonyHint": "It inherits the mother's settings.",
+    "apiaryLabel": "Apiary",
+    "apiarySource": "current",
     "dateLabel": "Date of split",
     "dateHint": "Splits can be back-dated to the day they actually happened.",
     "nameLabel": "Name",
@@ -250,7 +252,7 @@
     "saveAllChanges": "Save All Changes",
     "equipmentPlanningOverview": "Equipment Planning Overview",
     "trackCurrentEquipment": "Track your current equipment and plan for seasonal expansion",
-    "table":{
+    "table": {
       "title": "Equipment",
       "addEquipment": "Add Equipment",
       "equipmentName": "Equipment Name",
@@ -274,7 +276,7 @@
   },
   "llmPrompt": {
     "title": "LLM Prompt for {{hiveName}}",
-    "description":"Copy this prompt and paste it into your preferred AI assistant for a\nhive health assessment. You can edit the text before copying.",
+    "description": "Copy this prompt and paste it into your preferred AI assistant for a\nhive health assessment. You can edit the text before copying.",
     "charactersLength": "{{length}} characters",
     "promptCopied": "Copied",
     "promptCopyToClipboard": "Copy to clipboard",
