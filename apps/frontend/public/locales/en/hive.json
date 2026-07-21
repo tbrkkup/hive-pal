@@ -177,7 +177,10 @@
     "undo": "Undo",
     "toastUndone": "Split undone",
     "toastUndoError": "Could not undo the split",
-    "toastError": "Split failed. Please check the values and try again."
+    "toastError": "Split failed. Please check the values and try again.",
+    "provenanceFrom": "Split from",
+    "provenanceFromTitle": "This hive was split from {{name}}",
+    "provenanceOffspring": "Offspring"
   },
   "manage": {
     "title": "Manage Hive",

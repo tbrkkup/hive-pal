@@ -177,7 +177,10 @@
     "undo": "Rückgängig",
     "toastUndone": "Teilung rückgängig gemacht",
     "toastUndoError": "Teilung konnte nicht rückgängig gemacht werden",
-    "toastError": "Teilung fehlgeschlagen. Bitte Werte prüfen und erneut versuchen."
+    "toastError": "Teilung fehlgeschlagen. Bitte Werte prüfen und erneut versuchen.",
+    "provenanceFrom": "Ableger von",
+    "provenanceFromTitle": "Dieses Volk wurde von {{name}} abgeleitet",
+    "provenanceOffspring": "Ableger"
   },
   "manage": {
     "title": "Bienenstockverwaltung",
