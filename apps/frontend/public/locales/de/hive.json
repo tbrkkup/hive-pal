@@ -194,7 +194,8 @@
     "hivePlaceholder": "Bienenstock 01",
     "notesPlaceholder": "Guter Bienenstock",
     "pickDate": "Datum auswählen",
-    "submit": "Absenden"
+    "submit": "Absenden",
+    "validationError": "Speichern nicht möglich — bitte prüfen: {{fields}}"
   },
   "weather": {
     "forecast": "Wettervorhersage"
@@ -210,7 +211,7 @@
     "noHivesInApiary": "Noch keine Bienenstöcke in diesem Bienenstand vorhanden.",
     "dragToOrganize": "Füge Bienenstöcke hinzu und ziehe sie in das Raster oben, um deinen Bienenstand zu organisieren."
   },
-  "equipment":{
+  "equipment": {
     "currentHives": "Aktuelle Bienenstöcke",
     "targetHives": "Soll-Bienenstöcke",
     "itemsNeeded": "Benötigte Artikel",
@@ -222,7 +223,7 @@
     "saveAllChanges": "Alle Änderungen speichern",
     "equipmentPlanningOverview": "Übersicht über die Ausstattungsplanung",
     "trackCurrentEquipment": "Behalte den Überblick über deinen aktuellen Bestand und plane deine saisonalen Erweiterungen",
-    "table":{
+    "table": {
       "title": "Ausstattung",
       "addEquipment": "Ausstattung hinzufügen",
       "equipmentName": "Ausstattungsname",
