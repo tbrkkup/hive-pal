@@ -283,6 +283,14 @@ describe('Colony split (e2e)', () => {
       new Date(newDate.getTime() + 24 * 86_400_000).toISOString(),
     );
 
+    // The daughter's installation date follows the corrected split date.
+    const daughter = await prisma.hive.findUniqueOrThrow({
+      where: { id: daughterId },
+    });
+    expect(daughter.installationDate?.toISOString()).toBe(
+      newDate.toISOString(),
+    );
+
     // An attempted type/details change is ignored, not applied.
     await request(app.getHttpServer())
       .put(`/actions/${motherAction.id}`)
@@ -296,6 +304,58 @@ describe('Colony split (e2e)', () => {
     });
     expect(stillSplit.type).toBe('SPLIT');
     expect(stillSplit.splitAction).not.toBeNull();
+  });
+
+  it('creates the daughter at a chosen target apiary, dated to the split', async () => {
+    const { hive, box } = await makeSourceHive('Mother G', 10);
+    const targetApiary = await prisma.apiary.create({
+      data: getRandomApiary({ userId, name: 'Split Target Apiary' }),
+    });
+    const splitDate = new Date('2026-07-01T12:00:00.000Z');
+
+    const res = await request(app.getHttpServer())
+      .post(`/hives/${hive.id}/split`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({
+        date: splitDate.toISOString(),
+        newHiveName: 'Ableger G',
+        apiaryId: targetApiary.id,
+        framesMoved: [{ boxId: box.id, count: 3 }],
+        queenDisposition: 'STAYED_WITH_SOURCE',
+      })
+      .expect(201);
+
+    const daughter = await prisma.hive.findUniqueOrThrow({
+      where: { id: res.body.newHiveId },
+    });
+    expect(daughter.apiaryId).toBe(targetApiary.id);
+    // The daughter colony exists since the (back-dated) split.
+    expect(daughter.installationDate?.toISOString()).toBe(
+      splitDate.toISOString(),
+    );
+  });
+
+  it("rejects splitting into an apiary the user doesn't own", async () => {
+    const { hive, box } = await makeSourceHive('Mother H', 10);
+    await request(app.getHttpServer())
+      .post(`/hives/${hive.id}/split`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({
+        date: new Date().toISOString(),
+        newHiveName: 'Ableger H',
+        apiaryId: '99999999-9999-4999-8999-999999999999',
+        framesMoved: [{ boxId: box.id, count: 3 }],
+        queenDisposition: 'STAYED_WITH_SOURCE',
+      })
+      .expect(404);
+
+    // Nothing was debited from the mother.
+    const motherBox = await prisma.box.findUniqueOrThrow({
+      where: { id: box.id },
+    });
+    expect(motherBox.frameCount).toBe(10);
   });
 
   it('deleting one SPLIT action removes the pair but keeps the hives', async () => {
