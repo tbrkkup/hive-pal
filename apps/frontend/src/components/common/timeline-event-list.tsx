@@ -30,6 +30,7 @@ import {
   Wrench,
   MoreVertical,
   CheckCircle,
+  Undo2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +45,7 @@ import {
   InspectionResponse,
   InspectionStatus,
   ActionResponse,
+  ActionType,
   QuickCheckResponse,
   PhotoResponse,
   DocumentResponse,
@@ -94,6 +96,8 @@ export interface TimelineEventListProps {
   emptyMessage?: string;
   onEditAction?: (action: ActionResponse) => void;
   onDeleteAction?: (action: ActionResponse) => void;
+  /** Shown on SPLIT actions only: fully revert the split (undo endpoint). */
+  onUndoSplit?: (action: ActionResponse) => void;
   onDeleteQuickCheck?: (quickCheck: QuickCheckResponse) => void;
   onDeletePhoto?: (photo: PhotoResponse) => void;
   onDeleteDocument?: (document: DocumentResponse) => void;
@@ -388,6 +392,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
   emptyMessage,
   onEditAction,
   onDeleteAction,
+  onUndoSplit,
   onDeleteQuickCheck,
   onDeletePhoto,
   onDeleteDocument,
@@ -988,6 +993,20 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
               </div>
               {!action.harvestId && (onEditAction || onDeleteAction) && (
                 <div className="flex items-center gap-0.5 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                  {onUndoSplit && action.type === ActionType.SPLIT && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-stone-500"
+                      title="Undo split"
+                      onClick={e => {
+                        e.stopPropagation();
+                        onUndoSplit(action);
+                      }}
+                    >
+                      <Undo2 className="h-3 w-3" />
+                    </Button>
+                  )}
                   {onEditAction && (
                     <Button
                       variant="ghost"

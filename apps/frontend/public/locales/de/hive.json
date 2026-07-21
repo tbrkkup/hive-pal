@@ -149,6 +149,8 @@
     "afterWord": "danach",
     "newColony": "Neues Volk",
     "newColonyHint": "Er erbt die Einstellungen des Muttervolks und bleibt am selben Bienenstand.",
+    "dateLabel": "Datum der Teilung",
+    "dateHint": "Teilungen können auf den tatsächlichen Tag zurückdatiert werden.",
     "nameLabel": "Name",
     "queenQuestion": "Wer behält die Königin?",
     "queenHint": "Die weisellose Seite erhält automatisch eine Erinnerung zur Nachkontrolle.",

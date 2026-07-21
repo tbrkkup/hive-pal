@@ -37,13 +37,20 @@ test('walks through the split wizard and summarises the choices', async ({
   await expect(page.getByText('of 10 frames')).toBeVisible();
   await page.screenshot({ path: 'test-results/split-wizard-step1.png' });
 
-  // Advance to the summary.
+  // Advance to the summary — back-dating the split on the way (issue: splits
+  // must not be locked to "today").
   await page.getByRole('button', { name: 'Next' }).click(); // -> New hive
   await expect(page.getByLabel('Name')).toHaveValue(/Volk 7 · Ableger/);
+  await page.getByLabel('Date of split').fill('2026-07-14');
+  // The suggested name follows the chosen date until manually edited.
+  await expect(page.getByLabel('Name')).toHaveValue(
+    'Volk 7 · Ableger 2026-07-14',
+  );
   await page.getByRole('button', { name: 'Next' }).click(); // -> Queen
   await expect(page.getByText('Who keeps the queen?')).toBeVisible();
   await page.getByRole('button', { name: 'Next' }).click(); // -> Confirm
 
+  await expect(page.getByText('2026-07-14', { exact: true })).toBeVisible();
   await expect(page.getByText('3 brood frames')).toBeVisible();
   await expect(page.getByText('7 frames')).toBeVisible();
   await expect(page.getByText('stays with the mother')).toBeVisible();

@@ -243,19 +243,10 @@ export const useSplitHive = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      data,
-      apiaryId,
-    }: {
-      id: string;
-      data: SplitHive;
-      apiaryId?: string;
-    }) => {
+    mutationFn: async ({ id, data }: { id: string; data: SplitHive }) => {
       const response = await apiClient.post<SplitHiveResponse>(
         `/api/hives/${id}/split`,
         data,
-        apiaryHeaderConfig(apiaryId),
       );
       return response.data;
     },
@@ -288,16 +279,13 @@ export const useUndoSplit = () => {
       hiveId,
       splitId,
       force,
-      apiaryId,
     }: {
       hiveId: string;
       splitId: string;
       force?: boolean;
-      apiaryId?: string;
     }) => {
       await apiClient.delete(
         `/api/hives/${hiveId}/splits/${splitId}${force ? '?force=true' : ''}`,
-        apiaryHeaderConfig(apiaryId),
       );
     },
     onSuccess: async () => {
