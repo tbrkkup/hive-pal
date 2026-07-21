@@ -17,6 +17,8 @@ dissolving one colony into two).
    (data model + migration) — implemented.**
 6. [`06-phase2-implementation.md`](./06-phase2-implementation.md) — **Phase 2
    (split + undo API) — implemented.**
+7. [`07-phase3-implementation.md`](./07-phase3-implementation.md) — **Phase 3
+   (frontend split wizard + entry point + hooks) — implemented.**
 
 ## Executive summary
 
