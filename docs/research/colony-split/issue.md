@@ -13,33 +13,26 @@ new colony, debits the mother's frames, handles the queen, and records the event
 on both hives' timelines — with an optional provenance link from daughter to
 mother.
 
-## Why this matters — and why the timing is seasonal
+## Why this matters
 
-Splitting is not an occasional edge case; it is a **scheduled, seasonal operation**
-that most beekeepers perform several times a year, and its usefulness is tightly
-bound to the calendar:
+Splitting is a **core, recurring beekeeping operation** — one of the handful of
+things every beekeeper does to manage their colonies — and a hive-management app
+that can't record it has a real gap in its timeline. Whenever a split happens,
+the data that matters for months afterward (which colony came from which, how
+many frames each has, where the queen went, and when to check the queenless side)
+is exactly what's lost today.
 
-- **Swarm season (spring, ~May–June):** splits are the standard tool to relieve
-  swarming pressure. A colony that is about to swarm is split so the bees stay
-  and the beekeeper keeps the increase instead of losing a swarm.
-- **End of the main nectar flow — "Trachtende" (Central Europe, roughly
-  mid‑to‑late July):** this is the classic window for forming **Ableger** (nucs)
-  for three overlapping reasons:
-  1. **Colony increase / replacing winter losses** — new colonies formed now have
-     time to build up before winter.
-  2. **Queen rearing** — the queenless side of a split is used to raise or accept a
-     new queen while there are still drones and good weather.
-  3. **Varroa management** — a split creates a **brood break** on both sides, which
-     is a cornerstone of treatment-timing strategies (e.g. split‑and‑treat /
-     "Teilen und Behandeln"). Doing this right at Trachtende, before the
-     late-summer treatment window, materially affects winter survival.
+The same operation serves different purposes at different points in the year,
+which is part of why first-class support is worthwhile rather than a niche
+add-on:
 
-Because the operation is seasonal, so is the **cost of not having it**: a
-beekeeper working through their apiary at Trachtende splits many colonies over a
-few days and currently has **no reliable place to record any of it**. The data
-that matters most for the following months — which colony came from which, how
-many frames each has, where the queen went, and when to check the queenless side
-— is exactly the data that is lost today.
+- **Swarm control** — splitting a colony that's preparing to swarm keeps the bees
+  and the increase instead of losing a swarm.
+- **Colony increase / replacing losses** — forming new colonies (Ableger / nucs)
+  from strong ones.
+- **Queen rearing** — the queenless side of a split raises or accepts a new queen.
+- **Varroa management** — a split creates a brood break on both sides, used in
+  treatment-timing strategies (e.g. split‑and‑treat / "Teilen und Behandeln").
 
 ## Current gap
 

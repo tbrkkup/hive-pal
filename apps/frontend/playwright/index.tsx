@@ -1,4 +1,5 @@
 import { beforeMount } from '@playwright/experimental-ct-react/hooks';
+import '../src/index.css';
 import { ThemeProvider } from '../src/context/theme-provider';
 import { AuthContext } from '../src/context/auth-context/auth-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

@@ -2,6 +2,12 @@
 
 @plugin "tailwindcss-animate";
 
+/* Explicit source globs (resolved relative to this file) so utility detection
+ * works even when the build's root isn't the app dir — e.g. Playwright
+ * component tests, whose Vite root is playwright/.cache. For the normal app
+ * build this is redundant with Tailwind's automatic detection. */
+@source "./**/*.{ts,tsx,html}";
+
 /* Release Notes Content Styles */
 .release-notes-content h1 {
   font-size: 1.5rem;
