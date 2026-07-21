@@ -67,6 +67,14 @@ export const hiveScoreSchema = z.object({
   warnings: z.array(z.string()),
   confidence: z.number(),
 });
+// Lightweight reference to a related hive, used for split provenance links
+// (the mother a hive was split from, and the offspring split off from it).
+export const hiveProvenanceRefSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  status: hiveStatusSchema,
+});
+
 // Schema for detailed hive response
 export const hiveDetailResponseSchema = createHiveSchema.extend({
   id: z.string().uuid(),
@@ -80,6 +88,10 @@ export const hiveDetailResponseSchema = createHiveSchema.extend({
   featurePhotoUrl: z.string().nullish(),
   inspectionType: inspectionTypeEnum.optional(),
   updatedAt: z.string().datetime(),
+  // Split provenance (optional origin marker, not biological lineage).
+  parentHiveId: z.string().uuid().nullish(),
+  parentHive: hiveProvenanceRefSchema.nullish(),
+  offspring: z.array(hiveProvenanceRefSchema).default([]),
 });
 
 // Schema for basic hive response
@@ -126,6 +138,7 @@ export type CreateHiveResponse = z.infer<typeof createHiveResponseSchema>;
 export type UpdateHive = z.infer<typeof updateHiveSchema>;
 export type UpdateHiveResponse = z.infer<typeof updateHiveResponseSchema>;
 export type HiveDetailResponse = z.infer<typeof hiveDetailResponseSchema>;
+export type HiveProvenanceRef = z.infer<typeof hiveProvenanceRefSchema>;
 export type HiveResponse = z.infer<typeof hiveResponseSchema>;
 export type HiveWithBoxesResponse = z.infer<typeof hiveWithBoxesResponseSchema>;
 export type HiveScore = z.infer<typeof hiveScoreSchema>;

@@ -126,6 +126,26 @@ describe('Colony split (e2e)', () => {
     // Follow-up todo for the queenless side (the daughter here)
     const todos = await prisma.todo.findMany({ where: { hiveId: newHiveId } });
     expect(todos.length).toBeGreaterThanOrEqual(1);
+
+    // Provenance is exposed on the hive detail endpoint (Phase 4):
+    // the daughter reports its mother, and the mother lists the daughter.
+    const daughterDetail = await request(app.getHttpServer())
+      .get(`/hives/${newHiveId}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+    expect(daughterDetail.body.parentHiveId).toBe(hive.id);
+    expect(daughterDetail.body.parentHive?.id).toBe(hive.id);
+    expect(daughterDetail.body.parentHive?.name).toBe('Mother A');
+
+    const motherDetail = await request(app.getHttpServer())
+      .get(`/hives/${hive.id}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+    expect(
+      motherDetail.body.offspring.map((o: { id: string }) => o.id),
+    ).toContain(newHiveId);
   });
 
   it('moves the queen to the daughter when queenDisposition = MOVED_TO_NEW', async () => {
