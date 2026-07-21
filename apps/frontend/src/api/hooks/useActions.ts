@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../client';
+import { apiaryHeaderConfig } from './useHives';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import {
   ActionFilter,
@@ -74,12 +75,15 @@ export const useUpdateAction = () => {
   return useMutation<
     ActionResponse,
     Error,
-    { actionId: string; data: UpdateAction }
+    { actionId: string; data: UpdateAction; apiaryId?: string }
   >({
-    mutationFn: async ({ actionId, data }) => {
+    // apiaryId: the hive's own apiary — required for hives outside the
+    // currently selected apiary (cross-apiary "view all" mode).
+    mutationFn: async ({ actionId, data, apiaryId }) => {
       const response = await apiClient.put<ActionResponse>(
         `/api/actions/${actionId}`,
         data,
+        apiaryHeaderConfig(apiaryId),
       );
       return response.data;
     },
@@ -96,9 +100,13 @@ export const useUpdateAction = () => {
 export const useDeleteAction = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<void, Error, string>({
-    mutationFn: async (actionId: string) => {
-      await apiClient.delete(`/api/actions/${actionId}`);
+  return useMutation<void, Error, { actionId: string; apiaryId?: string }>({
+    // apiaryId: the hive's own apiary — see useUpdateAction.
+    mutationFn: async ({ actionId, apiaryId }) => {
+      await apiClient.delete(
+        `/api/actions/${actionId}`,
+        apiaryHeaderConfig(apiaryId),
+      );
     },
     onSuccess: () => {
       // Invalidate all actions queries

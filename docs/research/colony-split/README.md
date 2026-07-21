@@ -21,7 +21,9 @@ dissolving one colony into two).
    (frontend split wizard + entry point + hooks) — implemented.**
 8. [`08-phase4-implementation.md`](./08-phase4-implementation.md) — **Phase 4
    (provenance badges + German localization) — implemented.**
-9. [`issue.md`](./issue.md) — English feature-request write-up for a future
+9. [`09-timeline-fixes.md`](./09-timeline-fixes.md) — **Timeline fixes
+   (back-dating, split edit/delete, persistent undo) — implemented.**
+10. [`issue.md`](./issue.md) — English feature-request write-up for a future
    upstream PR.
 
 ## Executive summary
