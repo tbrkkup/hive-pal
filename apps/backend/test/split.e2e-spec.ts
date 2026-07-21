@@ -229,4 +229,121 @@ describe('Colony split (e2e)', () => {
       })
       .expect(400);
   });
+
+  it('re-dating one side of the split re-dates the pair and shifts the reminder', async () => {
+    const { hive, box } = await makeSourceHive('Mother E', 10);
+    const originalDate = new Date('2026-07-21T10:00:00.000Z');
+    await request(app.getHttpServer())
+      .post(`/hives/${hive.id}/split`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({
+        date: originalDate.toISOString(),
+        newHiveName: 'Ableger E',
+        framesMoved: [{ boxId: box.id, count: 3 }],
+        queenDisposition: 'STAYED_WITH_SOURCE',
+        followUpDays: 24,
+      })
+      .expect(201);
+
+    const motherAction = await prisma.action.findFirstOrThrow({
+      where: { hiveId: hive.id, type: 'SPLIT' },
+      include: { splitAction: true },
+    });
+
+    // Back-date the split by 7 days via the generic actions endpoint (this is
+    // what the timeline edit dialog calls).
+    const newDate = new Date('2026-07-14T10:00:00.000Z');
+    const res = await request(app.getHttpServer())
+      .put(`/actions/${motherAction.id}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({ date: newDate.toISOString(), notes: 'corrected date' })
+      .expect(200);
+
+    // The split record survives untouched (details are immutable).
+    expect(res.body.type).toBe('SPLIT');
+    expect(res.body.details.framesMoved).toBe(3);
+
+    // The counterpart entry moved to the same date.
+    const pair = await prisma.action.findMany({
+      where: { splitAction: { splitId: motherAction.splitAction!.splitId } },
+    });
+    expect(pair).toHaveLength(2);
+    for (const a of pair) {
+      expect(a.date.toISOString()).toBe(newDate.toISOString());
+    }
+
+    // The follow-up reminder shifted by the same 7 days (24d after new date).
+    const daughterId = pair.find((a) => a.hiveId !== hive.id)!.hiveId!;
+    const todo = await prisma.todo.findFirstOrThrow({
+      where: { hiveId: daughterId, completed: false },
+    });
+    expect(todo.dueDate!.toISOString()).toBe(
+      new Date(newDate.getTime() + 24 * 86_400_000).toISOString(),
+    );
+
+    // An attempted type/details change is ignored, not applied.
+    await request(app.getHttpServer())
+      .put(`/actions/${motherAction.id}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({ type: 'OTHER', details: { type: 'OTHER' } })
+      .expect(200);
+    const stillSplit = await prisma.action.findUniqueOrThrow({
+      where: { id: motherAction.id },
+      include: { splitAction: true },
+    });
+    expect(stillSplit.type).toBe('SPLIT');
+    expect(stillSplit.splitAction).not.toBeNull();
+  });
+
+  it('deleting one SPLIT action removes the pair but keeps the hives', async () => {
+    const { hive, box } = await makeSourceHive('Mother F', 10);
+    const res = await request(app.getHttpServer())
+      .post(`/hives/${hive.id}/split`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .send({
+        date: new Date().toISOString(),
+        newHiveName: 'Ableger F',
+        framesMoved: [{ boxId: box.id, count: 4 }],
+        queenDisposition: 'STAYED_WITH_SOURCE',
+      })
+      .expect(201);
+
+    const motherAction = await prisma.action.findFirstOrThrow({
+      where: { hiveId: hive.id, type: 'SPLIT' },
+      include: { splitAction: true },
+    });
+
+    await request(app.getHttpServer())
+      .delete(`/actions/${motherAction.id}`)
+      .set('Cookie', authCookie)
+      .set('x-apiary-id', apiaryId)
+      .expect(200);
+
+    // Both timeline entries are gone…
+    const remaining = await prisma.action.findMany({
+      where: {
+        hiveId: { in: [hive.id, res.body.newHiveId] },
+        type: 'SPLIT',
+      },
+    });
+    expect(remaining).toHaveLength(0);
+    const splitRows = await prisma.splitAction.findMany({
+      where: { splitId: motherAction.splitAction!.splitId },
+    });
+    expect(splitRows).toHaveLength(0);
+
+    // …but the hives and their frame changes remain (log-only delete).
+    const daughter = await prisma.hive.findUnique({
+      where: { id: res.body.newHiveId },
+    });
+    expect(daughter).not.toBeNull();
+    const motherBox = await prisma.box.findUniqueOrThrow({
+      where: { id: box.id },
+    });
+    expect(motherBox.frameCount).toBe(6);
+  });
 });

@@ -11,7 +11,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 
 const DEFAULT_FOLLOW_UP_DAYS = 24;
-const SPLIT_FOLLOWUP_TITLE = 'Check requeening after split';
+// Exported so the actions service can shift the reminder when a split is
+// re-dated from the timeline.
+export const SPLIT_FOLLOWUP_TITLE = 'Check requeening after split';
 
 type SplitActionInput = {
   hiveId: string;

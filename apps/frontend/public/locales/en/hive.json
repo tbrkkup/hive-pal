@@ -149,6 +149,8 @@
     "afterWord": "after",
     "newColony": "New colony",
     "newColonyHint": "It inherits the mother's settings and stays in the same apiary.",
+    "dateLabel": "Date of split",
+    "dateHint": "Splits can be back-dated to the day they actually happened.",
     "nameLabel": "Name",
     "queenQuestion": "Who keeps the queen?",
     "queenHint": "The queenless side gets a follow-up reminder automatically.",

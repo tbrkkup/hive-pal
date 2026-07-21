@@ -45,11 +45,15 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
   const broodBox = broodBoxes[0];
   const maxFrames = broodBox?.frameCount ?? 0;
 
-  const defaultName = `${hive.name} · Ableger ${format(new Date(), 'yyyy-MM-dd')}`;
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const suggestedName = (d: string) => `${hive.name} · Ableger ${d}`;
 
   const [step, setStep] = useState(0);
   const [frames, setFrames] = useState(Math.min(3, maxFrames || 3));
-  const [name, setName] = useState(defaultName);
+  const [dateStr, setDateStr] = useState(today);
+  const [name, setName] = useState(suggestedName(today));
+  // Once the user edits the name, stop following the chosen date.
+  const [nameEdited, setNameEdited] = useState(false);
   const [queen, setQueen] = useState<QueenDisposition>('STAYED_WITH_SOURCE');
   const [followUpDays, setFollowUpDays] = useState(24);
 
@@ -60,7 +64,9 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
   const reset = () => {
     setStep(0);
     setFrames(Math.min(3, maxFrames || 3));
-    setName(defaultName);
+    setDateStr(today);
+    setName(suggestedName(today));
+    setNameEdited(false);
     setQueen('STAYED_WITH_SOURCE');
     setFollowUpDays(24);
   };
@@ -77,12 +83,16 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
 
   const handleConfirm = async () => {
     if (!broodBox?.id) return;
+    // Today keeps the exact current time; a back-dated split lands at midday
+    // local time so it can't slip into a neighbouring day in other timezones.
+    const splitDate =
+      dateStr === today ? new Date() : new Date(`${dateStr}T12:00:00`);
     try {
       const res = await split.mutateAsync({
         id: hive.id,
         apiaryId: hive.apiaryId ?? undefined,
         data: {
-          date: new Date().toISOString(),
+          date: splitDate.toISOString(),
           newHiveName: name.trim(),
           framesMoved: [{ boxId: broodBox.id, count: frames }],
           queenDisposition: queen,
@@ -271,13 +281,39 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
                   </p>
                 </div>
                 <div className="space-y-1.5">
+                  <Label htmlFor="split-date">
+                    {t('split.dateLabel', { defaultValue: 'Date of split' })}
+                  </Label>
+                  <Input
+                    id="split-date"
+                    type="date"
+                    value={dateStr}
+                    max={today}
+                    onChange={(e) => {
+                      const d = e.target.value;
+                      if (!d) return;
+                      setDateStr(d);
+                      if (!nameEdited) setName(suggestedName(d));
+                    }}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t('split.dateHint', {
+                      defaultValue:
+                        'Splits can be back-dated to the day they actually happened.',
+                    })}
+                  </p>
+                </div>
+                <div className="space-y-1.5">
                   <Label htmlFor="split-name">
                     {t('split.nameLabel', { defaultValue: 'Name' })}
                   </Label>
                   <Input
                     id="split-name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setNameEdited(true);
+                    }}
                   />
                 </div>
               </div>
@@ -354,6 +390,10 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
                   {t('split.summary', { defaultValue: 'Summary' })}
                 </h4>
                 <div className="rounded-lg border divide-y text-sm">
+                  <Row
+                    k={t('split.dateLabel', { defaultValue: 'Date of split' })}
+                    v={dateStr}
+                  />
                   <Row
                     k={`${t('split.movedFromPrefix', { defaultValue: 'Moved from' })} ${hive.name}`}
                     v={`${frames} ${t('split.broodFramesUnit', { defaultValue: 'brood frames' })}`}
