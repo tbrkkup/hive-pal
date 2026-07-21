@@ -1,3 +1,6 @@
+// Renders an inspection's beekeeping actions (feeding, treatment, frames, …) as
+// compact, colour-coded chips — one per distinct action type, deduplicated with
+// a ×count. Used in the inspections table's "Actions" column.
 import {
   Box,
   ClipboardCheck,
