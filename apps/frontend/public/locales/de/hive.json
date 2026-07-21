@@ -196,7 +196,8 @@
     "hivePlaceholder": "Bienenstock 01",
     "notesPlaceholder": "Guter Bienenstock",
     "pickDate": "Datum auswählen",
-    "submit": "Absenden"
+    "submit": "Absenden",
+    "validationError": "Speichern nicht möglich — bitte prüfen: {{fields}}"
   },
   "weather": {
     "forecast": "Wettervorhersage"

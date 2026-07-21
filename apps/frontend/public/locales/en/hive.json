@@ -196,7 +196,8 @@
     "hivePlaceholder": "hive 01",
     "notesPlaceholder": "Good hive",
     "pickDate": "Pick a date",
-    "submit": "Submit"
+    "submit": "Submit",
+    "validationError": "Cannot save — please check: {{fields}}"
   },
   "settings": {
     "title": "Hive Settings",
