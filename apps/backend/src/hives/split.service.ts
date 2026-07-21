@@ -113,12 +113,28 @@ export class SplitService {
         .sort((a, b) => a.position - b.position)[0];
       const apiaryId = dto.apiaryId ?? source.apiaryId;
 
+      // The daughter may be placed at a different apiary — but only one the
+      // caller actually owns.
+      if (apiaryId !== source.apiaryId) {
+        const target = await tx.apiary.findFirst({
+          where: { id: apiaryId, userId: filter.userId },
+          select: { id: true },
+        });
+        if (!target) {
+          throw new NotFoundException(
+            'Target apiary not found or access denied',
+          );
+        }
+      }
+
       // 4. Create the daughter hive + one brood box holding the moved frames.
       const daughter = await tx.hive.create({
         data: {
           name: dto.newHiveName,
           apiaryId,
           status: 'ACTIVE',
+          // The daughter colony comes into existence at the split.
+          installationDate: date,
           parentHiveId: source.id,
           ...(source.settings != null
             ? { settings: source.settings as Prisma.InputJsonValue }

@@ -148,7 +148,9 @@
     "framesLower": "Waben",
     "afterWord": "danach",
     "newColony": "Neues Volk",
-    "newColonyHint": "Er erbt die Einstellungen des Muttervolks und bleibt am selben Bienenstand.",
+    "newColonyHint": "Er erbt die Einstellungen des Muttervolks.",
+    "apiaryLabel": "Bienenstand",
+    "apiarySource": "aktuell",
     "dateLabel": "Datum der Teilung",
     "dateHint": "Teilungen können auf den tatsächlichen Tag zurückdatiert werden.",
     "nameLabel": "Name",
@@ -210,7 +212,7 @@
     "noHivesInApiary": "Noch keine Bienenstöcke in diesem Bienenstand vorhanden.",
     "dragToOrganize": "Füge Bienenstöcke hinzu und ziehe sie in das Raster oben, um deinen Bienenstand zu organisieren."
   },
-  "equipment":{
+  "equipment": {
     "currentHives": "Aktuelle Bienenstöcke",
     "targetHives": "Soll-Bienenstöcke",
     "itemsNeeded": "Benötigte Artikel",
@@ -222,7 +224,7 @@
     "saveAllChanges": "Alle Änderungen speichern",
     "equipmentPlanningOverview": "Übersicht über die Ausstattungsplanung",
     "trackCurrentEquipment": "Behalte den Überblick über deinen aktuellen Bestand und plane deine saisonalen Erweiterungen",
-    "table":{
+    "table": {
       "title": "Ausstattung",
       "addEquipment": "Ausstattung hinzufügen",
       "equipmentName": "Ausstattungsname",
