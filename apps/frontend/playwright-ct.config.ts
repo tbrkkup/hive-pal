@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/experimental-ct-react';
 import { dirname, resolve } from 'path';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 // @ts-expect-error __filename and __dirname are not available in ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -34,7 +35,9 @@ export default defineConfig({
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
     ctViteConfig: {
-      plugins: [react()],
+      // Tailwind v4 is a Vite plugin; without it the imported index.css emits
+      // no utility classes and components render unstyled.
+      plugins: [react(), tailwindcss()],
       resolve: {
         alias: [
           {
