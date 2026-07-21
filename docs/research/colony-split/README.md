@@ -19,6 +19,10 @@ dissolving one colony into two).
    (split + undo API) — implemented.**
 7. [`07-phase3-implementation.md`](./07-phase3-implementation.md) — **Phase 3
    (frontend split wizard + entry point + hooks) — implemented.**
+8. [`08-phase4-implementation.md`](./08-phase4-implementation.md) — **Phase 4
+   (provenance badges + German localization) — implemented.**
+9. [`issue.md`](./issue.md) — English feature-request write-up for a future
+   upstream PR.
 
 ## Executive summary
 

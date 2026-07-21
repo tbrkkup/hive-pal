@@ -202,8 +202,12 @@ Both hives then show the split on their **timelines** (SPLIT action) and an
   hooks + a toast "Undo" action. Timeline rendering for the SPLIT action already
   landed in Phase 1/2. Verified with a Playwright component test
   (`split-wizard.spec.tsx`). See `07-phase3-implementation.md`.
-- **Phase 4 — provenance UX**: "split from **X**" / "offspring: **Y**" badges &
-  links on the hive detail header **and** timeline (no layout dependency).
+- **Phase 4 — provenance UX** ✅ **done**: `parentHive` + `offspring` exposed on
+  the hive detail response (backend `findOne` + shared schema), and
+  "Ableger von **X**" / "Ableger: **Y**" badge links (`HiveProvenance`) under the
+  hive name on the detail header. German + English localized. Verified with
+  Playwright component tests (`hive-provenance.spec.tsx`) + an e2e assertion on
+  the detail endpoint. See `08-phase4-implementation.md`.
 - **Phase 5 — polish & later**: methods/reasons i18n (DE/EN), fill the **Pagden
   split** guide placeholder, the deferred "dissolution into two" flow, and hooking
   the Liebefelder "when to split" advice to a one-click split.
