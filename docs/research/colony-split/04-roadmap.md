@@ -197,9 +197,11 @@ Both hives then show the split on their **timelines** (SPLIT action) and an
   (create / direct frame decrement / queen move) + SPLIT action pair + auto
   follow-up `Todo` + **undo** `DELETE /hives/:id/splits/:splitId`. e2e tests
   written. See `06-phase2-implementation.md`.
-- **Phase 3 — frontend wizard**: the stepper above + timeline rendering for the
-  SPLIT action (icon/label, from→to hive, frames moved) in
-  `timeline-event-list.tsx` and `actions-card.tsx`.
+- **Phase 3 — frontend wizard** ✅ **done**: `SplitWizard` (4-step dialog) +
+  entry point in the hive-detail action sidebar + `useSplitHive`/`useUndoSplit`
+  hooks + a toast "Undo" action. Timeline rendering for the SPLIT action already
+  landed in Phase 1/2. Verified with a Playwright component test
+  (`split-wizard.spec.tsx`). See `07-phase3-implementation.md`.
 - **Phase 4 — provenance UX**: "split from **X**" / "offspring: **Y**" badges &
   links on the hive detail header **and** timeline (no layout dependency).
 - **Phase 5 — polish & later**: methods/reasons i18n (DE/EN), fill the **Pagden
