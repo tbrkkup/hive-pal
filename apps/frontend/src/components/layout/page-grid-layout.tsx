@@ -1,5 +1,7 @@
 import { PropsWithChildren } from 'react';
 
+// Page scaffold: a two-thirds MainContent beside a one-third PageAside on md+
+// screens, stacked into a single column on mobile.
 export const PageGrid: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <div className={'grid md:grid-cols-3 grid-cols-1 gap-4'}>{children}</div>
@@ -14,6 +16,7 @@ export const MainContent: React.FC<PropsWithChildren> = ({ children }) => {
   return <div className={'md:col-span-2 min-w-0'}>{children}</div>;
 };
 
+// The one-third aside column — page-level actions / secondary content.
 export const PageAside: React.FC<PropsWithChildren> = ({ children }) => {
   return <div className={'col-span-1'}>{children}</div>;
 };
