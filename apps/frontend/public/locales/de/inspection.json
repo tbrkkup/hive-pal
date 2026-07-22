@@ -326,7 +326,15 @@
         "selectUnit": "Einheit auswählen",
         "amount": "Menge",
         "notesOptional": "Notizen (optional)",
-        "notesPlaceholder": "Zusätzliche Notizen zur Behandlung hinzufügen"
+        "notesPlaceholder": "Zusätzliche Notizen zur Behandlung hinzufügen",
+        "other": "Anderes (Freitext)",
+        "manageProducts": "Mittel verwalten",
+        "addEfficacy": "+ Milbenzählung erfassen (Wirksamkeit)",
+        "miteMethod": "Zählmethode",
+        "miteBefore": "Milben vorher",
+        "miteAfter": "Milben nachher",
+        "sampleSize": "Stichprobe (Bienen)",
+        "efficacy": "{{p}} % Wirksamkeit"
       },
       "frames_section": {
         "title": "Rähmchen",

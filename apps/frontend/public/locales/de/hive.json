@@ -210,7 +210,7 @@
     "noHivesInApiary": "Noch keine Bienenstöcke in diesem Bienenstand vorhanden.",
     "dragToOrganize": "Füge Bienenstöcke hinzu und ziehe sie in das Raster oben, um deinen Bienenstand zu organisieren."
   },
-  "equipment":{
+  "equipment": {
     "currentHives": "Aktuelle Bienenstöcke",
     "targetHives": "Soll-Bienenstöcke",
     "itemsNeeded": "Benötigte Artikel",
@@ -222,7 +222,7 @@
     "saveAllChanges": "Alle Änderungen speichern",
     "equipmentPlanningOverview": "Übersicht über die Ausstattungsplanung",
     "trackCurrentEquipment": "Behalte den Überblick über deinen aktuellen Bestand und plane deine saisonalen Erweiterungen",
-    "table":{
+    "table": {
       "title": "Ausstattung",
       "addEquipment": "Ausstattung hinzufügen",
       "equipmentName": "Ausstattungsname",
@@ -358,5 +358,12 @@
     "saving": "Speichert…",
     "updateSuccess": "Bienenstock-Einstellungen erfolgreich aktualisiert",
     "updateError": "Bienenstock-Einstellungen konnten nicht aktualisiert werden"
+  },
+  "treatmentSummary": {
+    "title": "Angewandte Wirkstoffe",
+    "inWithdrawal": "In Wartezeit bis {{date}} ({{product}})",
+    "safeToHarvest": "Wartezeit abgelaufen — Ernte unbedenklich",
+    "empty": "Noch keine Behandlungen mit bekannter Zusammensetzung.",
+    "incompleteHint": "{{n}} Behandlung(en) konnten nicht umgerechnet werden (fehlende Dichte / inkompatible Einheiten)"
   }
 }

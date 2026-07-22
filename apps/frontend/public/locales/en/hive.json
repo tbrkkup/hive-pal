@@ -250,7 +250,7 @@
     "saveAllChanges": "Save All Changes",
     "equipmentPlanningOverview": "Equipment Planning Overview",
     "trackCurrentEquipment": "Track your current equipment and plan for seasonal expansion",
-    "table":{
+    "table": {
       "title": "Equipment",
       "addEquipment": "Add Equipment",
       "equipmentName": "Equipment Name",
@@ -274,7 +274,7 @@
   },
   "llmPrompt": {
     "title": "LLM Prompt for {{hiveName}}",
-    "description":"Copy this prompt and paste it into your preferred AI assistant for a\nhive health assessment. You can edit the text before copying.",
+    "description": "Copy this prompt and paste it into your preferred AI assistant for a\nhive health assessment. You can edit the text before copying.",
     "charactersLength": "{{length}} characters",
     "promptCopied": "Copied",
     "promptCopyToClipboard": "Copy to clipboard",
@@ -358,5 +358,12 @@
       "harvest": "Harvest",
       "note": "Note"
     }
+  },
+  "treatmentSummary": {
+    "title": "Applied active ingredients",
+    "inWithdrawal": "In withdrawal until {{date}} ({{product}})",
+    "safeToHarvest": "Withdrawal passed — safe to harvest",
+    "empty": "No treatments with a known composition yet.",
+    "incompleteHint": "{{n}} treatment(s) could not be converted (missing density / incompatible units)"
   }
 }
