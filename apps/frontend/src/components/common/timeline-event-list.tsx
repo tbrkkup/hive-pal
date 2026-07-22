@@ -31,6 +31,7 @@ import {
   MoreVertical,
   CheckCircle,
   Undo2,
+  Split,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -282,6 +283,8 @@ const getActionIcon = (action: ActionResponse) => {
       return <StickyNote className="h-4 w-4" />;
     case 'MAINTENANCE':
       return <Wrench className="h-4 w-4" />;
+    case 'SPLIT':
+      return <Split className="h-4 w-4" />;
     default:
       return <ActivityIcon className="h-4 w-4" />;
   }
@@ -316,6 +319,14 @@ const getActionLabel = (action: ActionResponse, t: (key: string) => string) => {
       return 'Harvest';
     case 'NOTE':
       return 'Note';
+    case 'SPLIT':
+      if (action.details?.type === 'SPLIT') {
+        const n = action.details.framesMoved;
+        return action.details.role === 'SOURCE'
+          ? `Colony split — gave ${n} brood frame${n !== 1 ? 's' : ''} to a new colony`
+          : `Colony split — created with ${n} brood frame${n !== 1 ? 's' : ''}`;
+      }
+      return 'Colony split';
     case 'BOX_CONFIGURATION':
       return t('common:timeline.boxConfiguration');
     case 'MAINTENANCE':
