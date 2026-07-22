@@ -43,6 +43,15 @@ the (absent) field error display, so the rejection is completely invisible:
 the submit handler never runs and no message appears. The result is a dead
 save button.
 
+## Second failure mode: moving the hive to another apiary
+
+Changing the **apiary** in the same form fails silently too, for a different
+reason: the update mutation sent the *newly selected* apiary as the
+`x-apiary-id` context header. The backend authorizes the update by looking the
+hive up **in the header's apiary** — but the hive still belongs to its old
+apiary, so the lookup 404s. The `await` in `onSubmit` had no `catch`, so the
+rejection was swallowed and, again, the button appeared dead.
+
 ## Fix
 
 1. **Validate `status` against the real enum** — use `hiveStatusSchema` from
@@ -54,6 +63,11 @@ save button.
    button.
 3. **Label the button "Save"** (`common:actions.save`) in edit mode instead of
    reusing the "Edit Hive" page title.
+4. **Authorize the update against the hive's current apiary** (the new apiary
+   travels in the body; the subsequent boxes update targets the new apiary,
+   where the hive lives after the move), and wrap the mutations in
+   `try/catch` with success/error toasts so server-side failures are visible
+   as well.
 
 ## Notes
 
