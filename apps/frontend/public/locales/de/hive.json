@@ -23,7 +23,8 @@
   },
   "edit": {
     "title": "Bienenstock bearbeiten",
-    "success": "Bienenstock erfolgreich aktualisiert"
+    "success": "Bienenstock erfolgreich aktualisiert",
+    "error": "Bienenstock konnte nicht gespeichert werden. Bitte erneut versuchen."
   },
   "delete": {
     "confirm": "Möchten Sie diesen Bienenstock wirklich löschen?",
