@@ -168,26 +168,44 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     if (onSubmitOverride) {
       return onSubmitOverride(finalData as HiveFormData);
     } else if (isEditMode) {
-      await updateHive({
-        id: hiveId,
-        data: {
-          ...finalData,
+      try {
+        await updateHive({
           id: hiveId,
-          status: data.status as HiveStatusEnum,
-          installationDate: data.installationDate.toISOString(),
-        },
-        apiaryId: finalData.apiaryId,
-      });
-      // The hive update endpoint ignores boxes; persist box/frame changes
-      // through the dedicated boxes endpoint.
-      if (finalData.boxes && finalData.boxes.length > 0) {
-        await updateHiveBoxes({
-          id: hiveId,
-          boxes: finalData.boxes,
-          apiaryId: finalData.apiaryId,
+          data: {
+            ...finalData,
+            id: hiveId,
+            status: data.status as HiveStatusEnum,
+            installationDate: data.installationDate.toISOString(),
+          },
+          // Authorize against the hive's CURRENT apiary: when the user moves
+          // the hive to another apiary, the backend must still find it in the
+          // old one (the new apiary travels in the body).
+          apiaryId: existingHive?.apiaryId ?? finalData.apiaryId,
         });
+        // The hive update endpoint ignores boxes; persist box/frame changes
+        // through the dedicated boxes endpoint. After a move the hive now
+        // lives in the target apiary.
+        if (finalData.boxes && finalData.boxes.length > 0) {
+          await updateHiveBoxes({
+            id: hiveId,
+            boxes: finalData.boxes,
+            apiaryId: finalData.apiaryId,
+          });
+        }
+        toast.success(
+          t('hive:edit.success', {
+            defaultValue: 'Hive updated successfully',
+          }),
+        );
+        navigate(`/hives/${hiveId}`);
+      } catch {
+        // A failed request must never look like a dead button.
+        toast.error(
+          t('hive:edit.error', {
+            defaultValue: 'Failed to save the hive. Please try again.',
+          }),
+        );
       }
-      navigate(`/hives/${hiveId}`);
     } else {
       createHive({
         ...finalData,

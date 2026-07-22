@@ -23,7 +23,8 @@
   },
   "edit": {
     "title": "Edit Hive",
-    "success": "Hive updated successfully"
+    "success": "Hive updated successfully",
+    "error": "Failed to save the hive. Please try again."
   },
   "delete": {
     "confirm": "Are you sure you want to delete this hive?",

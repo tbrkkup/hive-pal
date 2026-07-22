@@ -4,6 +4,7 @@ import { HiveForm } from './hive-form';
 import type { Page } from '@playwright/test';
 
 const APIARY_ID = '11111111-1111-4111-8111-111111111111';
+const APIARY_2_ID = '44444444-4444-4444-8444-444444444444';
 const HIVE_ID = '22222222-2222-4222-8222-222222222222';
 
 // Regression test for the silently-dead save button: a hive whose status is
@@ -13,13 +14,20 @@ const HIVE_ID = '22222222-2222-4222-8222-222222222222';
 async function mockApi(page: Page, requests: string[]) {
   await page.route('**/api/**', async (route) => {
     const url = new URL(route.request().url());
-    const key = `${route.request().method()} ${url.pathname}`;
+    const apiaryHeader = route.request().headers()['x-apiary-id'] ?? '-';
+    const key = `${route.request().method()} ${url.pathname} [${apiaryHeader}]`;
     requests.push(key);
     if (url.pathname === '/api/apiaries') {
       return route.fulfill({
         json: {
           apiaries: [
             { id: APIARY_ID, name: 'Home Apiary', role: 'OWNER', settings: {} },
+            {
+              id: APIARY_2_ID,
+              name: 'Out Apiary',
+              role: 'OWNER',
+              settings: {},
+            },
           ],
           pendingMemberships: 0,
         },
@@ -82,6 +90,40 @@ test('saving a hive with a non-ACTIVE status sends the update', async ({
 
   // The update request actually goes out (used to be silently swallowed).
   await expect
-    .poll(() => requests.filter((r) => r === `PATCH /api/hives/${HIVE_ID}`))
+    .poll(() =>
+      requests.filter((r) => r.startsWith(`PATCH /api/hives/${HIVE_ID}`)),
+    )
+    .toHaveLength(1);
+});
+
+test('moving a hive to another apiary authorizes against the current one', async ({
+  mount,
+  page,
+}) => {
+  const requests: string[] = [];
+  await mockApi(page, requests);
+
+  await mount(
+    <MemoryRouter>
+      <HiveForm hiveId={HIVE_ID} />
+    </MemoryRouter>,
+  );
+  await expect(page.getByPlaceholder('hive 01')).toHaveValue('Volk 7');
+
+  // Switch the apiary select from Home Apiary to Out Apiary.
+  await page.getByRole('combobox').first().click();
+  await page.getByRole('option', { name: /Out Apiary/ }).click();
+
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+
+  // The PATCH must be authorized against the hive's CURRENT apiary — with the
+  // new apiary in the header the backend can't find the hive (the regression
+  // this test pins down).
+  await expect
+    .poll(() =>
+      requests.filter(
+        (r) => r === `PATCH /api/hives/${HIVE_ID} [${APIARY_ID}]`,
+      ),
+    )
     .toHaveLength(1);
 });
