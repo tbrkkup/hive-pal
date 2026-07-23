@@ -73,7 +73,8 @@
     "broodTimeline": "Brutkalender",
     "swarmManagement": "Schwarmkontrolle",
     "varroaManagement": "Varroa-Management",
-    "documentation": "Dokumentation"
+    "documentation": "Dokumentation",
+    "treatmentProducts": "Behandlungsmittel"
   },
   "liebefelder": {
     "title": "Liebefelder Schätzmethode",
@@ -537,7 +538,9 @@
       "viewReports": "Berichte anzeigen",
       "noApiary": "Wähle einen Bienenstand aus, um Statistiken anzuzeigen",
       "apiaryDetails": "Bienenstand-Details"
-    }
+    },
+    "treatmentTotals": "Angewandte Wirkstoffe (produktübergreifend)",
+    "treatmentTotalsEmpty": "Für diesen Zeitraum sind keine Behandlungen erfasst."
   },
   "photo": {
     "captionPlaceholder": "Beschreibe das Foto...",
@@ -1176,5 +1179,29 @@
     "october": "Oktober",
     "november": "November",
     "december": "Dezember"
+  },
+  "treatmentProducts": {
+    "title": "Behandlungsmittel",
+    "subtitle": "Lege eigene Behandlungsmittel und ihre Wirkstoff-Zusammensetzung an.",
+    "add": "Mittel hinzufügen",
+    "noComposition": "Keine Zusammensetzung hinterlegt",
+    "withdrawalDays": "Wartezeit: {{d}} Tage",
+    "withdrawalUnknown": "Wartezeit: k. A.",
+    "editTitle": "Mittel bearbeiten",
+    "dialogHint": "Lege den Aggregatzustand und die Wirkstoffe mit ihrer Konzentration fest.",
+    "name": "Name",
+    "form": "Aggregatzustand",
+    "method": "Anwendung (optional)",
+    "defaultUnit": "Mengeneinheit",
+    "withdrawal": "Wartezeit (Tage)",
+    "composition": "Wirkstoffe",
+    "addIngredient": "Wirkstoff hinzufügen",
+    "density": "Dichte (g/ml)",
+    "densityHint": "Die Dichte wird benötigt, um zwischen der Mengeneinheit und einer anders gemessenen Konzentration umzurechnen.",
+    "advanced": "Erweitert",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "deleteTitle": "Behandlungsmittel löschen?",
+    "deleteDesc": "Damit wird dein eigenes Mittel entfernt. Das kann nicht rückgängig gemacht werden."
   }
 }
