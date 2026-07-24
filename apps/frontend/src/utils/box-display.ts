@@ -110,6 +110,18 @@ function resolveHeightMm(variant?: BoxVariantEnum, type?: string): number {
  * getBoxHeight(BoxVariantEnum.DADANT, 'detail', BoxTypeEnum.HONEY); //  56
  * getBoxHeight(BoxVariantEnum.DADANT, 'detail', BoxTypeEnum.FEEDER); // 37
  */
+/**
+ * Real-world box height in millimetres for a given variant/type — the same
+ * table that drives the rendered stack, exposed for other proportional
+ * visualizations (e.g. the hive header gradient).
+ */
+export function getBoxHeightMm(
+  variant?: BoxVariantEnum,
+  type?: string,
+): number {
+  return resolveHeightMm(variant, type);
+}
+
 export function getBoxHeight(
   variant?: BoxVariantEnum,
   context: BoxHeightContext = 'minimap',
