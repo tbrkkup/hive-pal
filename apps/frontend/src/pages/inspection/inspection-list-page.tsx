@@ -22,6 +22,7 @@ import {
   CrownIcon,
   HistoryIcon,
   InfoIcon,
+  Scale,
   SearchIcon,
   SunIcon,
   ThermometerIcon,
@@ -513,6 +514,19 @@ const InspectionTableRow = ({
           </span>
         )}
       </TableCell>
+      <TableCell>
+        {(inspection.weights?.length ?? 0) > 0 ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs whitespace-nowrap text-teal-700 dark:bg-teal-950/40 dark:text-teal-300">
+            <Scale className="h-3 w-3 shrink-0" />
+            {t('inspection:fields.weighing')}
+            {(inspection.weights?.length ?? 0) > 1 && (
+              <span className="tabular-nums">×{inspection.weights!.length}</span>
+            )}
+          </span>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </TableCell>
       <TableCell className="text-right">
         <Button
           variant="ghost"
@@ -552,6 +566,7 @@ const renderInspectionsTable = (
               : 'Strength'}
           </TableHead>
           <TableHead>{t('inspection:fields.queenSeen')}</TableHead>
+          <TableHead>{t('inspection:fields.weighing')}</TableHead>
           <TableHead className="text-right">
             {t('common:actions.actions')}
           </TableHead>
