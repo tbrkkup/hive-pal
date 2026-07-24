@@ -53,7 +53,8 @@ export const SplitWizard = ({ hive, open, onOpenChange }: SplitWizardProps) => {
   const maxFrames = broodBox?.frameCount ?? 0;
 
   const today = format(new Date(), 'yyyy-MM-dd');
-  const suggestedName = (d: string) => `${hive.name} · Ableger ${d}`;
+  const suggestedName = (d: string) =>
+    `${hive.name} · ${t('split.suggestedNameSuffix', { defaultValue: 'Split' })} ${d}`;
 
   const [step, setStep] = useState(0);
   const [frames, setFrames] = useState(Math.min(3, maxFrames || 3));

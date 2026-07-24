@@ -40,11 +40,11 @@ test('walks through the split wizard and summarises the choices', async ({
   // Advance to the summary — back-dating the split on the way (issue: splits
   // must not be locked to "today").
   await page.getByRole('button', { name: 'Next' }).click(); // -> New hive
-  await expect(page.getByLabel('Name')).toHaveValue(/Volk 7 · Ableger/);
+  await expect(page.getByLabel('Name')).toHaveValue(/Volk 7 · Split/);
   await page.getByLabel('Date of split').fill('2026-07-14');
   // The suggested name follows the chosen date until manually edited.
   await expect(page.getByLabel('Name')).toHaveValue(
-    'Volk 7 · Ableger 2026-07-14',
+    'Volk 7 · Split 2026-07-14',
   );
   await page.getByRole('button', { name: 'Next' }).click(); // -> Queen
   await expect(page.getByText('Who keeps the queen?')).toBeVisible();

@@ -135,6 +135,7 @@
   },
   "split": {
     "titlePrefix": "Volk teilen",
+    "suggestedNameSuffix": "Ableger",
     "stepFrames": "Waben",
     "stepNewHive": "Neuer Stock",
     "stepQueen": "Königin",

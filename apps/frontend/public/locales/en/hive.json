@@ -135,6 +135,7 @@
   },
   "split": {
     "titlePrefix": "Split colony",
+    "suggestedNameSuffix": "Split",
     "stepFrames": "Frames",
     "stepNewHive": "New hive",
     "stepQueen": "Queen",
