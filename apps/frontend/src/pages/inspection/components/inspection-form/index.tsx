@@ -513,6 +513,19 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                         form.setValue('isAllDay', checked)
                       }
                     />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8"
+                      onClick={() => {
+                        // Set the inspection to the current date and time.
+                        form.setValue('isAllDay', false);
+                        field.onChange(new Date());
+                      }}
+                    >
+                      {t('inspection:form.now', { defaultValue: 'Now' })}
+                    </Button>
                   </div>
 
                   {isInFuture && (
