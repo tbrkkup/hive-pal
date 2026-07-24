@@ -15,7 +15,7 @@
     "noHivesMatchingSearch": "Keine Bienenstöcke gefunden für \"{{searchTerm}}\"",
     "noHivesWithStatus": "Keine {{status}} Bienenstöcke gefunden",
     "clearFilters": "Filter zurücksetzen",
-    "createFirst": "Erstelle deinen ersten Bienenstock"
+    "createFirst": "Erstellen Sie Ihren ersten Bienenstock"
   },
   "create": {
     "title": "Neuen Bienenstock erstellen",
@@ -27,7 +27,7 @@
     "error": "Bienenstock konnte nicht gespeichert werden. Bitte erneut versuchen."
   },
   "delete": {
-    "confirm": "Möchtest du diesen Bienenstock wirklich löschen?",
+    "confirm": "Möchten Sie diesen Bienenstock wirklich löschen?",
     "success": "Bienenstock erfolgreich gelöscht"
   },
   "fields": {
@@ -52,13 +52,13 @@
   },
   "boxConfigurator": {
     "title": "Beutenkonfiguration",
-    "description": "Visualisiere und konfiguriere den Aufbau deines Bienenstocks. Die Zargen werden von unten nach oben angezeigt.",
+    "description": "Visualisieren und konfigurieren Sie den Aufbau Ihres Bienenstocks. Die Zargen werden von unten nach oben angezeigt.",
     "editConfiguration": "Konfiguration bearbeiten",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "addBox": "Zarge hinzufügen",
     "noBoxes": "Noch keine Zargen konfiguriert",
-    "clickToAdd": "Klicke auf „Zarge hinzufügen“, um deinen Bienenstock aufzubauen",
+    "clickToAdd": "Klicken Sie auf „Zarge hinzufügen“, um Ihren Bienenstock aufzubauen",
     "saveSuccess": "Zargenkonfiguration erfolgreich gespeichert",
     "saveError": "Zargenkonfiguration konnte nicht gespeichert werden",
     "boxProperties": "Zargeneigenschaften",
@@ -212,7 +212,7 @@
     "grid": "Raster",
     "unpositionedHives": "Nicht platzierte Bienenstöcke",
     "noHivesInApiary": "Noch keine Bienenstöcke in diesem Bienenstand vorhanden.",
-    "dragToOrganize": "Füge Bienenstöcke hinzu und ziehe sie in das Raster oben, um deinen Bienenstand zu organisieren."
+    "dragToOrganize": "Fügen Sie Bienenstöcke hinzu und ziehen Sie sie in das Raster oben, um Ihren Bienenstand zu organisieren."
   },
   "equipment": {
     "currentHives": "Aktuelle Bienenstöcke",
@@ -225,7 +225,7 @@
     "cancelChanges": "Änderungen verwerfen",
     "saveAllChanges": "Alle Änderungen speichern",
     "equipmentPlanningOverview": "Übersicht über die Ausstattungsplanung",
-    "trackCurrentEquipment": "Behalte den Überblick über deinen aktuellen Bestand und plane deine saisonalen Erweiterungen",
+    "trackCurrentEquipment": "Behalten Sie den Überblick über Ihren aktuellen Bestand und planen Sie Ihre saisonalen Erweiterungen",
     "table": {
       "title": "Ausstattung",
       "addEquipment": "Ausstattung hinzufügen",
@@ -239,8 +239,8 @@
       "actions": "Aktionen",
       "deleteItem": "Ausstattung löschen",
       "hideItem": "Ausstattung ausblenden",
-      "deleteConfirm": "Möchtest du „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
-      "hideConfirm": "Dadurch wird „{{name}}“ aus deiner Ausstattungsliste ausgeblendet. Du kannst sie später wiederherstellen.",
+      "deleteConfirm": "Möchten Sie „{{name}}“ wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "hideConfirm": "Dadurch wird „{{name}}“ aus Ihrer Ausstattungsliste ausgeblendet. Sie können sie später wiederherstellen.",
       "cancel": "Abbrechen",
       "delete": "Löschen",
       "hide": "Ausblenden",
@@ -250,7 +250,7 @@
   },
   "llmPrompt": {
     "title": "LLM-Prompt für {{hiveName}}",
-    "description": "Kopiere diese Eingabeaufforderung und füge sie in deinen bevorzugten KI-Assistenten ein, um\n eine Bewertung des Bienenstockzustands zu erhalten. Du kannst den Text vor dem Kopieren bearbeiten.",
+    "description": "Kopieren Sie diese Eingabeaufforderung und fügen Sie sie in Ihren bevorzugten KI-Assistenten ein, um\n eine Bewertung des Bienenstockzustands zu erhalten. Sie können den Text vor dem Kopieren bearbeiten.",
     "charactersLength": "{{length}} Zeichen",
     "promptCopied": "Kopiert",
     "promptCopyToClipboard": "In die Zwischenablage kopieren",
@@ -259,7 +259,7 @@
     "sendToAssistant": "An KI-Assistent senden",
     "failedToSendToAssistant": "Der Assistent konnte nicht geöffnet werden",
     "textArea": {
-      "description": "Du bist ein erfahrener Imkereiberater. Bitte analysiere die folgenden Daten zum Bienenstock und gib deine Einschätzung ab.",
+      "description": "Sie sind ein erfahrener Imkereiberater. Bitte analysieren Sie die folgenden Daten zum Bienenstock und geben Sie Ihre Einschätzung ab.",
       "hiveOverview": "Bienenstockübersicht",
       "name": "Name",
       "status": "Status",
@@ -318,7 +318,7 @@
       "noCompletedInspections": "Keine abgeschlossenen Durchsichten erfasst.",
       "closingPromptTitle": "Basierend auf den obigen Daten, bitte gib an:",
       "closingPromptFirst": "Eine allgemeine Beurteilung des Gesundheitszustands dieses Bienenstocks",
-      "closingPromptSecond": "Alle Probleme oder Fragen, die dir auffallen",
+      "closingPromptSecond": "Alle Probleme oder Fragen, die Ihnen auffallen",
       "closingPromptThird": "Empfohlene Maßnahmen für den Imker",
       "closingPromptFourth": "Saisonale Überlegungen auf der Grundlage der bisherigen Durchsichtsergebnisse",
       "fed": "Fütterung: {{amount}} {{unit}} von {{feedType}}{{concentration}}",
@@ -337,11 +337,11 @@
   },
   "settings": {
     "title": "Bienenstock-Einstellungen",
-    "description": "Lege Fütterungszeiträume und Durchsichtsintervalle speziell für diesen Bienenstock fest.",
+    "description": "Legen Sie Fütterungszeiträume und Durchsichtsintervalle speziell für diesen Bienenstock fest.",
     "advancedTitle": "Erweiterte Einstellungen",
-    "advancedDescription": "Lege Fütterungs- und Durchsichtseinstellungen für diesen Bienenstock fest",
+    "advancedDescription": "Legen Sie Fütterungs- und Durchsichtseinstellungen für diesen Bienenstock fest",
     "autumnFeeding": "Herbstauffütterung",
-    "autumnFeedingDescription": "Lege Zeitraum und Zielmenge der Herbstauffütterung für diesen Bienenstock fest.",
+    "autumnFeedingDescription": "Legen Sie Zeitraum und Zielmenge der Herbstauffütterung für diesen Bienenstock fest.",
     "feedingStart": "Beginn der Herbstauffütterung",
     "feedingEnd": "Ende der Herbstauffütterung",
     "targetFeedingKg": "Ziel-Herbstauffütterung (kg)",
@@ -352,7 +352,7 @@
     "targetAmount": "Zielmenge (kg)",
     "targetAmountDescription": "Ziel-Futtermenge in Zuckeräquivalent",
     "inspectionSchedule": "Durchsichtsplan",
-    "inspectionScheduleDescription": "Lege das bevorzugte Durchsichtsintervall für diesen Bienenstock fest.",
+    "inspectionScheduleDescription": "Legen Sie das bevorzugte Durchsichtsintervall für diesen Bienenstock fest.",
     "inspectionFrequency": "Durchsichtsintervall (Tage)",
     "inspectionFrequencyDescription": "Wie oft dieser Bienenstock durchgesehen werden soll (in Tagen)",
     "showInCalendar": "Im Kalender anzeigen",

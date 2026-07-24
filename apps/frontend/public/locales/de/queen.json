@@ -13,7 +13,7 @@
         "success": "Königin erfolgreich aktualisiert"
     },
     "delete": {
-        "confirm": "Möchtest du diese Königin wirklich löschen?",
+        "confirm": "Möchten Sie diese Königin wirklich löschen?",
         "success": "Königin erfolgreich gelöscht"
     },
     "fields": {

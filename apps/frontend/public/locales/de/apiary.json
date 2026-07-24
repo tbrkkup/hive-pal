@@ -20,7 +20,7 @@
     "success": "Bienenstand erfolgreich aktualisiert"
   },
   "delete": {
-    "confirm": "Möchtest du diesen Bienenstand wirklich löschen?",
+    "confirm": "Möchten Sie diesen Bienenstand wirklich löschen?",
     "success": "Bienenstand erfolgreich gelöscht"
   },
   "detail": {
@@ -75,14 +75,14 @@
   },
   "calendarSubscription": {
     "title": "Kalenderabonnement",
-    "description": "Abonniere den Durchsichtenplan dieses Bienenstands in deiner Kalender-App",
+    "description": "Abonnieren Sie den Durchsichtenplan dieses Bienenstands in Ihrer Kalender-App",
     "addToCalendar": "Zum Kalender hinzufügen",
     "regenerateUrl": "URL neu generieren",
     "regenerated": "Abonnement-URL wurde neu generiert",
     "regenerateFailed": "Abonnement-URL konnte nicht neu generiert werden",
     "copied": "Abonnement-URL in die Zwischenablage kopiert",
     "copyFailed": "Kopieren in die Zwischenablage fehlgeschlagen",
-    "readOnlyNote": "Diese URL bietet schreibgeschützten Zugriff auf deinen Durchsichtenplan. Beim Neugenerieren wird die vorherige URL ungültig.",
+    "readOnlyNote": "Diese URL bietet schreibgeschützten Zugriff auf Ihren Durchsichtenplan. Beim Neugenerieren wird die vorherige URL ungültig.",
     "copyUrl": "URL kopieren"
   },
   "form": {

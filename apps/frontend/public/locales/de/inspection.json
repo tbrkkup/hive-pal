@@ -165,13 +165,13 @@
   "dialogs": {
     "cancelInspection": {
       "title": "Durchsicht abbrechen",
-      "description": "Möchtest du die Durchsicht für {{hiveName}} am {{date}} wirklich abbrechen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "description": "Möchten Sie die Durchsicht für {{hiveName}} am {{date}} wirklich abbrechen? Diese Aktion kann nicht rückgängig gemacht werden.",
       "keepInspection": "Beibehalten",
       "cancelInspection": "Durchsicht abbrechen"
     },
     "reschedule": {
       "title": "Durchsicht neu planen",
-      "description": "Wähle ein neues Datum für die Durchsicht von {{hiveName}}. Die Wettervorhersage wird für die nächsten 7 Tage angezeigt.",
+      "description": "Wählen Sie ein neues Datum für die Durchsicht von {{hiveName}}. Die Wettervorhersage wird für die nächsten 7 Tage angezeigt.",
       "newDate": "Neues Durchsichtsdatum: {{date}}",
       "cancel": "Abbrechen",
       "reschedule": "Durchsicht neu planen",
@@ -182,7 +182,7 @@
     },
     "completingScheduled": {
       "title": "Geplante Durchsicht vom {{date}} abschließen",
-      "description": "Diese Durchsicht wird als abgeschlossen markiert, sobald du deine Änderungen speicherst."
+      "description": "Diese Durchsicht wird als abgeschlossen markiert, sobald Sie Ihre Änderungen speichern."
     }
   },
   "weather": {
@@ -242,7 +242,7 @@
     "now": "Jetzt",
     "specificTime": "Uhrzeit festlegen",
     "futureScheduled": "Diese Durchsicht ist für die Zukunft geplant",
-    "futureScheduledDescription": "Du planst eine Durchsicht für ein zukünftiges Datum.",
+    "futureScheduledDescription": "Sie planen eine Durchsicht für ein zukünftiges Datum.",
     "cancel": "Abbrechen",
     "saveAndNext": "Speichern und weiter",
     "saving": "Speichert...",
@@ -261,9 +261,9 @@
     },
     "notes": {
       "title": "Notizen",
-      "description": "Füge zusätzliche Notizen zu dieser Durchsicht hinzu",
+      "description": "Fügen Sie zusätzliche Notizen zu dieser Durchsicht hinzu",
       "label": "Notizen",
-      "placeholder": "Gib Beobachtungen, Erkenntnisse oder durchgeführte Maßnahmen ein..."
+      "placeholder": "Geben Sie Beobachtungen, Erkenntnisse oder durchgeführte Maßnahmen ein..."
     },
     "weights": {
       "title": "Gewicht",
@@ -428,7 +428,7 @@
     "goBack": "Zurück",
     "frameModificationAdded": "Bei dieser Durchsicht wurden dem Bienenstock {{count}} Rähmchen hinzugefügt.",
     "frameModificationRemoved": "Bei dieser Durchsicht wurden {{count}} Rähmchen aus dem Bienenstock entfernt.",
-    "frameModificationQuestion": "Möchtest du die aktualisierte Rähmchenzahl beibehalten oder zurücksetzen?",
+    "frameModificationQuestion": "Möchten Sie die aktualisierte Rähmchenzahl beibehalten oder zurücksetzen?",
     "deleteKeepFrames": "Löschen & Rähmchenzahl beibehalten",
     "deleteRevertFrames": "Löschen & Rähmchenzahl zurücksetzen",
     "deleteFailed": "Durchsicht konnte nicht gelöscht werden"
@@ -453,14 +453,14 @@
   },
   "schedule": {
     "title": "Durchsicht planen",
-    "description": "Plane deine Durchsichten für die nächsten 7 Tage mit Wettervorhersage",
+    "description": "Planen Sie Ihre Durchsichten für die nächsten 7 Tage mit Wettervorhersage",
     "selectHives": "Bienenstöcke auswählen",
-    "selectHivesDescription": "Wähle aus, für welche Bienenstöcke Durchsichten geplant werden sollen",
+    "selectHivesDescription": "Wählen Sie aus, für welche Bienenstöcke Durchsichten geplant werden sollen",
     "hivesSelected": "{{count}} Bienenstock ausgewählt",
     "hivesSelectedPlural": "{{count}} Bienenstöcke ausgewählt",
     "clear": "Zurücksetzen",
     "scheduleCalendar": "Kalender planen",
-    "calendarDescription": "Wähle einen Tag zur Planung deiner Durchsicht mit Wettervorhersage (nächste {{days}} Tage)",
+    "calendarDescription": "Wählen Sie einen Tag zur Planung Ihrer Durchsicht mit Wettervorhersage (nächste {{days}} Tage)",
     "selectHiveFirst": "Bitte wähle mindestens einen Bienenstock aus, um die Wettervorhersage anzuzeigen",
     "noApiaryWeather": "Die ausgewählten Bienenstöcke haben keinen zugeordneten Standort für Wetterdaten",
     "today": "Heute",
@@ -469,8 +469,8 @@
     "showFewerDays": "Weniger Tage anzeigen",
     "showMoreDays": "Mehr Tage anzeigen (+7)",
     "inspectionDetails": "Durchsichtsdetails",
-    "schedulingCount": "Plane {{count}} Durchsicht für {{date}}",
-    "schedulingCountPlural": "Plane {{count}} Durchsichten für {{date}}",
+    "schedulingCount": "Planen Sie {{count}} Durchsicht für {{date}}",
+    "schedulingCountPlural": "Planen Sie {{count}} Durchsichten für {{date}}",
     "selectedHives": "Ausgewählte Bienenstöcke:",
     "createAsBatch": "Als Sammeldurchsicht erstellen",
     "batchDescription": "Führe Durchsichten nacheinander mit einem geführten Ablauf durch",
@@ -480,8 +480,8 @@
     "notesPlaceholder": "Notizen für diese geplante Durchsicht hinzufügen...",
     "batchInfo": "Diese Sammeldurchsicht wird erstellt und ist bereit zum Start",
     "scheduledInfo": "Diese Durchsicht wird für ein zukünftiges Datum geplant",
-    "batchStartInfo": "Du kannst die Sammeldurchsicht sofort beginnen oder später starten.",
-    "scheduledStartInfo": "Du kannst Details hinzufügen und die Durchsicht am geplanten Datum abschließen.",
+    "batchStartInfo": "Sie können die Sammeldurchsicht sofort beginnen oder später starten.",
+    "scheduledStartInfo": "Sie können Details hinzufügen und die Durchsicht am geplanten Datum abschließen.",
     "createBatchInspection": "Sammeldurchsicht erstellen",
     "scheduleCount": "{{count}} Durchsicht planen",
     "scheduleCountPlural": "{{count}} Durchsichten planen",
@@ -495,7 +495,7 @@
   },
   "edit": {
     "completingFrom": "Geplante Durchsicht vom {{date}} abschließen",
-    "markedCompleted": "Diese Durchsicht wird als abgeschlossen markiert, sobald du deine Änderungen speicherst."
+    "markedCompleted": "Diese Durchsicht wird als abgeschlossen markiert, sobald Sie Ihre Änderungen speichern."
   },
   "dashboard": {
     "title": "Durchsichtsstatus",
@@ -515,7 +515,7 @@
     },
     "queen": {
       "title": "Königin",
-      "hint": "Hast du sie gesehen? Weiselzellen vorhanden?",
+      "hint": "Haben Sie sie gesehen? Weiselzellen vorhanden?",
       "yes": "Gesehen",
       "no": "Nicht gesehen",
       "notLooked": "Nicht gesucht"
@@ -531,17 +531,17 @@
     },
     "review": {
       "title": "Überprüfung",
-      "hint": "Prüfe die Zusammenfassung und speichere dann.",
+      "hint": "Prüfen Sie die Zusammenfassung und speichern Sie dann.",
       "readyToSave": "Bereit zum Speichern",
       "save": "Durchsicht speichern",
-      "invalid": "Bitte überprüfe deine Eingaben",
+      "invalid": "Bitte überprüfen Sie Ihre Eingaben",
       "hasNotes": "Notizen hinzugefügt",
       "cellTypes": "Zelltypen"
     }
   },
   "audioQuick": {
     "recordingFor": "Audio-Durchsicht für",
-    "prompt": "Tippe, um die Aufnahme zu starten. Die Durchsicht wird beim Aufnahmebeginn erstellt.",
+    "prompt": "Tippen Sie, um die Aufnahme zu starten. Die Durchsicht wird beim Aufnahmebeginn erstellt.",
     "tapToStart": "Zum Starten tippen",
     "tapToStop": "Zum Stoppen und Speichern tippen",
     "start": "Aufnahme starten",
@@ -554,7 +554,7 @@
   },
   "pendingBoxUpdate": {
     "updatingTitle": "Beutenkonfiguration wird aktualisiert",
-    "updatingDescription": "Deine Durchsicht wurde gespeichert. Die Beutenkonfiguration wird im Hintergrund aktualisiert.",
+    "updatingDescription": "Ihre Durchsicht wurde gespeichert. Die Beutenkonfiguration wird im Hintergrund aktualisiert.",
     "failedTitle": "Aktualisierung der Beutenkonfiguration fehlgeschlagen",
     "failedDescription": "Die Beutenkonfiguration konnte nicht aktualisiert werden. Bitte erneut versuchen oder diese Meldung ausblenden.",
     "retry": "Erneut versuchen",
