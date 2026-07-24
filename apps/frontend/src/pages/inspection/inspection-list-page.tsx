@@ -30,6 +30,7 @@ import { TrendIndicator } from '@/components/common/trend-indicator';
 import { largestRemainder } from '@/utils/math';
 import { FRAME_FIELDS } from '@/constants/frame-fields';
 import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 import {
   MainContent,
@@ -443,6 +444,7 @@ const InspectionTableRow = ({
   isSubjective: boolean;
   navigate: (path: string) => void;
 }) => {
+  const { formatTime } = useDateFormat();
   const prevInspection = inspections
     .slice(index + 1)
     .find(candidate => candidate.hiveId === inspection.hiveId);
@@ -468,10 +470,7 @@ const InspectionTableRow = ({
           })}
           <br />
           <span className="text-xs text-muted-foreground">
-            {new Date(inspection.date).toLocaleTimeString('en-US', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+            {formatTime(new Date(inspection.date))}
           </span>
         </div>
       </TableCell>

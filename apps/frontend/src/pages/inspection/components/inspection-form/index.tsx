@@ -48,6 +48,7 @@ import { PhotosSection, PendingPhoto } from './photos-section';
 import { ScorePreviewSection } from './score-preview';
 import { AiMergeBanner } from '@/pages/inspection/components/inspection-form/ai-merge-banner';
 import { InspectionDateTimePicker } from '@/components/inspection-date-time-picker';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { FrameCountSection } from './frame-counts';
 import { uploadPendingPhotos } from './upload-pending-photos';
 import { uploadPendingRecordings } from './upload-pending-recordings';
@@ -113,6 +114,7 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
   aiSuggestedFields = [],
 }) => {
   const { t } = useTranslation('inspection');
+  const { formatTime } = useDateFormat();
   const [searchParams] = useSearchParams();
   const fromScheduled = searchParams.get('from') === 'scheduled';
   const { data: hives } = useHiveOptions();
@@ -456,9 +458,13 @@ export const InspectionForm: React.FC<InspectionFormProps> = ({
                           )}
                         >
                           {field.value ? (
-                            isAllDay
-                              ? format(field.value, 'PPP')
-                              : format(field.value, 'PPP HH:mm')
+                            isAllDay ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              `${format(field.value, 'PPP')} ${formatTime(
+                                field.value,
+                              )}`
+                            )
                           ) : (
                             <span>{t('inspection:form.pickDate')}</span>
                           )}
