@@ -75,6 +75,7 @@ export function AudioQuickPage() {
             observations: {},
             actions: [],
           },
+          // The hive's own apiary — cross-apiary safe in view-all mode.
           apiaryId: hive?.apiaryId,
         });
         if (cancelled) return;

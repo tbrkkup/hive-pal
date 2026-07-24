@@ -45,9 +45,7 @@ export function MobileWizardPage() {
   }, [hive]);
 
   const form = useForm<InspectionFormData>({
-    resolver: zodResolver(
-      isSubjective ? subjectiveInspectionSchema : inspectionSchema,
-    ),
+    resolver: zodResolver(isSubjective ? subjectiveInspectionSchema : inspectionSchema),
     defaultValues: {
       hiveId,
       date: new Date(),
@@ -58,12 +56,11 @@ export function MobileWizardPage() {
   });
 
   const [pendingPhotos, setPendingPhotos] = useState<PendingPhoto[]>([]);
-  const [pendingRecordings, setPendingRecordings] = useState<
-    PendingRecording[]
-  >([]);
+  const [pendingRecordings, setPendingRecordings] = useState<PendingRecording[]>([]);
   const [stepIndex, setStepIndex] = useState(0);
 
   const upsert = useUpsertInspection(undefined, {
+    // The hive's own apiary — required for cross-apiary writes in view-all mode.
     apiaryId: hive?.apiaryId,
     onBeforeNavigate: async (id: string) => {
       await Promise.all([
@@ -128,7 +125,13 @@ export function MobileWizardPage() {
         ),
       },
     ],
-    [t, isSubjective, broodFrameCapacity, pendingPhotos, pendingRecordings],
+    [
+      t,
+      isSubjective,
+      broodFrameCapacity,
+      pendingPhotos,
+      pendingRecordings,
+    ],
   );
 
   const isLastStep = stepIndex === steps.length - 1;
