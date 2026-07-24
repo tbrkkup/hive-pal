@@ -170,10 +170,14 @@ export const HiveForm: React.FC<HiveFormProps> = ({
           status: data.status as HiveStatusEnum,
           installationDate: data.installationDate.toISOString(),
         },
-        apiaryId: finalData.apiaryId,
+        // Authorize against the hive's CURRENT apiary: when the user moves the
+        // hive to another apiary, the backend must still find it in the old
+        // one (the new apiary travels in the body).
+        apiaryId: existingHive?.apiaryId ?? finalData.apiaryId,
       });
       // The hive update endpoint ignores boxes; persist box/frame changes
-      // through the dedicated boxes endpoint.
+      // through the dedicated boxes endpoint. After a move the hive now lives
+      // in the target apiary.
       if (finalData.boxes && finalData.boxes.length > 0) {
         await updateHiveBoxes({
           id: hiveId,
