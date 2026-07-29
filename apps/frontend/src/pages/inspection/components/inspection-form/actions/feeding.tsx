@@ -27,6 +27,10 @@ import {
   UserFeedTypeResponse,
 } from 'shared-schemas';
 import { useFeedTypes } from '@/api/hooks';
+import {
+  getPreferredFeedUnit,
+  saveFeedUnitPreference,
+} from '@/utils/feeding-unit-preference';
 import { ActionViewRenderer } from './action-view-container';
 
 export type FeedingActionType = {
@@ -91,6 +95,23 @@ const resolveSpec = (
 const defaultUnitFor = (spec: FeedSpec | null): FeedEntryUnit =>
   spec?.density != null ? 'l' : 'kg';
 
+/**
+ * The unit to preselect for a feed: the remembered last-used unit (per type,
+ * then global) when it is valid for this feed, otherwise the feed's default.
+ */
+const preferredUnitFor = (
+  selectedId: string | null,
+  spec: FeedSpec | null,
+): FeedEntryUnit => {
+  const preferred = getPreferredFeedUnit(
+    selectedId === FREETEXT ? null : selectedId,
+  );
+  if (preferred && (!isVolumeFeedUnit(preferred) || spec?.density != null)) {
+    return preferred;
+  }
+  return defaultUnitFor(spec);
+};
+
 const normalizeLegacyUnit = (unit: string): FeedEntryUnit => {
   switch (unit.toLowerCase()) {
     case 'ml':
@@ -141,7 +162,7 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
     action?.enteredUnit ??
       (action
         ? normalizeLegacyUnit(action.unit)
-        : defaultUnitFor(resolveSpec(initialId, userFeedTypes))),
+        : preferredUnitFor(initialId, resolveSpec(initialId, userFeedTypes))),
   );
   const [waterAddedMl, setWaterAddedMl] = useState<number | null>(
     action?.waterAddedMl ?? null,
@@ -170,10 +191,10 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
     setSelectedId(id);
     if (id !== FREETEXT) setCustomFeedName('');
     const nextSpec = resolveSpec(id, userFeedTypes);
-    // Drop a volume unit that the newly selected feed cannot convert.
-    if (isVolumeFeedUnit(enteredUnit) && nextSpec?.density == null) {
-      setEnteredUnit('kg');
-    }
+    // The unit field only appears after a type is picked, so selecting a type
+    // owns the unit: last-used for this feed (validated), else the feed's
+    // default (L for liquids, kg for solids).
+    setEnteredUnit(preferredUnitFor(id, nextSpec));
   };
 
   const builtinLabel = (id: string, fallback: string) =>
@@ -372,6 +393,9 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
     const isFreetext = selectedId === FREETEXT;
     const label = isFreetext ? customFeedName.trim() : (spec?.label ?? '');
     if (!label) return;
+
+    // Remember the unit actually used, so the next feeding preselects it.
+    saveFeedUnitPreference(isFreetext ? null : selectedId, enteredUnit);
 
     onSave({
       type: 'FEEDING',

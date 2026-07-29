@@ -173,6 +173,29 @@ test.describe('Feeding', () => {
     ).not.toBeVisible();
     await expect(actionsSection.getAction('Feeding')).toBeVisible();
   });
+
+  test('Remembers the last-used unit per feed type', async ({
+    page,
+    mount,
+  }) => {
+    await mount(<ActionsWithForm />);
+    const actionsSection = new ActionsSectionPageObject(page);
+    const feedingSection = actionsSection.feedingSection;
+    await actionsSection.selectAction('Feeding');
+
+    // Apiinvert defaults to L; save once with kg …
+    await feedingSection.fillFeedingForm({
+      feedType: 'Apiinvert',
+      quantity: '5',
+      unit: 'kg',
+    });
+    await feedingSection.getRemoveButton().click();
+
+    // … and the next feeding with the same type preselects kg.
+    await actionsSection.selectAction('Feeding');
+    await feedingSection.selectFeedType('Apiinvert');
+    await expect(feedingSection.getUnitField()).toHaveText('kg');
+  });
 });
 
 test.describe('Treatment', () => {
