@@ -191,17 +191,10 @@ export const FeedingForm: React.FC<FeedingActionProps> = ({
     setSelectedId(id);
     if (id !== FREETEXT) setCustomFeedName('');
     const nextSpec = resolveSpec(id, userFeedTypes);
-    // Prefer the unit last used with this feed type; otherwise keep the
-    // current choice, unless it's a volume unit the new feed can't convert.
-    const remembered = getPreferredFeedUnit(id === FREETEXT ? null : id);
-    if (
-      remembered &&
-      (!isVolumeFeedUnit(remembered) || nextSpec?.density != null)
-    ) {
-      setEnteredUnit(remembered);
-    } else if (isVolumeFeedUnit(enteredUnit) && nextSpec?.density == null) {
-      setEnteredUnit('kg');
-    }
+    // The unit field only appears after a type is picked, so selecting a type
+    // owns the unit: last-used for this feed (validated), else the feed's
+    // default (L for liquids, kg for solids).
+    setEnteredUnit(preferredUnitFor(id, nextSpec));
   };
 
   const builtinLabel = (id: string, fallback: string) =>
