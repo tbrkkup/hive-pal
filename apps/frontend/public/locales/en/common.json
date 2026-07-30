@@ -1791,5 +1791,9 @@
     "save": "Save",
     "deleteTitle": "Delete treatment product?",
     "deleteDesc": "This removes your custom product. This cannot be undone."
+  },
+  "pwa": {
+    "updateAvailable": "A new version is available",
+    "reload": "Reload"
   }
 }

@@ -1203,5 +1203,9 @@
     "save": "Speichern",
     "deleteTitle": "Behandlungsmittel löschen?",
     "deleteDesc": "Damit wird dein eigenes Mittel entfernt. Das kann nicht rückgängig gemacht werden."
+  },
+  "pwa": {
+    "updateAvailable": "Eine neue Version ist verfügbar",
+    "reload": "Neu laden"
   }
 }
