@@ -247,7 +247,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
           <RelocateDialog
             open={relocateOpen}
             onOpenChange={setRelocateOpen}
-            hiveId={hiveId}
+            hiveIds={[hiveId]}
             currentApiaryId={hive?.apiaryId}
           />
         )}

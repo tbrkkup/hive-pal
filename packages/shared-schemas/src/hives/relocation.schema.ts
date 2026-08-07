@@ -15,6 +15,11 @@ export const relocateHiveSchema = z.object({
   notes: z.string().max(2000).optional(),
 });
 
+/** Moving several colonies in one go — the migratory-beekeeping case. */
+export const relocateHivesSchema = relocateHiveSchema.extend({
+  hiveIds: z.array(z.string().uuid()).min(1).max(500),
+});
+
 export const relocationResultSchema = z.object({
   hiveId: z.string().uuid(),
   actionId: z.string().uuid(),
@@ -25,5 +30,13 @@ export const relocationResultSchema = z.object({
   applied: z.boolean(),
 });
 
+export const relocationBulkResultSchema = z.object({
+  moved: z.array(relocationResultSchema),
+  /** Hives already standing at the destination; no action was recorded. */
+  skipped: z.array(z.string().uuid()),
+});
+
 export type RelocateHive = z.infer<typeof relocateHiveSchema>;
+export type RelocateHives = z.infer<typeof relocateHivesSchema>;
 export type RelocationResult = z.infer<typeof relocationResultSchema>;
+export type RelocationBulkResult = z.infer<typeof relocationBulkResultSchema>;

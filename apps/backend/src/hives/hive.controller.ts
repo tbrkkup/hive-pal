@@ -35,8 +35,11 @@ import {
   UpdateHiveResponse,
   CreateHiveResponse,
   relocateHiveSchema,
+  relocateHivesSchema,
   RelocateHive,
+  RelocateHives,
   RelocationResult,
+  RelocationBulkResult,
 } from 'shared-schemas';
 import { RelocationService } from './relocation.service';
 
@@ -51,6 +54,27 @@ export class HiveController {
     private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('HiveController');
+  }
+
+  /**
+   * Moves several colonies to another apiary in one transaction — the
+   * migratory-beekeeping case. Declared before `:id/relocate` so the literal
+   * path is not captured by the parameterised route.
+   */
+  @Post('relocate')
+  @ZodValidation(relocateHivesSchema)
+  relocateMany(
+    @Body() dto: RelocateHives,
+    @Req() req: RequestWithApiary,
+  ): Promise<RelocationBulkResult> {
+    const { hiveIds, ...rest } = dto;
+    this.logger.log(
+      `Relocating ${hiveIds.length} hive(s) to apiary ${dto.toApiaryId}`,
+    );
+    return this.relocationService.relocateMany(hiveIds, rest, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
   }
 
   @Post(':id/relocate')
