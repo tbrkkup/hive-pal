@@ -35,6 +35,7 @@ type ActionWithRelations = Prisma.ActionGetPayload<{
     maintenanceAction: true;
     statusChangeAction: true;
     splitAction: true;
+    relocationAction: true;
     createdByUser: { select: { name: true; email: true } };
   };
 }>;
@@ -476,6 +477,7 @@ export class ActionsService {
         maintenanceAction: true,
         statusChangeAction: true,
         splitAction: true,
+        relocationAction: true,
         createdByUser: { select: { name: true, email: true } },
       },
     });
@@ -552,6 +554,7 @@ export class ActionsService {
           maintenanceAction: true,
           statusChangeAction: true,
           splitAction: true,
+          relocationAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -601,6 +604,7 @@ export class ActionsService {
         maintenanceAction: true,
         statusChangeAction: true,
         splitAction: true,
+        relocationAction: true,
         createdByUser: { select: { name: true, email: true } },
       },
     });
@@ -670,6 +674,7 @@ export class ActionsService {
           maintenanceAction: true,
           statusChangeAction: true,
           splitAction: true,
+          relocationAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -773,6 +778,7 @@ export class ActionsService {
           maintenanceAction: true,
           statusChangeAction: true,
           splitAction: true,
+          relocationAction: true,
           createdByUser: { select: { name: true, email: true } },
         },
       });
@@ -1087,6 +1093,32 @@ export class ActionsService {
           },
         };
       }
+
+      case ActionType.RELOCATION:
+        if (!prismaAction.relocationAction) {
+          this.logger.warn(
+            `Relocation action details missing for action ${prismaAction.id}`,
+          );
+          return {
+            ...base,
+            type: ActionType.OTHER,
+            details: { type: ActionType.OTHER },
+          };
+        }
+        return {
+          ...base,
+          type: ActionType.RELOCATION,
+          details: {
+            type: ActionType.RELOCATION as const,
+            fromApiaryId: prismaAction.relocationAction.fromApiaryId,
+            toApiaryId: prismaAction.relocationAction.toApiaryId,
+            fromApiaryName: prismaAction.relocationAction.fromApiaryName,
+            toApiaryName: prismaAction.relocationAction.toApiaryName,
+            reason: prismaAction.relocationAction.reason,
+            appliedAt:
+              prismaAction.relocationAction.appliedAt?.toISOString() ?? null,
+          },
+        };
 
       case ActionType.MAINTENANCE:
         if (!prismaAction.maintenanceAction) {

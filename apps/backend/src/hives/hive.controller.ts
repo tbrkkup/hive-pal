@@ -42,7 +42,11 @@ import {
   splitHiveSchema,
   SplitHive,
   SplitHiveResponse,
+  relocateHiveSchema,
+  RelocateHive,
+  RelocationResult,
 } from 'shared-schemas';
+import { RelocationService } from './relocation.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('hives')
@@ -52,6 +56,7 @@ export class HiveController {
   constructor(
     private readonly hiveService: HiveService,
     private readonly splitService: SplitService,
+    private readonly relocationService: RelocationService,
     private readonly logger: CustomLoggerService,
   ) {
     this.logger.setContext('HiveController');
@@ -67,6 +72,20 @@ export class HiveController {
   ): Promise<SplitHiveResponse> {
     this.logger.log(`Splitting hive ${id} by user: ${req.user.id}`);
     return this.splitService.split(id, dto, {
+      apiaryId: req.apiaryId,
+      userId: req.user.id,
+    });
+  }
+
+  @Post(':id/relocate')
+  @ZodValidation(relocateHiveSchema)
+  relocate(
+    @Param('id') id: string,
+    @Body() dto: RelocateHive,
+    @Req() req: RequestWithApiary,
+  ): Promise<RelocationResult> {
+    this.logger.log(`Relocating hive ${id} to apiary ${dto.toApiaryId}`);
+    return this.relocationService.relocateOne(id, dto, {
       apiaryId: req.apiaryId,
       userId: req.user.id,
     });

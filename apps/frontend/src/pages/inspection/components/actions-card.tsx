@@ -9,6 +9,7 @@ import {
   Pill,
   Split,
   Wrench,
+  Truck,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { InspectionSection } from './inspection-section';
@@ -68,6 +69,10 @@ const ACTION_VISUAL: Record<
   [ActionType.HARVEST]: {
     Icon: ClipboardCheck,
     tone: 'bg-yellow-50 text-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-300',
+  },
+  [ActionType.RELOCATION]: {
+    Icon: Truck,
+    tone: 'bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300',
   },
   [ActionType.OTHER]: {
     Icon: ClipboardCheck,
@@ -330,6 +335,7 @@ const ACTION_LABELS: Record<string, string> = {
   STATUS_CHANGE: 'Status Change',
   SPLIT: 'Colony Split',
   HARVEST: 'Harvest',
+  RELOCATION: 'Relocation',
   OTHER: 'Other',
 };
 

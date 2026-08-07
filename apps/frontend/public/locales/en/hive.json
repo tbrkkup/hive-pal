@@ -369,5 +369,30 @@
     "safeToHarvest": "Withdrawal passed — safe to harvest",
     "empty": "No treatments with a known composition yet.",
     "incompleteHint": "{{n}} treatment(s) could not be converted (missing density / incompatible units)"
+  },
+    "relocate": {
+    "action": "Move to another apiary",
+    "title": "Move to another apiary",
+    "description": "An apiary is a location, so moving the colony there is recorded on its timeline.",
+    "destination": "Destination",
+    "selectDestination": "Select an apiary",
+    "noOtherApiary": "You have no other apiary yet — create one to move colonies there.",
+    "when": "When",
+    "now": "Now",
+    "pickDateTime": "Date and time",
+    "plannedHint": "This date is in the future: the move is recorded now and takes effect on that day.",
+    "reason": "Reason",
+    "reasonOptional": "Optional",
+    "reasons": {
+      "FORAGE": "Forage",
+      "OVERWINTERING": "Overwintering",
+      "OTHER": "Other"
+    },
+    "notes": "Notes (optional)",
+    "formNotice": "Moving this colony to another apiary is recorded on its timeline. When did it happen?",
+    "toastError": "Could not move the colony. Please try again.",
+    "submit": "Move colony",
+    "toastMoved": "Colony moved",
+    "toastScheduled": "Move scheduled"
   }
 }

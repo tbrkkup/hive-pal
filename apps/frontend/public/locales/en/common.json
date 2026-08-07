@@ -425,7 +425,8 @@
     "yesterday": "Yesterday",
     "filterEventType": "Type",
     "filterDateRange": "Range",
-    "filterHive": "Hive"
+    "filterHive": "Hive",
+    "relocation": "Relocation"
   },
   "syrupCalculator": {
     "title": "Syrup Calculator",
