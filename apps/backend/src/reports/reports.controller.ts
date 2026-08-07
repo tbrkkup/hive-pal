@@ -12,7 +12,8 @@ import { ReportsService } from './reports.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiaryContextGuard } from '../guards/apiary-context.guard';
 import { ApiaryPermissionGuard } from '../guards/apiary-permission.guard';
-import { RequestWithApiary } from '../interface/request-with.apiary';
+import { RequestWithApiaryScope } from '../interface/request-with.apiary';
+import { AllowAllApiaries } from '../guards/allow-all-apiaries.decorator';
 import { CustomLoggerService } from '../logger/logger.service';
 import {
   ApiaryStatisticsDto,
@@ -31,9 +32,10 @@ export class ReportsController {
   }
 
   @Get('statistics')
+  @AllowAllApiaries()
   async getApiaryStatistics(
     @Query('period') period: string = ReportPeriod.ALL,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<ApiaryStatisticsDto> {
     this.logger.log(
       `Getting statistics for apiary ${req.apiaryId}, period: ${period}, user: ${req.user.id}`,
@@ -48,15 +50,16 @@ export class ReportsController {
     }
 
     return this.reportsService.getApiaryStatistics(
-      req.apiaryId,
+      { apiaryId: req.apiaryId, userId: req.user.id, allApiaries: req.allApiaries },
       period as ReportPeriod,
     );
   }
 
   @Get('trends')
+  @AllowAllApiaries()
   async getApiaryTrends(
     @Query('period') period: string = ReportPeriod.ALL,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<ApiaryTrendsDto> {
     this.logger.log(
       `Getting trends for apiary ${req.apiaryId}, period: ${period}, user: ${req.user.id}`,
@@ -70,15 +73,19 @@ export class ReportsController {
       );
     }
 
-    return this.reportsService.getTrends(req.apiaryId, period as ReportPeriod);
+    return this.reportsService.getTrends(
+      { apiaryId: req.apiaryId, userId: req.user.id, allApiaries: req.allApiaries },
+      period as ReportPeriod,
+    );
   }
 
   @Get('export/csv')
   @Header('Content-Type', 'text/csv')
   @Header('Content-Disposition', 'attachment; filename="apiary-report.csv"')
+  @AllowAllApiaries()
   async exportCsv(
     @Query('period') period: string = ReportPeriod.ALL,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<string> {
     this.logger.log(
       `Exporting CSV for apiary ${req.apiaryId}, period: ${period}, user: ${req.user.id}`,
@@ -92,15 +99,19 @@ export class ReportsController {
       );
     }
 
-    return this.reportsService.exportCsv(req.apiaryId, period as ReportPeriod);
+    return this.reportsService.exportCsv(
+      { apiaryId: req.apiaryId, userId: req.user.id, allApiaries: req.allApiaries },
+      period as ReportPeriod,
+    );
   }
 
   @Get('export/pdf')
   @Header('Content-Type', 'application/pdf')
   @Header('Content-Disposition', 'attachment; filename="apiary-report.pdf"')
+  @AllowAllApiaries()
   async exportPdf(
     @Query('period') period: string = ReportPeriod.ALL,
-    @Req() req: RequestWithApiary,
+    @Req() req: RequestWithApiaryScope,
   ): Promise<StreamableFile> {
     this.logger.log(
       `Exporting PDF for apiary ${req.apiaryId}, period: ${period}, user: ${req.user.id}`,
@@ -115,7 +126,7 @@ export class ReportsController {
     }
 
     const buffer = await this.reportsService.exportPdf(
-      req.apiaryId,
+      { apiaryId: req.apiaryId, userId: req.user.id, allApiaries: req.allApiaries },
       period as ReportPeriod,
     );
     return new StreamableFile(buffer);

@@ -26,7 +26,7 @@ export const ReportsPage = () => {
   const { t } = useTranslation('common');
   const [period, setPeriod] = useState<ReportPeriod>('ytd');
   const [isExporting, setIsExporting] = useState(false);
-  const { activeApiaryId, activeApiary } = useApiary();
+  const { activeApiaryId, activeApiary, viewAllApiaries } = useApiary();
   const {
     data: statistics,
     isLoading,
@@ -38,7 +38,7 @@ export const ReportsPage = () => {
   );
 
   const handleExportCsv = async () => {
-    if (!activeApiaryId) return;
+    if (!activeApiaryId && !viewAllApiaries) return;
 
     setIsExporting(true);
     try {
@@ -67,7 +67,7 @@ export const ReportsPage = () => {
   };
 
   const handleExportPdf = async () => {
-    if (!activeApiaryId) return;
+    if (!activeApiaryId && !viewAllApiaries) return;
 
     setIsExporting(true);
     try {
@@ -99,7 +99,7 @@ export const ReportsPage = () => {
     refetch();
   };
 
-  if (!activeApiaryId) {
+  if (!activeApiaryId && !viewAllApiaries) {
     return (
       <PageGrid>
         <MainContent>
@@ -120,7 +120,11 @@ export const ReportsPage = () => {
           <ReportsHeader
             period={period}
             onPeriodChange={setPeriod}
-            apiaryName={activeApiary?.name}
+            apiaryName={
+              viewAllApiaries
+                ? t('reports.allApiaries', { defaultValue: 'All apiaries' })
+                : activeApiary?.name
+            }
           />
 
           <StatisticsCards statistics={statistics} isLoading={isLoading} />
