@@ -177,9 +177,14 @@ describe('RelocationService', () => {
     destinationIsAccessible();
     hiveIsHere(FIELD); // already standing at the destination
 
-    await expect(
-      service.relocateOne(HIVE, { toApiaryId: FIELD }, filter),
-    ).rejects.toBeInstanceOf(ForbiddenException);
+    const result = await service.relocateMany(
+      [HIVE],
+      { toApiaryId: FIELD },
+      filter,
+    );
+
+    expect(result.moved).toEqual([]);
+    expect(result.skipped).toEqual([HIVE]);
     expect(tx.action.create).not.toHaveBeenCalled();
   });
 

@@ -7,7 +7,12 @@ import { Prisma } from '@/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
-import { ActionType, RelocateHive, RelocationResult } from 'shared-schemas';
+import {
+  ActionType,
+  RelocateHive,
+  RelocationBulkResult,
+  RelocationResult,
+} from 'shared-schemas';
 
 /**
  * Moving colonies between apiaries.
@@ -67,13 +72,13 @@ export class RelocationService {
 
   /**
    * Moves one or more colonies in a single transaction, so a partially
-   * completed move cannot happen.
+   * completed migration cannot happen.
    */
-  private async relocateMany(
+  async relocateMany(
     hiveIds: string[],
     dto: RelocateHive,
     filter: ApiaryUserFilter,
-  ): Promise<{ moved: RelocationResult[]; skipped: string[] }> {
+  ): Promise<RelocationBulkResult> {
     const date = dto.date ? new Date(dto.date) : new Date();
     const ids = [...new Set(hiveIds)];
 
