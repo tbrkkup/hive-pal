@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   EditIcon,
@@ -9,6 +10,7 @@ import {
   AlertTriangle,
   Smartphone,
   Mic,
+  Truck,
 } from 'lucide-react';
 import { bee } from '@lucide/lab';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +23,7 @@ import { AlertItem } from '@/components/alerts';
 import { useHive, useDeleteHive } from '@/api/hooks';
 import { QRCodeDialog } from './qr-code-dialog';
 import { LlmPromptDialog } from './llm-prompt-dialog';
+import { RelocateDialog } from '@/components/hive/relocate-dialog';
 import {
   ActionSidebarContainer,
   ActionSidebarGroup,
@@ -46,6 +49,7 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
   const { canEdit } = useApiaryPermission();
   const { data: hive } = useHive(hiveId || '', { enabled: !!hiveId });
   const deleteHive = useDeleteHive();
+  const [relocateOpen, setRelocateOpen] = useState(false);
 
   const deleteDialog = useDeleteDialog(
     () => {
@@ -180,6 +184,17 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               tooltip={t('hive:edit.title', { defaultValue: 'Edit Hive' })}
               disabled={!hiveId}
             />
+            <MenuItemButton
+              icon={<Truck className="h-4 w-4" />}
+              label={t('hive:relocate.action', {
+                defaultValue: 'Move to another apiary',
+              })}
+              onClick={() => setRelocateOpen(true)}
+              tooltip={t('hive:relocate.action', {
+                defaultValue: 'Move to another apiary',
+              })}
+              disabled={!hiveId}
+            />
             <SidebarMenuItem>
               {hiveId && hive ? (
                 <QRCodeDialog hiveId={hiveId} hiveName={hive.name} />
@@ -227,6 +242,15 @@ export const ActionSideBar: React.FC<ActionSideBarProps> = ({
               'Are you sure you want to remove this hive? The hive will be archived and its data removed from active view.',
           })}
         />
+
+        {hiveId && (
+          <RelocateDialog
+            open={relocateOpen}
+            onOpenChange={setRelocateOpen}
+            hiveId={hiveId}
+            currentApiaryId={hive?.apiaryId}
+          />
+        )}
       </ActionSidebarContainer>
     </div>
   );

@@ -11,6 +11,8 @@ import {
   UpdateHive,
   UpdateHiveResponse,
   UpdateHiveBoxes,
+  RelocateHive,
+  RelocationResult,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -232,6 +234,40 @@ export const useUpdateHiveBoxes = () => {
     },
     onError: (error, variables) => {
       logApiError(error, `/api/hives/${variables.id}/boxes`, 'PUT');
+    },
+  });
+};
+
+/**
+ * Moves a colony to another apiary.
+ *
+ * A relocation both changes the hive and writes a timeline entry, so the hive
+ * detail, the (apiary-scoped) lists and the action/inspection views all go
+ * stale at once.
+ */
+export const useRelocateHive = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: RelocateHive }) => {
+      const response = await apiClient.post<RelocationResult>(
+        `/api/hives/${id}/relocate`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: HIVES_KEYS.detail(variables.id),
+      });
+      await queryClient.invalidateQueries({ queryKey: HIVES_KEYS.lists() });
+      await queryClient.invalidateQueries({
+        queryKey: HIVES_KEYS.listsWithBoxes(),
+      });
+      await queryClient.invalidateQueries({ queryKey: ['actions'] });
+    },
+    onError: (error, variables) => {
+      logApiError(error, `/api/hives/${variables.id}/relocate`, 'POST');
     },
   });
 };

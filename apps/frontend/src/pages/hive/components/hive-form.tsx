@@ -36,11 +36,13 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { useApiary } from '@/hooks/use-apiary';
+import { toLocalInputValue } from '@/utils/datetime-input';
 import React, { useEffect, useState, useRef } from 'react';
 import {
   useCreateHive,
   useUpdateHive,
   useUpdateHiveBoxes,
+  useRelocateHive,
   useHive,
   useFrameSizes,
 } from '@/api/hooks';
@@ -91,7 +93,7 @@ export const HiveForm: React.FC<HiveFormProps> = ({
 }) => {
   const { t } = useTranslation(['hive', 'common']);
   const navigate = useNavigate();
-  const { apiaries, activeApiaryId } = useApiary();
+  const { apiaries, activeApiaryId, setActiveApiaryId } = useApiary();
   const isEditMode = !!hiveId;
   const { data: existingHive } = useHive(hiveId || '', {
     enabled: isEditMode,
@@ -101,6 +103,13 @@ export const HiveForm: React.FC<HiveFormProps> = ({
   });
   const { mutateAsync: updateHive } = useUpdateHive();
   const { mutateAsync: updateHiveBoxes } = useUpdateHiveBoxes();
+  const { mutateAsync: relocateHive } = useRelocateHive();
+
+  // Changing the apiary here is a relocation, not a plain field edit, so it
+  // needs a date of its own — "now" or an explicit moment, which may lie in
+  // the future for a planned move.
+  const [moveWhen, setMoveWhen] = useState<'now' | 'custom'>('now');
+  const [moveDate, setMoveDate] = useState(() => toLocalInputValue(new Date()));
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [isBoxConfigOpen, setIsBoxConfigOpen] = useState(false);
   const [configureBoxes, setConfigureBoxes] = useState(false);
@@ -162,10 +171,20 @@ export const HiveForm: React.FC<HiveFormProps> = ({
     if (onSubmitOverride) {
       return onSubmitOverride(finalData as HiveFormData);
     } else if (isEditMode) {
+      // Changing the apiary is a relocation, not a field edit: it has to be
+      // recorded on the timeline. Keep it out of the plain update and move the
+      // colony afterwards, so the update is still authorized against the
+      // apiary the hive is currently in.
+      const movedTo =
+        existingHive && finalData.apiaryId !== existingHive.apiaryId
+          ? finalData.apiaryId
+          : null;
+
       await updateHive({
         id: hiveId,
         data: {
           ...finalData,
+          apiaryId: existingHive?.apiaryId ?? finalData.apiaryId,
           id: hiveId,
           status: data.status as HiveStatusEnum,
           installationDate: data.installationDate.toISOString(),
@@ -176,6 +195,21 @@ export const HiveForm: React.FC<HiveFormProps> = ({
       if (finalData.boxes && finalData.boxes.length > 0) {
         await updateHiveBoxes({ id: hiveId, boxes: finalData.boxes });
       }
+
+      if (movedTo) {
+        const result = await relocateHive({
+          id: hiveId,
+          data: {
+            toApiaryId: movedTo,
+            ...(moveWhen === 'custom' && {
+              date: new Date(moveDate).toISOString(),
+            }),
+          },
+        });
+        // Views are scoped by the active apiary, so follow the colony.
+        if (result.applied) setActiveApiaryId(movedTo);
+      }
+
       navigate(`/hives/${hiveId}`);
     } else {
       createHive({
@@ -255,6 +289,52 @@ export const HiveForm: React.FC<HiveFormProps> = ({
               </FormControl>
 
               <FormMessage />
+
+              {isEditMode &&
+                existingHive &&
+                field.value !== existingHive.apiaryId && (
+                  <div
+                    className="rounded-md border border-sky-200 dark:border-sky-900 bg-sky-50/60 dark:bg-sky-950/20 p-3 space-y-2"
+                    data-test="hive-form-move-when"
+                  >
+                    <p className="text-sm">
+                      {t('hive:relocate.formNotice', {
+                        defaultValue:
+                          'Moving this colony to another apiary is recorded on its timeline. When did it happen?',
+                      })}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={moveWhen === 'now' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setMoveWhen('now')}
+                        data-test="hive-form-move-now"
+                      >
+                        {t('hive:relocate.now', { defaultValue: 'Now' })}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={moveWhen === 'custom' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setMoveWhen('custom')}
+                        data-test="hive-form-move-custom"
+                      >
+                        {t('hive:relocate.pickDateTime', {
+                          defaultValue: 'Date and time',
+                        })}
+                      </Button>
+                    </div>
+                    {moveWhen === 'custom' && (
+                      <Input
+                        type="datetime-local"
+                        value={moveDate}
+                        onChange={e => setMoveDate(e.target.value)}
+                        data-test="hive-form-move-date"
+                      />
+                    )}
+                  </div>
+                )}
             </FormItem>
           )}
         />
