@@ -78,4 +78,16 @@ test.describe('Colony relocation', () => {
       page.locator('[data-test="relocate-planned-hint"]'),
     ).toBeVisible();
   });
+
+  test('several colonies can be moved together', async ({ page }) => {
+    await page.goto('/hives');
+
+    await page.locator('[data-test="hive-select-all"]').click();
+    await expect(page.locator('[data-test="hive-bulk-bar"]')).toBeVisible();
+
+    await page.locator('[data-test="hive-bulk-move"]').click();
+    await expect(
+      page.locator('[data-test="relocate-dialog"]'),
+    ).toBeVisible();
+  });
 });

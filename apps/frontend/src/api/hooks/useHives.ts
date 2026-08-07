@@ -14,7 +14,9 @@ import {
   SplitHive,
   SplitHiveResponse,
   RelocateHive,
+  RelocateHives,
   RelocationResult,
+  RelocationBulkResult,
 } from 'shared-schemas';
 import { useApiaryStore } from '@/hooks/use-apiary';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -413,6 +415,28 @@ export const useRelocateHive = () => {
     },
     onError: (error, variables) => {
       logApiError(error, `/api/hives/${variables.id}/relocate`, 'POST');
+    },
+  });
+};
+
+/** Moves several colonies at once — the migratory-beekeeping case. */
+export const useRelocateHives = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: RelocateHives) => {
+      const response = await apiClient.post<RelocationBulkResult>(
+        `/api/hives/relocate`,
+        data,
+      );
+      return response.data;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: HIVES_KEYS.all });
+      await queryClient.invalidateQueries({ queryKey: ['actions'] });
+    },
+    onError: error => {
+      logApiError(error, `/api/hives/relocate`, 'POST');
     },
   });
 };

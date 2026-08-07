@@ -373,6 +373,7 @@
     "relocate": {
     "action": "Move to another apiary",
     "title": "Move to another apiary",
+    "countSuffix": "({{count}} colonies)",
     "description": "An apiary is a location, so moving the colony there is recorded on its timeline.",
     "destination": "Destination",
     "selectDestination": "Select an apiary",
@@ -390,9 +391,15 @@
     },
     "notes": "Notes (optional)",
     "formNotice": "Moving this colony to another apiary is recorded on its timeline. When did it happen?",
-    "toastError": "Could not move the colony. Please try again.",
-    "submit": "Move colony",
-    "toastMoved": "Colony moved",
-    "toastScheduled": "Move scheduled"
+    "selectAll": "Select all colonies",
+    "selectedCount_one": "{{count}} colony selected",
+    "selectedCount_other": "{{count}} colonies selected",
+    "toastMoved_one": "Moved {{count}} colony",
+    "toastMoved_other": "Moved {{count}} colonies",
+    "toastScheduled_one": "Move scheduled for {{count}} colony",
+    "toastScheduled_other": "Move scheduled for {{count}} colonies",
+    "toastError": "Could not move the colonies. Please try again.",
+    "submit_one": "Move colony",
+    "submit_other": "Move {{count}} colonies"
   }
 }

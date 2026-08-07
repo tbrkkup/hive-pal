@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useApiaries, useRelocateHive } from '@/api/hooks';
+import { useApiaries, useRelocateHives } from '@/api/hooks';
 import { useApiary } from '@/hooks/use-apiary';
 import { toLocalInputValue } from '@/utils/datetime-input';
 import type { RelocateHive } from 'shared-schemas';
@@ -29,9 +29,14 @@ import type { RelocateHive } from 'shared-schemas';
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  hiveId: string;
-  /** Hidden from the destination list; moving there would be a no-op. */
+  /** The colonies to move. One for the detail page, many for a bulk move. */
+  hiveIds: string[];
+  /**
+   * Hidden from the destination list because moving there would be a no-op.
+   * Only meaningful when every selected colony shares an apiary.
+   */
   currentApiaryId?: string | null;
+  onMoved?: () => void;
 }
 
 type Reason = NonNullable<RelocateHive['reason']>;
@@ -40,12 +45,13 @@ type When = 'now' | 'custom';
 export function RelocateDialog({
   open,
   onOpenChange,
-  hiveId,
+  hiveIds,
   currentApiaryId,
+  onMoved,
 }: Props) {
   const { t } = useTranslation(['hive', 'common']);
   const { data: apiaries } = useApiaries();
-  const relocate = useRelocateHive();
+  const relocate = useRelocateHives();
   const { activeApiaryId, setActiveApiaryId } = useApiary();
 
   const [toApiaryId, setToApiaryId] = useState<string>('');
@@ -75,32 +81,38 @@ export function RelocateDialog({
   };
 
   const handleSubmit = async () => {
-    if (!toApiaryId) return;
+    if (!toApiaryId || hiveIds.length === 0) return;
     try {
       const result = await relocate.mutateAsync({
-        id: hiveId,
-        data: {
-          toApiaryId,
-          ...(when === 'custom' && { date: new Date(customDate).toISOString() }),
-          ...(reason && { reason }),
-          ...(notes.trim() && { notes: notes.trim() }),
-        },
+        hiveIds,
+        toApiaryId,
+        ...(when === 'custom' && { date: new Date(customDate).toISOString() }),
+        ...(reason && { reason }),
+        ...(notes.trim() && { notes: notes.trim() }),
       });
-      const applied = result.applied;
+      const applied = result.moved.some(m => m.applied);
       // Views are scoped to the active apiary via the x-apiary-id header. Once
       // the colonies have actually left, keeping the old apiary selected would
       // make the page the user is standing on fail to load them.
       if (applied && activeApiaryId !== toApiaryId) {
         setActiveApiaryId(toApiaryId);
       }
+      const count = result.moved.length;
       toast.success(
         applied
-          ? t('hive:relocate.toastMoved', { defaultValue: 'Colony moved' })
+          ? t('hive:relocate.toastMoved', {
+              defaultValue: 'Moved {{count}} colony',
+              defaultValue_other: 'Moved {{count}} colonies',
+              count,
+            })
           : t('hive:relocate.toastScheduled', {
-              defaultValue: 'Move scheduled',
+              defaultValue: 'Move scheduled for {{count}} colony',
+              defaultValue_other: 'Move scheduled for {{count}} colonies',
+              count,
             }),
       );
       reset();
+      onMoved?.();
       onOpenChange(false);
     } catch {
       toast.error(
@@ -120,6 +132,14 @@ export function RelocateDialog({
             {t('hive:relocate.title', {
               defaultValue: 'Move to another apiary',
             })}
+            {hiveIds.length > 1 && (
+              <span className="text-sm font-normal text-muted-foreground">
+                {t('hive:relocate.countSuffix', {
+                  defaultValue: '({{count}} colonies)',
+                  count: hiveIds.length,
+                })}
+              </span>
+            )}
           </DialogTitle>
           <DialogDescription>
             {t('hive:relocate.description', {
@@ -254,7 +274,11 @@ export function RelocateDialog({
             disabled={!toApiaryId || relocate.isPending}
             data-test="relocate-submit"
           >
-            {t('hive:relocate.submit', { defaultValue: 'Move colony' })}
+            {t('hive:relocate.submit', {
+              defaultValue: 'Move colony',
+              defaultValue_other: 'Move {{count}} colonies',
+              count: hiveIds.length,
+            })}
           </Button>
         </DialogFooter>
       </DialogContent>

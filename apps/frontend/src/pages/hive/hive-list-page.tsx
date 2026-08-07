@@ -25,7 +25,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { HiveStatus, HiveActionSidebar } from './components';
-import { ChevronRight, Search } from 'lucide-react';
+import { ChevronRight, Search, Truck } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RelocateDialog } from '@/components/hive/relocate-dialog';
+import { useApiary } from '@/hooks/use-apiary';
 import { useHives } from '@/api/hooks';
 import { HiveResponse, HiveStatus as HiveStatusEnum } from 'shared-schemas';
 import { useUserPreferences } from '@/api/hooks/useUserPreferences';
@@ -40,6 +43,9 @@ export const HiveListPage = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [relocateOpen, setRelocateOpen] = useState(false);
+  const { activeApiaryId } = useApiary();
   const { data: userPreferences } = useUserPreferences();
   const dateFormat = (userPreferences?.dateFormat ?? 'MM/DD/YYYY') as DateFormatPreference;
 
@@ -116,6 +122,38 @@ export const HiveListPage = () => {
           </div>
         </div>
 
+        {selectedIds.length > 0 && (
+          <div
+            className="flex items-center gap-3 rounded-md border bg-muted/40 px-3 py-2 mb-3"
+            data-test="hive-bulk-bar"
+          >
+            <span className="text-sm">
+              {t('hive:relocate.selectedCount', {
+                defaultValue: '{{count}} colony selected',
+                defaultValue_other: '{{count}} colonies selected',
+                count: selectedIds.length,
+              })}
+            </span>
+            <Button
+              size="sm"
+              onClick={() => setRelocateOpen(true)}
+              data-test="hive-bulk-move"
+            >
+              <Truck className="mr-1.5 h-4 w-4" />
+              {t('hive:relocate.action', {
+                defaultValue: 'Move to another apiary',
+              })}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setSelectedIds([])}
+            >
+              {t('common:actions.cancel', { defaultValue: 'Cancel' })}
+            </Button>
+          </div>
+        )}
+
         {hives.length > 0 ? (
           <Table>
             <TableCaption>
@@ -133,6 +171,20 @@ export const HiveListPage = () => {
             </TableCaption>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-10">
+                  <Checkbox
+                    checked={
+                      hives.length > 0 && selectedIds.length === hives.length
+                    }
+                    onCheckedChange={checked =>
+                      setSelectedIds(checked ? hives.map(h => h.id) : [])
+                    }
+                    aria-label={t('hive:relocate.selectAll', {
+                      defaultValue: 'Select all colonies',
+                    })}
+                    data-test="hive-select-all"
+                  />
+                </TableHead>
                 <TableHead>{t('hive:fields.name')}</TableHead>
                 <TableHead>{t('hive:fields.status')}</TableHead>
                 <TableHead>{t('hive:fields.installationDate')}</TableHead>
@@ -150,6 +202,21 @@ export const HiveListPage = () => {
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => navigate(`/hives/${hive.id}`)}
                 >
+                  {/* Stop propagation so ticking a row does not open it. */}
+                  <TableCell onClick={e => e.stopPropagation()}>
+                    <Checkbox
+                      checked={selectedIds.includes(hive.id)}
+                      onCheckedChange={checked =>
+                        setSelectedIds(prev =>
+                          checked
+                            ? [...prev, hive.id]
+                            : prev.filter(id => id !== hive.id),
+                        )
+                      }
+                      aria-label={hive.name}
+                      data-test="hive-select"
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{hive.name}</TableCell>
                   <TableCell>
                     <HiveStatus status={hive.status} />
@@ -200,6 +267,13 @@ export const HiveListPage = () => {
             </Button>
           </div>
         )}
+        <RelocateDialog
+          open={relocateOpen}
+          onOpenChange={setRelocateOpen}
+          hiveIds={selectedIds}
+          currentApiaryId={activeApiaryId}
+          onMoved={() => setSelectedIds([])}
+        />
       </MainContent>
       <PageAside>
         <HiveActionSidebar onRefreshData={handleRefreshData} />
