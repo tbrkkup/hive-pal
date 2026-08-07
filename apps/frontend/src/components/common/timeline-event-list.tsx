@@ -30,6 +30,7 @@ import {
   Wrench,
   MoreVertical,
   CheckCircle,
+  Truck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -278,6 +279,8 @@ const getActionIcon = (action: ActionResponse) => {
       return <StickyNote className="h-4 w-4" />;
     case 'MAINTENANCE':
       return <Wrench className="h-4 w-4" />;
+    case 'RELOCATION':
+      return <Truck className="h-4 w-4" />;
     default:
       return <ActivityIcon className="h-4 w-4" />;
   }
@@ -321,6 +324,17 @@ const getActionLabel = (action: ActionResponse, t: (key: string) => string) => {
         return `${stat === 'cleaned' ? 'Cleaned' : 'Replaced'} ${comp}`;
       }
       return t('common:timeline.maintenance');
+    case 'RELOCATION':
+      if (action.details?.type === 'RELOCATION') {
+        const { fromApiaryName, toApiaryName, appliedAt } = action.details;
+        const route =
+          fromApiaryName && toApiaryName
+            ? `${fromApiaryName} \u2192 ${toApiaryName}`
+            : (toApiaryName ?? '');
+        // A move dated in the future has not taken effect yet.
+        return appliedAt ? `Moved ${route}` : `Move planned ${route}`;
+      }
+      return t('common:timeline.relocation');
     default:
       return action.type;
   }
@@ -347,6 +361,8 @@ const getEventTone = (event: TimelineEvent): MarkerTone => {
         return 'rose';
       case 'HARVEST':
         return 'yellow';
+      case 'RELOCATION':
+        return 'sky';
       case 'NOTE':
       case 'FRAME':
       case 'MAINTENANCE':

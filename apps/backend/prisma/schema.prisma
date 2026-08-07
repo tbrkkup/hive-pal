@@ -431,6 +431,7 @@ model Action {
   harvestAction   HarvestAction?
   boxConfigurationAction BoxConfigurationAction?
   maintenanceAction MaintenanceAction?
+  relocationAction  RelocationAction?
   createdByUserId String?
   createdByUser   User?      @relation("ActionCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
 
@@ -499,6 +500,37 @@ model MaintenanceAction {
   action    Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
   component String // BOX, BOTTOM_BOARD, COVER
   status    String // CLEANED, REPLACED
+}
+
+// A colony moving from one apiary (= location) to another. The parent Action
+// carries the date the move happens on, which may lie in the future.
+model RelocationAction {
+  id       String @id @default(uuid())
+  actionId String @unique
+  action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  // Deliberately plain columns, not foreign keys. A relocation is a historical
+  // log entry and must outlive the sites it names: deleting an apiary cascades
+  // to its hives and thus to their actions, and a competing SET NULL on the
+  // same rows breaks the delete outright. Keeping the ids loose also stops an
+  // unrelated colony's history from being rewritten when an old site is
+  // removed. Writes are validated in RelocationService instead, and the name
+  // snapshots below keep the entry readable once an apiary is gone.
+  fromApiaryId String?
+  toApiaryId   String?
+
+  fromApiaryName String?
+  toApiaryName   String?
+
+  reason RelocationReason?
+
+  // Null while the move is still scheduled; set once it has taken effect on
+  // Hive.apiaryId. Future-dated moves are applied by RelocationScheduler.
+  appliedAt DateTime?
+
+  @@index([fromApiaryId])
+  @@index([toApiaryId])
+  @@index([appliedAt])
 }
 
 // Harvest tracking
@@ -581,6 +613,15 @@ enum ActionType {
   BOX_CONFIGURATION
   MAINTENANCE
   NOTE
+  RELOCATION
+  OTHER
+}
+
+// Why a colony was moved to another apiary. OTHER is described in the
+// action's free-text notes.
+enum RelocationReason {
+  FORAGE
+  OVERWINTERING
   OTHER
 }
 

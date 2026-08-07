@@ -80,6 +80,25 @@ export const noteActionDetailsSchema = z.object({
   content: z.string().min(1),
 });
 
+export const relocationReasonSchema = z.enum([
+  'FORAGE',
+  'OVERWINTERING',
+  'OTHER',
+]);
+
+export const relocationActionDetailsSchema = z.object({
+  type: z.literal(ActionType.RELOCATION),
+  fromApiaryId: z.string().uuid().nullish(),
+  toApiaryId: z.string().uuid().nullish(),
+  // Snapshots taken when the move was recorded, so the entry stays readable
+  // after an apiary is deleted.
+  fromApiaryName: z.string().nullish(),
+  toApiaryName: z.string().nullish(),
+  reason: relocationReasonSchema.nullish(),
+  // Null while the move is still scheduled for a future date.
+  appliedAt: z.string().datetime().nullish(),
+});
+
 export const otherActionDetailsSchema = z.object({
   type: z.literal(ActionType.OTHER),
 });
@@ -93,6 +112,7 @@ export const actionDetailsSchema = z.discriminatedUnion('type', [
   boxConfigurationActionDetailsSchema,
   maintenanceActionDetailsSchema,
   noteActionDetailsSchema,
+  relocationActionDetailsSchema,
   otherActionDetailsSchema,
 ]);
 
@@ -105,5 +125,7 @@ export type MaintenanceActionDetails = z.infer<typeof maintenanceActionDetailsSc
 export type MaintenanceComponent = z.infer<typeof maintenanceComponentSchema>;
 export type MaintenanceStatus = z.infer<typeof maintenanceStatusSchema>;
 export type NoteActionDetails = z.infer<typeof noteActionDetailsSchema>;
+export type RelocationActionDetails = z.infer<typeof relocationActionDetailsSchema>;
+export type RelocationReason = z.infer<typeof relocationReasonSchema>;
 export type OtherActionDetails = z.infer<typeof otherActionDetailsSchema>;
 export type ActionDetails = z.infer<typeof actionDetailsSchema>;
