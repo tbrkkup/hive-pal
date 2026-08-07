@@ -14,6 +14,9 @@ import {
   ObservationSchemaType,
 } from 'shared-schemas';
 import PDFDocument from 'pdfkit';
+import { ApiaryScopeFilter } from '../interface/request-with.apiary';
+import { apiaryAccessWhere } from '../common';
+import { ALL_APIARIES } from '../guards/apiary-context.guard';
 
 interface SyrupConcentration {
   sugarPerLiter: number;
@@ -35,25 +38,48 @@ export class ReportsService {
     this.logger.setContext('ReportsService');
   }
 
+  /**
+   * Restricts hives to the reporting scope: a single apiary, or every apiary
+   * the user owns or is an active member of when in "view all" mode. The
+   * user-scoped branch is what keeps the cross-apiary query from running
+   * unfiltered.
+   */
+  private hiveScopeWhere(filter: ApiaryScopeFilter) {
+    return filter.apiaryId
+      ? { apiaryId: filter.apiaryId }
+      : { apiary: apiaryAccessWhere(filter.userId) };
+  }
+
+  /** Same scoping for records that hang off the apiary directly (harvests). */
+  private apiaryScopeWhere(filter: ApiaryScopeFilter) {
+    return filter.apiaryId
+      ? { apiaryId: filter.apiaryId }
+      : { apiary: apiaryAccessWhere(filter.userId) };
+  }
+
   async getApiaryStatistics(
-    apiaryId: string,
+    filter: ApiaryScopeFilter,
     period: ReportPeriod = ReportPeriod.ALL,
   ): Promise<ApiaryStatisticsDto> {
     this.logger.log(
-      `Getting statistics for apiary ${apiaryId}, period: ${period}`,
+      `Getting statistics for ${filter.apiaryId ?? 'all apiaries'}, period: ${period}`,
     );
 
     const { startDate, endDate } = this.calculateDateRange(period);
 
-    const apiary = await this.prisma.apiary.findUniqueOrThrow({
-      where: { id: apiaryId },
-      select: { id: true, name: true },
-    });
+    // In "view all" mode the report spans every apiary the user can access, so
+    // there is no single apiary to name it after.
+    const apiary = filter.apiaryId
+      ? await this.prisma.apiary.findUniqueOrThrow({
+          where: { id: filter.apiaryId },
+          select: { id: true, name: true },
+        })
+      : { id: ALL_APIARIES, name: 'All apiaries' };
 
-    // Get all hives for the apiary
+    // Get all hives in scope
     const hives = await this.prisma.hive.findMany({
       where: {
-        apiaryId,
+        ...this.hiveScopeWhere(filter),
       },
       include: {
         inspections: {
@@ -81,7 +107,7 @@ export class ReportsService {
 
     // Calculate honey harvested per hive
     const honeyByHive = await this.calculateHoneyByHive(
-      apiaryId,
+      filter,
       hiveIds,
       startDate,
       endDate,
@@ -122,7 +148,7 @@ export class ReportsService {
     let totalInspections = 0;
     const harvestCount = await this.prisma.harvest.count({
       where: {
-        apiaryId,
+        ...this.apiaryScopeWhere(filter),
         status: HarvestStatus.COMPLETED,
         ...(startDate
           ? { date: { gte: startDate, lte: endDate } }
@@ -274,7 +300,7 @@ export class ReportsService {
   }
 
   private async calculateHoneyByHive(
-    apiaryId: string,
+    filter: ApiaryScopeFilter,
     hiveIds: string[],
     startDate: Date | null,
     endDate: Date,
@@ -290,7 +316,7 @@ export class ReportsService {
   > {
     const harvests = await this.prisma.harvest.findMany({
       where: {
-        apiaryId,
+        ...this.apiaryScopeWhere(filter),
         status: HarvestStatus.COMPLETED,
         ...(startDate
           ? { date: { gte: startDate, lte: endDate } }
@@ -396,22 +422,26 @@ export class ReportsService {
   }
 
   async getTrends(
-    apiaryId: string,
+    filter: ApiaryScopeFilter,
     period: ReportPeriod = ReportPeriod.ALL,
   ): Promise<ApiaryTrendsDto> {
-    this.logger.log(`Getting trends for apiary ${apiaryId}, period: ${period}`);
+    this.logger.log(
+      `Getting trends for ${filter.apiaryId ?? 'all apiaries'}, period: ${period}`,
+    );
 
     const { startDate, endDate } = this.calculateDateRange(period);
 
-    const apiary = await this.prisma.apiary.findUniqueOrThrow({
-      where: { id: apiaryId },
-      select: { id: true, name: true },
-    });
+    const apiary = filter.apiaryId
+      ? await this.prisma.apiary.findUniqueOrThrow({
+          where: { id: filter.apiaryId },
+          select: { id: true, name: true },
+        })
+      : { id: ALL_APIARIES, name: 'All apiaries' };
 
-    // Get all hives for the apiary
+    // Get all hives in scope
     const hives = await this.prisma.hive.findMany({
       where: {
-        apiaryId,
+        ...this.hiveScopeWhere(filter),
       },
       select: {
         id: true,
@@ -424,7 +454,7 @@ export class ReportsService {
     // Get all harvests in the date range
     const harvests = await this.prisma.harvest.findMany({
       where: {
-        apiaryId,
+        ...this.apiaryScopeWhere(filter),
         status: HarvestStatus.COMPLETED,
         ...(startDate
           ? {
@@ -913,12 +943,14 @@ export class ReportsService {
   }
 
   async exportCsv(
-    apiaryId: string,
+    filter: ApiaryScopeFilter,
     period: ReportPeriod = ReportPeriod.ALL,
   ): Promise<string> {
-    this.logger.log(`Exporting CSV for apiary ${apiaryId}, period: ${period}`);
+    this.logger.log(
+      `Exporting CSV for ${filter.apiaryId ?? 'all apiaries'}, period: ${period}`,
+    );
 
-    const stats = await this.getApiaryStatistics(apiaryId, period);
+    const stats = await this.getApiaryStatistics(filter, period);
 
     // Helper function to escape CSV values
     const escapeCsv = (value: string | number | null | undefined): string => {
@@ -988,12 +1020,14 @@ export class ReportsService {
   }
 
   async exportPdf(
-    apiaryId: string,
+    filter: ApiaryScopeFilter,
     period: ReportPeriod = ReportPeriod.ALL,
   ): Promise<Buffer> {
-    this.logger.log(`Exporting PDF for apiary ${apiaryId}, period: ${period}`);
+    this.logger.log(
+      `Exporting PDF for ${filter.apiaryId ?? 'all apiaries'}, period: ${period}`,
+    );
 
-    const stats = await this.getApiaryStatistics(apiaryId, period);
+    const stats = await this.getApiaryStatistics(filter, period);
 
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ margin: 50 });

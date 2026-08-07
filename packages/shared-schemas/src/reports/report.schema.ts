@@ -32,9 +32,13 @@ export const hiveHealthSchema = z.object({
   lastInspectionDate: z.string().nullable(),
 });
 
+// Either a single apiary's UUID, or "all" when the report spans every apiary
+// the user can access ("view all apiaries" mode).
+const reportScopeIdSchema = z.union([z.string().uuid(), z.literal('all')]);
+
 // Main statistics response
 export const apiaryStatisticsSchema = z.object({
-  apiaryId: z.string().uuid(),
+  apiaryId: reportScopeIdSchema,
   apiaryName: z.string(),
   period: z.object({
     startDate: z.string(),
@@ -103,7 +107,7 @@ export const hiveHealthTrendSchema = z.object({
 });
 
 export const trendDataSchema = z.object({
-  apiaryId: z.string().uuid(),
+  apiaryId: reportScopeIdSchema,
   period: z.object({
     startDate: z.string(),
     endDate: z.string(),
