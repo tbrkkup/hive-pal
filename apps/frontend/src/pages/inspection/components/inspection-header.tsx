@@ -13,6 +13,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { HiveScore, InspectionStatus } from 'shared-schemas';
 import {
   Popover,
@@ -115,11 +116,12 @@ export const InspectionHeader = ({
   trailing,
 }: InspectionHeaderProps) => {
   const { t } = useTranslation('inspection');
+  const { formatTime } = useDateFormat();
   const statusConfig = getStatusConfig(status);
   const dateObj = new Date(date);
   const dayOfWeek = format(dateObj, 'EEEE');
   const dateLine = format(dateObj, 'MMMM d, yyyy');
-  const timeLine = format(dateObj, 'h:mm a');
+  const timeLine = formatTime(dateObj);
 
   const hasWeather = temperature != null || !!weatherConditions;
 
