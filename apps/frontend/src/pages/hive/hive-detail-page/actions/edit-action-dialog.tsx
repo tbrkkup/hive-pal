@@ -188,6 +188,12 @@ export const EditActionDialog = ({
   const updateAction = useUpdateAction();
   // A split is a structural paired record: only date + notes are editable.
   const isSplit = action.type === ActionType.SPLIT;
+  // A relocation names two apiaries and a direction, which this generic editor
+  // cannot express. Routed through the normal path it would be rewritten as
+  // OTHER and the move would be lost, so it is treated like a split: date and
+  // notes only.
+  const isRelocation = action.type === ActionType.RELOCATION;
+  const isStructural = isSplit || isRelocation;
   const [splitNotes, setSplitNotes] = useState(action.notes ?? '');
 
   const methods = useForm<ActionFormData>({
@@ -229,6 +235,23 @@ export const EditActionDialog = ({
         linkText: 'Go to harvest',
       };
     }
+    if (isRelocation) {
+      const details = action.details;
+      const from =
+        details?.type === ActionType.RELOCATION
+          ? details.fromApiaryName
+          : undefined;
+      const to =
+        details?.type === ActionType.RELOCATION
+          ? details.toApiaryName
+          : undefined;
+      return {
+        message:
+          `This colony moved${from && to ? ` from ${from} to ${to}` : ''}. ` +
+          'Only the date and notes can be edited here — to move it somewhere ' +
+          'else, record another move.',
+      };
+    }
     if (isSplit) {
       return {
         message:
@@ -243,8 +266,9 @@ export const EditActionDialog = ({
     const actions = values.actions || [];
     const selectedDate = values.date;
 
-    if (isSplit) {
-      // Split details are immutable; only date + notes travel to the server.
+    if (isStructural) {
+      // Structural details are immutable; only date + notes travel to the
+      // server, which leaves the underlying record untouched.
       try {
         await updateAction.mutateAsync({
           actionId: action.id,
@@ -254,7 +278,11 @@ export const EditActionDialog = ({
           },
           apiaryId,
         });
-        toast.success('Split updated — both timeline entries were re-dated');
+        toast.success(
+          isSplit
+            ? 'Split updated — both timeline entries were re-dated'
+            : 'Move updated',
+        );
         onOpenChange(false);
       } catch {
         toast.error('Failed to update action. Please try again.');
@@ -347,13 +375,17 @@ export const EditActionDialog = ({
                 </PopoverContent>
               </Popover>
             </div>
-            {isSplit ? (
+            {isStructural ? (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Notes</label>
                 <Textarea
                   value={splitNotes}
                   onChange={e => setSplitNotes(e.target.value)}
-                  placeholder="Notes about this split…"
+                  placeholder={
+                    isSplit
+                      ? 'Notes about this split…'
+                      : 'Notes about this move…'
+                  }
                   rows={3}
                 />
               </div>

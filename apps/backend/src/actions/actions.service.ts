@@ -880,6 +880,7 @@ export class ActionsService {
     await tx.maintenanceAction.deleteMany({ where: { actionId } });
     await tx.statusChangeAction.deleteMany({ where: { actionId } });
     await tx.splitAction.deleteMany({ where: { actionId } });
+    await tx.relocationAction.deleteMany({ where: { actionId } });
   }
 
   // Prisma-to-Domain Transformation Function
