@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState} from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -165,6 +166,12 @@ export const EditActionDialog = ({
   onOpenChange,
 }: EditActionDialogProps) => {
   const updateAction = useUpdateAction();
+  // A relocation records which sites a colony moved between. That pairing is
+  // not something this generic editor can express, and routing it through the
+  // normal path would rewrite the action as OTHER and drop the move entirely,
+  // so only the date and notes are editable here.
+  const isRelocation = action.type === ActionType.RELOCATION;
+  const [relocationNotes, setRelocationNotes] = useState(action.notes ?? '');
 
   const methods = useForm<ActionFormData>({
     defaultValues: {
@@ -204,6 +211,20 @@ export const EditActionDialog = ({
         linkText: 'Go to harvest',
       };
     }
+    if (isRelocation) {
+      const from = action.details?.type === ActionType.RELOCATION
+        ? action.details.fromApiaryName
+        : undefined;
+      const to = action.details?.type === ActionType.RELOCATION
+        ? action.details.toApiaryName
+        : undefined;
+      return {
+        message:
+          `This colony moved${from && to ? ` from ${from} to ${to}` : ''}. ` +
+          'Only the date and notes can be edited here — to move it somewhere ' +
+          'else, record another move.',
+      };
+    }
     return null;
   };
 
@@ -211,6 +232,24 @@ export const EditActionDialog = ({
     const values = methods.getValues();
     const actions = values.actions || [];
     const selectedDate = values.date;
+
+    if (isRelocation) {
+      // Sending no details leaves the relocation record untouched.
+      try {
+        await updateAction.mutateAsync({
+          actionId: action.id,
+          data: {
+            date: selectedDate.toISOString(),
+            notes: relocationNotes.trim() || undefined,
+          },
+        });
+        toast.success('Move updated');
+        onOpenChange(false);
+      } catch {
+        toast.error('Failed to update action. Please try again.');
+      }
+      return;
+    }
 
     if (actions.length === 0) {
       toast.error('Please add at least one action before saving.');
@@ -296,7 +335,19 @@ export const EditActionDialog = ({
                 </PopoverContent>
               </Popover>
             </div>
-            <ActionsSection editMode />
+            {isRelocation ? (
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Notes</label>
+                <Textarea
+                  value={relocationNotes}
+                  onChange={e => setRelocationNotes(e.target.value)}
+                  placeholder="Notes about this move…"
+                  rows={3}
+                />
+              </div>
+            ) : (
+              <ActionsSection editMode />
+            )}
             <div className="flex justify-end gap-2 mt-6">
               <Button
                 type="button"
