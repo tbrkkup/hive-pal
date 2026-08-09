@@ -109,8 +109,27 @@ export function calculateFeedingTotals(
     let sugarGrams = 0;
     let syrupMl = 0;
 
-    // Calculate based on feed type
-    if (details.feedType === 'SYRUP' || details.feedType === 'Syrup') {
+    if (details.sugarG != null) {
+      // Feed-type registry record: the sugar mass was derived from the feed's
+      // sugar content when the feeding was saved (and recomputed server-side),
+      // so it also covers commercial invert syrups and user-defined feeds,
+      // whose `feedType` is a display label rather than one of the ids below.
+      sugarGrams = details.sugarG;
+
+      // Liquid volume poured into the feeder: the feed's own volume (mass ÷
+      // density) plus any water it was diluted with. Solid feeds carry no
+      // density and contribute no volume.
+      if (
+        details.amountG != null &&
+        details.density != null &&
+        details.density > 0
+      ) {
+        syrupMl = details.amountG / details.density;
+      }
+      syrupMl += details.waterAddedMl ?? 0;
+    }
+    // Legacy records (no stored sugar mass): derive it from the feed type.
+    else if (details.feedType === 'SYRUP' || details.feedType === 'Syrup') {
       // Convert amount to ml (normalize all volume units)
       let amountMl = 0;
       switch (details.unit) {
