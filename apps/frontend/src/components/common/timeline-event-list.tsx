@@ -62,6 +62,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useScheduledInspectionActions } from '@/api/hooks/useScheduledInspectionActions';
+import { useDateFormat } from '@/hooks/use-date-format';
 import { cn } from '@/lib/utils';
 import { PhotoGallery } from './photo-gallery';
 import { StandalonePhotoPreview } from './standalone-photo-preview';
@@ -111,10 +112,6 @@ export interface TimelineEventListProps {
   hives?: Array<{ id: string; name: string }>;
   headerSlot?: React.ReactNode;
 }
-
-const formatTime = (date: string) => {
-  return format(new Date(date), 'h:mm a');
-};
 
 const formatEntryDate = (
   date: string,
@@ -449,6 +446,7 @@ export const TimelineEventList: React.FC<TimelineEventListProps> = ({
   headerSlot,
 }) => {
   const { t } = useTranslation('common');
+  const { formatTime } = useDateFormat();
   const [showAll, setShowAll] = useState(false);
   const [eventTypeFilter, setEventTypeFilter] =
     useState<EventTypeFilter>('all');

@@ -41,6 +41,7 @@ import { useHiveApiaryLookup } from '@/api/hooks/useHives';
 import { getInspectionDisplayDate } from '@/utils/inspection-display-date';
 import { toInspectionDateISOString } from '@/utils/inspection-date';
 import { RescheduleDialog } from './reschedule-dialog';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 interface ScheduledInspectionCardProps {
   inspection: InspectionResponse;
@@ -63,6 +64,7 @@ export const ScheduledInspectionCard: React.FC<
   ScheduledInspectionCardProps
 > = ({ inspection, hiveName, onUpdate }) => {
   const { t } = useTranslation(['inspection']);
+  const { formatTime } = useDateFormat();
   const navigate = useNavigate();
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
@@ -166,7 +168,7 @@ export const ScheduledInspectionCard: React.FC<
                   {format(inspectionDate, 'MMM d')}
                 </span>
                 {!inspection.isAllDay && (
-                  <span>{format(inspectionDate, 'h:mm a')}</span>
+                  <span>{formatTime(inspectionDate)}</span>
                 )}
               </div>
 

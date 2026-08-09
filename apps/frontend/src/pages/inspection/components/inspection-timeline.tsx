@@ -34,6 +34,7 @@ import { ScheduledInspectionCard } from './scheduled-inspection-card';
 import { useHives } from '@/api/hooks';
 import { useApiaryPermission } from '@/hooks/useApiaryPermission';
 import { useQueryClient } from '@tanstack/react-query';
+import { useDateFormat } from '@/hooks/use-date-format';
 
 type InspectionTimelineProps = {
   inspections: InspectionResponse[];
@@ -98,10 +99,7 @@ export const InspectionTimeline: React.FC<InspectionTimelineProps> = ({
     return format(parsedDate, 'MMM d, yyyy');
   }, []);
 
-  const formatTime = useCallback((date: Date | string) => {
-    const parsedDate = typeof date === 'string' ? new Date(date) : date;
-    return format(parsedDate, 'h:mm a');
-  }, []);
+  const { formatTime } = useDateFormat();
 
   // Helpers for color classes
   const getStrengthColor = (value: number | null) => {
