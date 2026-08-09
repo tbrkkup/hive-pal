@@ -69,7 +69,7 @@ describe('RelocationService', () => {
       expect(prisma.$transaction).not.toHaveBeenCalled();
     });
 
-    it('scopes the lookup to owner or active member', async () => {
+    it('requires write access, not merely read access', async () => {
       destinationIsAccessible();
       hiveIsHere();
 
@@ -78,9 +78,18 @@ describe('RelocationService', () => {
       const where = (prisma.apiary.findFirst as ReturnType<typeof vi.fn>).mock
         .calls[0][0].where;
       expect(where.id).toBe(FIELD);
+      // A VIEWER may read an apiary but must not move colonies into it.
       expect(where.OR).toEqual([
         { userId: 'user-1' },
-        { members: { some: { userId: 'user-1', status: 'ACTIVE' } } },
+        {
+          members: {
+            some: {
+              userId: 'user-1',
+              status: 'ACTIVE',
+              role: { in: ['OWNER', 'EDITOR'] },
+            },
+          },
+        },
       ]);
     });
   });

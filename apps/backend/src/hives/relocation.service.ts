@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ApiaryUserFilter } from '../interface/request-with.apiary';
 import { CustomLoggerService } from '../logger/logger.service';
@@ -22,6 +23,27 @@ import {
  * freely — a past date records a move that already happened, a future date
  * schedules one (see `applyDueRelocations`).
  */
+/**
+ * Apiaries the user may write to: owned, or an active membership that is not
+ * read-only. Moving a colony writes to both the apiary it leaves and the one it
+ * joins, so both ends are checked with this — a VIEWER must not be able to move
+ * colonies in or out.
+ */
+const writableApiaryWhere = (userId: string): Prisma.ApiaryWhereInput => ({
+  OR: [
+    { userId },
+    {
+      members: {
+        some: {
+          userId,
+          status: 'ACTIVE',
+          role: { in: ['OWNER', 'EDITOR'] },
+        },
+      },
+    },
+  ],
+});
+
 @Injectable()
 export class RelocationService {
   constructor(
@@ -64,13 +86,7 @@ export class RelocationService {
     // id could be written into Hive.apiaryId, moving a colony into a stranger's
     // apiary — the request context only proves access to the *source*.
     const destination = await this.prisma.apiary.findFirst({
-      where: {
-        id: dto.toApiaryId,
-        OR: [
-          { userId: filter.userId },
-          { members: { some: { userId: filter.userId, status: 'ACTIVE' } } },
-        ],
-      },
+      where: { id: dto.toApiaryId, ...writableApiaryWhere(filter.userId) },
       select: { id: true, name: true },
     });
     if (!destination) {
@@ -79,14 +95,18 @@ export class RelocationService {
       );
     }
 
+    // Scoped by write access to the colony's own apiary rather than by the
+    // request's apiary context. A colony can be opened from outside the
+    // selected apiary — any cross-apiary listing does that — and the move must
+    // still work; authorizing the hive directly is also the stricter check.
     const hives = await this.prisma.hive.findMany({
-      where: { id: { in: ids }, apiaryId: filter.apiaryId },
+      where: { id: { in: ids }, apiary: writableApiaryWhere(filter.userId) },
       select: { id: true, apiaryId: true, apiary: { select: { name: true } } },
     });
     if (hives.length !== ids.length) {
       const found = new Set(hives.map((h) => h.id));
       throw new NotFoundException(
-        `Hive(s) not found in this apiary: ${ids
+        `Hive(s) not found or not editable: ${ids
           .filter((id) => !found.has(id))
           .join(', ')}`,
       );
